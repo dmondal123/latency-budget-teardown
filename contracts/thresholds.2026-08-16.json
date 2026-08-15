@@ -1,0 +1,29 @@
+{
+  "threshold_set_id": "latency-budget-teardown/2026-08-16",
+  "status": "draft_pending_g1_approval",
+  "owner": "dmondal",
+  "frozen_on": "2026-08-16",
+  "change_policy": "A threshold change requires separate human review and cannot share a comparison with an intervention change.",
+  "promotion_predicate": {
+    "fatal_count": {"operator": "==", "value": 0},
+    "retrieval_recall_at_5": {"operator": ">=", "value": 0.9},
+    "citation_precision": {"operator": ">=", "value": 0.95},
+    "citation_validity_rate": {"operator": ">=", "value": 0.98},
+    "task_resolution_rate": {"operator": ">=", "value": 0.85},
+    "truncation_rate": {"operator": "<=", "value": 0.02},
+    "p95_ttft_ms": {"operator": "<=", "value": 3900},
+    "p95_ttc_ms": {"operator": "<=", "value": 15000},
+    "max_modality_or_traffic_slice_regression": {"operator": "<=", "value": 0.05},
+    "external_runtime_api_cost_per_completed_task": {"operator": "==", "value": 0.0}
+  },
+  "latency_budget_p95_ms": {
+    "admission": 100,
+    "retrieval": 400,
+    "context_media": 600,
+    "model_queue_prefill": 2800,
+    "model_decode": 10800,
+    "validation": 200,
+    "contingency": 100,
+    "ttc": 15000
+  }
+}

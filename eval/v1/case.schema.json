@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Multimodal RAG evaluation case v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "question",
+    "modality_group",
+    "traffic_slice",
+    "reference_answer",
+    "required_facts",
+    "gold_evidence_ids",
+    "source_file",
+    "page",
+    "support_quote",
+    "expected_abstention",
+    "verification_status",
+    "holdout"
+  ],
+  "properties": {
+    "case_id": {"type": "string", "pattern": "^eval-v1-[0-9]{2}$"},
+    "question": {"type": "string", "minLength": 1},
+    "modality_group": {"enum": ["text", "visual", "mixed"]},
+    "traffic_slice": {"enum": ["typical", "edge", "adversarial", "ambiguous"]},
+    "reference_answer": {"type": "string", "minLength": 1},
+    "required_facts": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "gold_evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "source_file": {"type": "string", "pattern": "^documents/.+\\.pdf$"},
+    "page": {"type": "integer", "minimum": 1},
+    "support_quote": {"type": "string", "minLength": 1},
+    "expected_abstention": {"type": "boolean"},
+    "verification_status": {"const": "manually_verified"},
+    "holdout": {"type": "boolean"}
+  }
+}

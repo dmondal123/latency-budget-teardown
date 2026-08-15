@@ -20,8 +20,8 @@ This file is the current project status. Update it after each meaningful milesto
 |---|---|---|---|---|
 | M01 | Refine and approve the RAG latency plan | Complete | `RAG_PIPELINE_PLAN.md` | 2026-08-16 |
 | M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
-| M03 | Freeze behavioral contract and quality gates | Not started | Expected contract and threshold files | 2026-08-16 |
-| M04 | Verify eval cases and seal holdout | Not started | Expected versioned eval dataset | 2026-08-16 |
+| M03 | Freeze behavioral contract and quality gates | In progress | `contracts/behavioral_contract.v1.json`, `contracts/thresholds.2026-08-16.json`; awaiting G1 approval | 2026-08-16 |
+| M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
 | M05 | Pass vLLM-Metal feasibility gate | Not started | Expected environment manifest and smoke-test record | 2026-08-16 |
 | M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
 | M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
@@ -43,8 +43,8 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 
 | Priority | Action | Completion evidence |
 |---|---|---|
-| P0 | Define and review the versioned behavioral contract | Approved contract file and hash |
-| P0 | Define eval schema, verify 30 cases, and seal six holdouts | Dataset validation report |
+| P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
+| P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
 | P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
 | P0 | Run text, image, memory, swap, and prefix-cache correctness probes | Feasibility experiment record |
 | P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
