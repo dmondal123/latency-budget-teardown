@@ -1,20 +1,20 @@
-- [ ] Freeze the behavioral contract and dated quality thresholds.
-- [ ] Define, verify, and seal the evaluation dataset and holdout cases.
-- [ ] Pin the model, runtime, dependencies, and target environment manifest.
-- [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes.
-- [ ] Implement deterministic PDF ingestion and the evidence manifest.
-- [ ] Implement BM25 retrieval, deterministic context/media assembly, and citation binding.
-- [ ] Implement SSE generation, deterministic validation, and abstention behavior.
-- [ ] Implement per-request timing spans, four clocks, cache/memory telemetry, and raw JSONL persistence.
-- [ ] Add contract, pipeline, instrumentation, reporting, and reproducibility tests.
-- [ ] Run and inspect the instrumented baseline.
-- [ ] Generate p50/p95 aligned waterfalls, marginal-stage tables, bootstrap intervals, and tail analysis.
-- [ ] Run image-resolution intervention `I1_image_1024` and evaluate quality effects.
-- [ ] Run output-token intervention `I2_output_128` and evaluate quality effects.
-- [ ] Run streaming, application-cache, and admitted-page interventions as separate conditions.
-- [ ] Accept or reject each isolated intervention from frozen gates and measured deltas.
-- [ ] Run the accepted combined condition and open the sealed holdout once.
-- [ ] Run separate concurrency-2 and concurrency-4 service profiles.
-- [ ] Generate final budget-variance, quality, cost, environment, and intervention-decision reports.
-- [ ] Implement and validate `scripts/reproduce.sh` in a clean environment.
-- [ ] Complete the final write-up, collaboration log, artifact audit, and submission ZIP validation.
+- [ ] Freeze the behavioral contract and dated quality thresholds. — `gpt-5.6-terra`, medium
+- [ ] Define, verify, and seal the evaluation dataset and holdout cases. — `gpt-5.6-terra`, medium
+- [ ] Pin the model, runtime, dependencies, and target environment manifest. — `gpt-5.6-luna`, medium
+- [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes. — `gpt-5.6-terra`, medium
+- [ ] Implement deterministic PDF ingestion and the evidence manifest. — `gpt-5.6-luna`, medium
+- [ ] Implement BM25 retrieval, deterministic context/media assembly, and citation binding. — `gpt-5.6-terra`, medium
+- [ ] Implement SSE generation, deterministic validation, and abstention behavior. — `gpt-5.6-terra`, medium
+- [ ] Implement per-request timing spans, four clocks, cache/memory telemetry, and raw JSONL persistence. — `gpt-5.6-terra`, medium
+- [ ] Add contract, pipeline, instrumentation, reporting, and reproducibility tests. — `gpt-5.6-terra`, medium
+- [ ] Run and inspect the instrumented baseline. — `gpt-5.6-luna`, medium
+- [ ] Generate p50/p95 aligned waterfalls, marginal-stage tables, bootstrap intervals, and tail analysis. — `gpt-5.6-sol`, high
+- [ ] Run image-resolution intervention `I1_image_1024` and evaluate quality effects. — `gpt-5.6-terra`, medium
+- [ ] Run output-token intervention `I2_output_128` and evaluate quality effects. — `gpt-5.6-terra`, medium
+- [ ] Run streaming, application-cache, and admitted-page interventions as separate conditions. — `gpt-5.6-terra`, medium
+- [ ] Accept or reject each isolated intervention from frozen gates and measured deltas. — `gpt-5.6-sol`, high
+- [ ] Run the accepted combined condition and open the sealed holdout once. — `gpt-5.6-terra`, medium
+- [ ] Run separate concurrency-2 and concurrency-4 service profiles. — `gpt-5.6-luna`, low
+- [ ] Generate final budget-variance, quality, cost, environment, and intervention-decision reports. — `gpt-5.6-luna`, medium
+- [ ] Implement and validate `scripts/reproduce.sh` in a clean environment. — `gpt-5.6-terra`, medium
+- [ ] Complete the final write-up, collaboration log, artifact audit, and submission ZIP validation. — `gpt-5.6-luna`, medium
