@@ -1,48 +1,20 @@
-1. Refine RAG_PIPELINE_PLAN.md using the evaluation
-     and latency skills.
-      - Establish the pipeline stages, baseline metrics,
-        p50/p95 waterfall, quality gates, two isolated
-        interventions, and budget methodology first.
-
-  2. Add/update the architecture documentation.
-      - It should explain the retrieval → model →
-        validation flow and where instrumentation,
-        clocks, budgets, and experiments sit.
-
-  3. Create the documentation scaffolding:
-      - PROGRESS.md
-      - an experiment log (description, steps, results,
-        observations, learnings)
-
-      - COLLABORATION_NOTES.md
-
-  4. Improve AGENTS.md.
-      - Link all core docs, define when parallel agents
-        are appropriate, define GitNexus invocation
-        policy, enforce the three-MCP maximum, and state
-        the commit convention.
-
-  5. Decide GitNexus policy: invoke it on demand, not as
-     a hook.
-      - A hook adds friction and context/tool overhead;
-        the existing “impact before symbol edits” rule
-        is sufficient.
-
-  6. Keep MCPs and skills selectively enabled.
-      - This is an ongoing operating rule, not a one-
-        time deliverable. Prefer CLIs and keep at most
-        three MCPs active.
-
-  7. Maintain PROGRESS.md, the experiment log, and
-     collaboration notes continuously.
-      - Update progress after meaningful milestones.
-      - Log every experiment immediately after its run.
-      - Update collaboration notes for significant agent
-        decisions/corrections, especially before
-        commits.
-
-  8. Commit each completed feature/fix with a short
-     message.
-      - Also ongoing; do it after each small, validated
-        unit of work—not for every documentation
-        keystroke.
+- [ ] Freeze the behavioral contract and dated quality thresholds.
+- [ ] Define, verify, and seal the evaluation dataset and holdout cases.
+- [ ] Pin the model, runtime, dependencies, and target environment manifest.
+- [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes.
+- [ ] Implement deterministic PDF ingestion and the evidence manifest.
+- [ ] Implement BM25 retrieval, deterministic context/media assembly, and citation binding.
+- [ ] Implement SSE generation, deterministic validation, and abstention behavior.
+- [ ] Implement per-request timing spans, four clocks, cache/memory telemetry, and raw JSONL persistence.
+- [ ] Add contract, pipeline, instrumentation, reporting, and reproducibility tests.
+- [ ] Run and inspect the instrumented baseline.
+- [ ] Generate p50/p95 aligned waterfalls, marginal-stage tables, bootstrap intervals, and tail analysis.
+- [ ] Run image-resolution intervention `I1_image_1024` and evaluate quality effects.
+- [ ] Run output-token intervention `I2_output_128` and evaluate quality effects.
+- [ ] Run streaming, application-cache, and admitted-page interventions as separate conditions.
+- [ ] Accept or reject each isolated intervention from frozen gates and measured deltas.
+- [ ] Run the accepted combined condition and open the sealed holdout once.
+- [ ] Run separate concurrency-2 and concurrency-4 service profiles.
+- [ ] Generate final budget-variance, quality, cost, environment, and intervention-decision reports.
+- [ ] Implement and validate `scripts/reproduce.sh` in a clean environment.
+- [ ] Complete the final write-up, collaboration log, artifact audit, and submission ZIP validation.
