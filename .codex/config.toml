@@ -1,0 +1,14 @@
+# Codex workspace configuration template.
+# Keep this minimal and deterministic.
+
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[sandbox_workspace_write]
+network_access = false
+
+# Uncomment and fill in only if this workspace actually needs an MCP server.
+# [mcp_servers.example]
+# command = "..."
+# args = ["..."]
+# cwd = "."

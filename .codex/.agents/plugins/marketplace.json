@@ -1,0 +1,20 @@
+{
+    "name": "week-1-fde-local",
+    "interface": {
+      "displayName": "Week 1 FDE Local Plugins"
+    },
+    "plugins": [
+      {
+        "name": "rosetta",
+        "source": {
+          "source": "local",
+          "path": "./plugins/rosetta"
+        },
+        "policy": {
+          "installation": "AVAILABLE",
+          "authentication": "ON_INSTALL"
+        },
+        "category": "Productivity"
+      }
+    ]
+  }

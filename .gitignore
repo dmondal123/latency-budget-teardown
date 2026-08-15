@@ -1,0 +1,17 @@
+.DS_Store
+.env
+.venv
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+node_modules/
+logs/spend.csv
+logs/context-ledger/
+.ctx/
+
+documents/
+core-codex-3.1.9-2026-08-13/
