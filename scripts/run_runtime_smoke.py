@@ -47,7 +47,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     base_url = f"http://127.0.0.1:{args.port}"
-    command = [sys.executable, "-m", "vllm.entrypoints.openai.api_server", "--model", args.model, "--revision", args.revision, "--port", str(args.port), "--max-model-len", "2048", "--limit-mm-per-prompt", "image=2"]
+    command = [sys.executable, "-m", "vllm.entrypoints.openai.api_server", "--model", args.model, "--revision", args.revision, "--port", str(args.port), "--max-model-len", "2048", "--limit-mm-per-prompt", '{"image":2}']
     env = os.environ.copy()
     env.update({"VLLM_METAL_USE_MLX": "1", "VLLM_MLX_DEVICE": "gpu", "VLLM_METAL_MULTIMODAL_MODE": "multimodal-native"})
     process = subprocess.Popen(command, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
