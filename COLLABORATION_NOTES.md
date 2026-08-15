@@ -26,6 +26,7 @@ Update this file only after a significant decision, correction, failure investig
 | C002 | 2026-08-16 | Agent correction | Replaced ambiguous cache testing with separate application-cache and engine-prefix-cache policies | `RAG_PIPELINE_PLAN.md` sections 3, 8, and 9 |
 | C003 | 2026-08-16 | Agent correction | Changed multimodal prefix caching from an assumption to a correctness-gated policy | `RAG_PIPELINE_PLAN.md` section 8 |
 | C004 | 2026-08-16 | Agent correction | Stopped a failed discovery command from suppressing later checks by running checks independently | Collaboration session evidence |
+| C005 | 2026-08-16 | Agent correction | Added the missing dedicated GitNexus impact-analysis workflow and logged the contract/eval approval boundary | `scripts/verify_eval.py`, GitNexus analysis output, `PROGRESS.md` |
 
 ## Detailed entries
 
@@ -69,6 +70,22 @@ Correction: Later discovery and validation checks were run independently, so an 
 
 Preventive rule: Run independent discovery checks independently. Treat an empty Git history as valid repository state.
 
+### C005: Eval milestone governance and impact analysis
+
+Context: The behavioral contract, dated thresholds, evaluation schema, 24 development cases, six holdouts, verifier, and tests were added in commit `8c411ee`.
+
+What was suboptimal: The commit ran the GitNexus CLI `detect-changes` check but did not complete the dedicated impact-analysis workflow. The milestone also had not been recorded here despite adding a draft/pending-G1 boundary that materially affects benchmark governance.
+
+How it was caught: The human asked whether the GitNexus analysis skill had been used for each commit and pointed out the missing collaboration-note update.
+
+Correction: Refreshed the GitNexus index, analyzed `validate_cases` upstream, reviewed the process inventory, and re-ran `detect-changes`. The analysis reports one direct caller (`main`), one affected process, and LOW risk. `PROGRESS.md` correctly keeps M03 and M04 in progress pending G1 rather than marking them complete.
+
+Evidence: `node .gitnexus/run.cjs analyze`; `node .gitnexus/run.cjs impact validate_cases --direction upstream`; `node .gitnexus/run.cjs detect-changes`; `scripts/verify_eval.py`; `PROGRESS.md`.
+
+`/status` model and token use: unavailable in this API session.
+
+Preventive rule: For every non-trivial commit, complete the matching GitNexus workflow—not only `detect-changes`—and add a concise collaboration entry when an implementation changes an approval boundary or corrects the operating process.
+
 ## Entry template
 
 ```markdown
@@ -77,8 +94,8 @@ Preventive rule: Run independent discovery checks independently. Treat an empty 
 Date:
 Participants:
 Type: Human direction | Human approval | Agent proposal | Agent correction | Rejected approach
-Related commit (if applicable):
-`/status` model and token use (significant entries only):
+Related commit (if applicable)
+`/status` model and token use (for all commits):
 
 Context:
 
