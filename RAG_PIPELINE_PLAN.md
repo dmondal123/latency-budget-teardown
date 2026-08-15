@@ -10,7 +10,7 @@ Build a reproducible CLI pipeline over the PDFs in `documents/`:
 request → retrieval → context/media assembly → vLLM-Metal model → validation → display
 ```
 
-The primary deployment target is an M4 Pro with 16 GB unified memory, using an open-weight vision-language model served through `vllm-metal`. The initial candidate is `mlx-community/Qwen3-VL-4B-Instruct-4bit`, which the current vLLM-Metal documentation lists as **experimental** native multimodal support on the paged backend. It remains a feasibility candidate until the pinned build passes the smoke and memory gates below.
+The primary deployment target is an M4 Pro with 24 GB unified memory, using an open-weight vision-language model served through `vllm-metal`. The initial candidate is `mlx-community/Qwen3-VL-4B-Instruct-4bit`, which the current vLLM-Metal documentation lists as **experimental** native multimodal support on the paged backend. It remains a feasibility candidate until the pinned build passes the smoke and memory gates below.
 
 The work is complete only when:
 

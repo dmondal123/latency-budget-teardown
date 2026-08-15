@@ -144,3 +144,9 @@ Follow-up:
 
 - Evidence: `runtime_smoke.v4.json` passed health, text, and image requests; observed peak memory was 17.08 GB.
 - Decision: User confirmed 24 GB available memory, so `environment/manifest.v1.json` now records `unified_memory_gib: 24`. M05 remains open pending swap/OOM, CPU-fallback, prefix-cache, and repeatability checks; the detailed checklist is recorded in `PROGRESS.md`.
+
+## 2026-08-16 — M05 plan review
+
+- Review: applied the `review-plan` skill against the assignment and `RAG_PIPELINE_PLAN.md`.
+- Verdict: REVISE. The original checklist had the right risk areas but lacked per-condition JSON evidence, explicit pass/fail gates, cache controls, and a non-ambiguous image fixture.
+- Correction: `PROGRESS.md` now specifies the evidence schema and acceptance conditions for memory/swap, CPU fallback, prefix-cache parity, concurrency, and image validation. The approved plan now reflects the confirmed 24 GB target.

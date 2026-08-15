@@ -6,13 +6,13 @@ This file is the current project status. Update it after each meaningful milesto
 
 | Field | Value |
 |---|---|
-| Overall state | Foundation tooling implemented; runtime feasibility gate blocked |
+| Overall state | Foundation tooling implemented; runtime feasibility gate in progress |
 | Current phase | D1 contract, fixtures, and vLLM-Metal feasibility |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, approved 2026-08-16 |
-| Latest milestone | Deterministic PDF ingestion and offline feasibility probes implemented |
+| Latest milestone | Metal-backed text/image smoke passed; remaining M05 checks under review |
 | Authoritative measurements | None yet |
-| Active blocker | None for target-device smoke; model download/startup may still fail and must be recorded |
-| Next gate | Run the real vLLM-Metal smoke, image identity, memory, swap, and prefix-cache gates |
+| Active blocker | None; remaining M05 checks require target-device measurements |
+| Next gate | Complete revised M05 evidence plan, then approve feasibility gate |
 
 ## Milestones
 
@@ -46,7 +46,7 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 | P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
 | P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
 | P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
-| P0 | Complete M05 runtime feasibility checks | Smoke, memory-fraction/OOM, swap, CPU-fallback, prefix-cache, and repeatability evidence |
+| P0 | Complete revised M05 runtime feasibility checks | Versioned JSON evidence for smoke, memory/swap, CPU-fallback, prefix-cache, and concurrency |
 | P0 | Build the deterministic PDF evidence manifest from the corpus | `scripts/ingest_pdfs.py` output and ingestion tests |
 | P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
 | P1 | Run B0 baseline with at least 150 valid requests | Baseline raw data and report |
@@ -157,4 +157,21 @@ Remaining M05 plan:
 4. Test prefix-cache parity with the same text prefix and changed image, changed text and same image, and cache-disabled control. Compare outputs and record cache-hit telemetry if exposed.
 5. Repeat text and image requests in a fresh server and a warm server, then run concurrency 2 and 4 smoke requests. Record failures, latency, memory, and swap separately.
 
-Next action: Run this checklist on the Metal-accessible machine and attach the resulting JSON evidence before approving M05.
+Next action: Run the revised checklist on the Metal-accessible machine and attach the resulting JSON evidence before approving M05.
+
+### 2026-08-16: M05 plan review
+
+Status: In progress
+
+Review verdict: REVISE. The checklist covers the intended risk areas, but the original version did not define persistent evidence or pass/fail criteria for every check.
+
+Required corrections:
+
+1. Store one JSON record per condition with runtime versions, model revision, device, memory samples, swap samples, exit code, request results, and exact command. Keep failed conditions; do not retry them into success.
+2. Define memory acceptance as: startup and requests succeed, no OOM, no sustained swap, and peak resident/unified memory remains below the machine’s 24 GiB capacity with an explicit safety margin recorded before baseline.
+3. Define CPU-fallback acceptance as: `mx.default_device()` is GPU before launch, `VLLM_MLX_DEVICE=gpu`, Metal worker initialization appears in logs, and the server does not report CPU execution. A single device check is insufficient.
+4. Define prefix-cache acceptance as output parity for repeated identical inputs, changed-text inputs, and same-text/different-image inputs, with cache enabled versus disabled controls. Record cache-hit telemetry when available; otherwise mark telemetry unknown rather than infer a hit.
+5. Define concurrency acceptance as separate concurrency-2 and concurrency-4 runs with no correctness failures, no OOM, no sustained swap, and per-request success/latency records. Do not combine these with the single-user smoke result.
+6. Use a non-ambiguous image fixture larger than 1×1 for the final image check, because the current 1×1 PNG generated a harmless channel-dimension warning.
+
+Decision: Basic runtime smoke is evidence-backed and passed in `artifacts/runtime_smoke.v4.json`; M05 remains open until the corrected evidence bundle satisfies all five checks.
