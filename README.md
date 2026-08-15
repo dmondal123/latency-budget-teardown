@@ -49,6 +49,15 @@ bash scripts/reproduce.sh
 
 That command does not exist yet. When implemented, it must verify the environment, start its own pinned model server, run registered conditions, generate every reported metric and chart from raw data, and stop only the process it started.
 
+The current implementation also provides two offline foundation commands:
+
+```bash
+.venv/bin/python scripts/probe_feasibility.py
+.venv/bin/python scripts/ingest_pdfs.py --corpus documents --output artifacts/evidence_manifest.v1.json
+```
+
+The first writes explicit host/configuration probe results and does not claim a model smoke test. The second reads PDFs in stable filename/page order and writes content-addressed page evidence records.
+
 ## Data and repository hygiene
 
 Source PDFs, downloaded model weights, virtual environments, caches, build outputs, credentials, and `.env` files are excluded from version control. Generated benchmark artifacts will be added only when required by the submission and when their provenance and size are verified.

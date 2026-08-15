@@ -115,3 +115,9 @@ Preventive rule or learning:
 
 Follow-up:
 ```
+
+## 2026-08-16 — feasibility and ingestion foundation
+
+- Context: items 4 and 5 requested from `TASKS.md`.
+- Changed: added offline feasibility probes and deterministic PyMuPDF page ingestion with content-addressed evidence IDs; added focused tests and README command documentation.
+- Learning: the system Python was not the pinned environment, and sandboxed `sysctl` can fail even when present. Validation therefore uses `.venv/bin/python`, while the probe records unavailable memory telemetry as an explicit failed capability. `/status` was unavailable in this session, so no token/model record was added.
