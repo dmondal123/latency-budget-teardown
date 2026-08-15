@@ -24,7 +24,7 @@ class VerifyEvalSuiteTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Qwen3-VL-4B-Instruct-4bit@2fd8dac", result.stdout)
-        self.assertIn("runtime revision pending feasibility gate", result.stdout)
+        self.assertNotIn("runtime revision pending feasibility gate", result.stdout)
 
     def test_versioned_case_schema_is_present(self) -> None:
         schema_path = REPOSITORY_ROOT / "eval/v1/case.schema.json"
