@@ -175,3 +175,10 @@ Follow-up:
 - Changed: added a bounded runner for the memory-fraction sweep, GPU/Metal log checks, cache parity and image identity, fresh/warm requests, and concurrency 2/4. It preserves one JSON record per condition and an aggregate result, including failures.
 - Evidence: `.venv/bin/python -m pytest -q` → 20 passed; `.venv/bin/python scripts/run_m05_feasibility.py --help` succeeded. The system Python lacks PyMuPDF, so validation must use the pinned `.venv`.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — M05 memory-sweep aggregation correction
+
+- Context: final review of the automated M05 result aggregation.
+- Correction: a failed exploratory higher memory fraction is retained as evidence but does not fail M05 when a lower fraction passes and is selected. The final gate still requires the selected fraction plus cache and concurrency conditions to pass.
+- Evidence: focused acceptance test and the full `.venv/bin/python -m pytest -q` suite.
+- `/status` model and token use: unavailable in this API session.

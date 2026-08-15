@@ -75,6 +75,14 @@ def assess_condition(*, device: str, server_log: str, request_results: list[dict
     return {"status": "pass" if not reasons else "fail", "reasons": reasons}
 
 
+def summary_status(records: list[dict[str, Any]], *, selected_fraction: float | None) -> str:
+    if selected_fraction is None:
+        return "fail"
+    required = {f"memory_fraction_{selected_fraction:.2f}", "cache_disabled", "cache_enabled", "concurrency_2", "concurrency_4"}
+    by_name = {str(record["name"]): record for record in records}
+    return "pass" if all(by_name.get(name, {}).get("acceptance", {}).get("status") == "pass" for name in required) else "fail"
+
+
 def _command_output(command: list[str]) -> str:
     try:
         return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT).strip()
@@ -219,8 +227,8 @@ def main() -> int:
                 by_name[name]["acceptance"]["status"] = "fail"
                 by_name[name]["acceptance"]["reasons"].extend(reason for reason in cache_reasons if reason not in by_name[name]["acceptance"]["reasons"])
             (args.output_dir / f"{name}.json").write_text(json.dumps(by_name[name], indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    summary = {"schema_version": "m05-summary.v1", "capacity_gib": args.capacity_gib, "safety_margin_gib": args.safety_margin_gib, "conditions": [{"name": item["name"], "status": item["acceptance"]["status"], "reasons": item["acceptance"]["reasons"]} for item in records]}
-    summary["status"] = "pass" if all(item["status"] == "pass" for item in summary["conditions"]) else "fail"
+    summary = {"schema_version": "m05-summary.v1", "capacity_gib": args.capacity_gib, "safety_margin_gib": args.safety_margin_gib, "selected_memory_fraction": max(safe_fractions) if safe_fractions else None, "conditions": [{"name": item["name"], "status": item["acceptance"]["status"], "reasons": item["acceptance"]["reasons"]} for item in records]}
+    summary["status"] = summary_status(records, selected_fraction=summary["selected_memory_fraction"])
     (args.output_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if summary["status"] == "pass" else 1

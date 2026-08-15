@@ -1,4 +1,4 @@
-from scripts.m05_feasibility import assess_condition, cache_correctness_reasons, has_sustained_swap, make_image_fixtures
+from scripts.m05_feasibility import assess_condition, cache_correctness_reasons, has_sustained_swap, make_image_fixtures, summary_status
 
 
 def test_assess_condition_accepts_bounded_metal_run():
@@ -58,3 +58,16 @@ def test_cache_correctness_requires_parity_and_distinct_image_identity():
     assert cache_correctness_reasons(enabled, disabled) == []
     assert "image_identity_failed" in cache_correctness_reasons([enabled[0], enabled[1], {"ok": True, "output": "black"}], disabled)
     assert "cache_output_parity_failed" in cache_correctness_reasons(enabled, [{**item, "output": "different"} for item in disabled])
+
+
+def test_summary_accepts_a_safe_lower_fraction_while_retaining_higher_failure():
+    records = [
+        {"name": "memory_fraction_0.60", "acceptance": {"status": "pass"}},
+        {"name": "memory_fraction_0.80", "acceptance": {"status": "fail"}},
+        {"name": "cache_enabled", "acceptance": {"status": "pass"}},
+        {"name": "cache_disabled", "acceptance": {"status": "pass"}},
+        {"name": "concurrency_2", "acceptance": {"status": "pass"}},
+        {"name": "concurrency_4", "acceptance": {"status": "pass"}},
+    ]
+
+    assert summary_status(records, selected_fraction=0.60) == "pass"
