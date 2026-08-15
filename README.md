@@ -66,6 +66,18 @@ With Metal visible (`Device(gpu, 0)`), run the bounded runtime smoke test:
 
 It starts and stops only its own server, checks readiness, sends text and image requests, and preserves failure logs in the JSON artifact.
 
+### M05 target-device feasibility evidence
+
+On the Metal-accessible M4 Pro, run the full bounded feasibility suite with the pinned runtime:
+
+```bash
+/Users/dmondal/.venv-vllm-metal/bin/python scripts/run_m05_feasibility.py --output-dir artifacts/m05.v1
+```
+
+The runner starts and stops only servers it launches. It writes one JSON record per memory-fraction, cache, and concurrency condition plus `summary.json`; failures are retained and cause a nonzero exit. It tests memory fractions `0.60`, `0.70`, and `0.80`, records process RSS, `vm_stat`, and swap snapshots, requires GPU/Metal-worker evidence, compares cache-enabled and cache-disabled output, verifies black/red image identity, and runs warm concurrency 2 and 4 probes.
+
+The default 4 GiB safety margin means a condition fails when observed server RSS exceeds 20 GiB on the 24 GiB target. This is a protective qualification threshold, not a memory reservation. Run the sweep while the laptop is otherwise quiet; it stops failed conditions but may make other applications sluggish if memory pressure rises.
+
 ## Data and repository hygiene
 
 Source PDFs, downloaded model weights, virtual environments, caches, build outputs, credentials, and `.env` files are excluded from version control. Generated benchmark artifacts will be added only when required by the submission and when their provenance and size are verified.

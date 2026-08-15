@@ -1,7 +1,7 @@
 - [x] Freeze the behavioral contract and dated quality thresholds. — `gpt-5.6-terra`, medium
 - [x] Define, verify, and seal the evaluation dataset and holdout cases. — `gpt-5.6-terra`, medium
 - [x] Pin the model, runtime, dependencies, and target environment manifest. — `gpt-5.6-luna`, medium
-- [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes. Runtime smoke script implemented; target-device run pending. — `gpt-5.6-terra`, medium
+- [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes. Automated M05 evidence runner and local tests implemented; target-device run pending. — `gpt-5.6-terra`, medium
 - [x] Implement deterministic PDF ingestion and the evidence manifest. — `gpt-5.6-luna`, medium
 - [x] Implement BM25 retrieval, deterministic context/media assembly, and citation binding. — `gpt-5.6-terra`, medium
 - [ ] Implement SSE generation, deterministic validation, and abstention behavior. — `gpt-5.6-terra`, medium

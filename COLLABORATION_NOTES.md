@@ -167,3 +167,11 @@ Follow-up:
 - Review: applied the `review-plan` skill against the assignment and `RAG_PIPELINE_PLAN.md`.
 - Verdict: REVISE. The original checklist had the right risk areas but lacked per-condition JSON evidence, explicit pass/fail gates, cache controls, and a non-ambiguous image fixture.
 - Correction: `PROGRESS.md` now specifies the evidence schema and acceptance conditions for memory/swap, CPU fallback, prefix-cache parity, concurrency, and image validation. The approved plan now reflects the confirmed 24 GB target.
+
+## 2026-08-16 — automated M05 evidence runner
+
+- Context: the user approved implementation after reviewing the M05 plan and the practical impact of the memory safety margin.
+- Decision: use a 4 GiB safety margin on the 24 GiB M4 Pro target, making 20 GiB the observed server-RSS qualification ceiling. This protects the machine from likely memory pressure; it is not a reserved allocation.
+- Changed: added a bounded runner for the memory-fraction sweep, GPU/Metal log checks, cache parity and image identity, fresh/warm requests, and concurrency 2/4. It preserves one JSON record per condition and an aggregate result, including failures.
+- Evidence: `.venv/bin/python -m pytest -q` → 20 passed; `.venv/bin/python scripts/run_m05_feasibility.py --help` succeeded. The system Python lacks PyMuPDF, so validation must use the pinned `.venv`.
+- `/status` model and token use: unavailable in this API session.
