@@ -115,6 +115,18 @@ Decision: Use these files continuously throughout implementation and before each
 
 Next action: Begin the D1 contract, eval-fixture, and vLLM-Metal feasibility work.
 
+### 2026-08-16: Deterministic retrieval and context assembly implemented
+
+Status: In progress
+
+What changed: Implemented deterministic BM25 retrieval, no-op reranker seam, text/render deduplication, lexical MMR diversification with per-document caps, metadata expansion, bounded whole-page packing, durable `SOURCE_N` citation bindings, citation resolution, and zero-evidence fail-fast dispatch behavior.
+
+Evidence: `scripts/retrieval.py`, `tests/test_retrieval.py`; focused retrieval tests and full suite pass (`10` and `15` tests respectively).
+
+Decision: Keep optional render/image/visual-description fields supported but absent from the current ingestion manifest; token bounds use deterministic lexical tokenization until the model tokenizer is integrated.
+
+Next action: Implement SSE generation, deterministic validation, and abstention behavior.
+
 ### 2026-08-16: Ingestion and feasibility tooling implemented
 
 Status: In progress

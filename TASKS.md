@@ -3,7 +3,7 @@
 - [x] Pin the model, runtime, dependencies, and target environment manifest. — `gpt-5.6-luna`, medium
 - [ ] Pass text, image, memory, swap, and multimodal prefix-cache feasibility probes. Runtime smoke script implemented; target-device run pending. — `gpt-5.6-terra`, medium
 - [x] Implement deterministic PDF ingestion and the evidence manifest. — `gpt-5.6-luna`, medium
-- [ ] Implement BM25 retrieval, deterministic context/media assembly, and citation binding. — `gpt-5.6-terra`, medium
+- [x] Implement BM25 retrieval, deterministic context/media assembly, and citation binding. — `gpt-5.6-terra`, medium
 - [ ] Implement SSE generation, deterministic validation, and abstention behavior. — `gpt-5.6-terra`, medium
 - [ ] Implement per-request timing spans, four clocks, cache/memory telemetry, and raw JSONL persistence. — `gpt-5.6-terra`, medium
 - [ ] Add contract, pipeline, instrumentation, reporting, and reproducibility tests. — `gpt-5.6-terra`, medium

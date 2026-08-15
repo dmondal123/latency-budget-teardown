@@ -27,6 +27,7 @@ Update this file only after a significant decision, correction, failure investig
 | C003 | 2026-08-16 | Agent correction | Changed multimodal prefix caching from an assumption to a correctness-gated policy | `RAG_PIPELINE_PLAN.md` section 8 |
 | C004 | 2026-08-16 | Agent correction | Stopped a failed discovery command from suppressing later checks by running checks independently | Collaboration session evidence |
 | C005 | 2026-08-16 | Agent correction | Added the missing dedicated GitNexus impact-analysis workflow and logged the contract/eval approval boundary | `scripts/verify_eval.py`, GitNexus analysis output, `PROGRESS.md` |
+| C006 | 2026-08-16 | Agent correction | Revised Task 6 after review-plan found missing assembly bounds and durable citation identity | `scripts/retrieval.py`, `tests/test_retrieval.py` |
 
 ## Detailed entries
 
@@ -85,6 +86,22 @@ Evidence: `node .gitnexus/run.cjs analyze`; `node .gitnexus/run.cjs impact valid
 `/status` model and token use: unavailable in this API session.
 
 Preventive rule: For every non-trivial commit, complete the matching GitNexus workflow—not only `detect-changes`—and add a concise collaboration entry when an implementation changes an approval boundary or corrects the operating process.
+
+### C006: Task 6 review-plan correction
+
+Context: The initial Task 6 implementation outline covered BM25, packing, and citation binding but did not explicitly cover every requirement in the approved retrieval/context-assembly sequence.
+
+What was suboptimal: The outline omitted an explicit two-page bound, durable document hash in citation metadata, and an observable model-dispatch abstention check.
+
+How it was caught: The `review-plan` coverage audit marked the outline `REVISE` and identified those omissions before implementation approval.
+
+Correction: Added `page_budget=2`, document name/hash/page citation metadata, `resolve_citations`, and `retrieve_context` fail-fast dispatch behavior with focused tests.
+
+Evidence: `scripts/retrieval.py`, `tests/test_retrieval.py`, `RAG_PIPELINE_PLAN.md:255-267`; `.venv/bin/python -m pytest -q` → 15 passed.
+
+`/status` model and token use: unavailable in this API session.
+
+Preventive rule: Review each plan step against both the pipeline requirement and an executable verification assertion before implementation.
 
 ## Entry template
 
