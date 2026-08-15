@@ -127,3 +127,9 @@ Follow-up:
 - Context: user approved M03 and requested M05 execution.
 - Evidence: environment manifest validation passed; the offline feasibility probe passed text, swap-command, prefix-hash, and runtime-configuration checks. `vllm`, `mlx`, and `mlx_vlm` were absent, `runtime.server_revision` was unset, and sandboxed `sysctl` memory telemetry failed.
 - Decision: M03 is complete. M05 remains blocked because real multimodal smoke, image identity, OOM/CPU-fallback/swap, and prefix-cache checks require the target runtime and hardware environment.
+
+## 2026-08-16 — vLLM-Metal runtime installed
+
+- Context: user requested package installation to continue M05.
+- Evidence: official installer created `/Users/dmondal/.venv-vllm-metal` with vLLM `0.27.1+cpu`, vLLM-Metal `0.3.0.dev20260815085651`, MLX `0.32.0`, and MLX-VLM `0.6.4`; native architecture is `arm64`.
+- Blocker: `vllm --version` terminated with `No Metal device available`, so the sandbox cannot run the GPU-backed smoke test. Exact installed versions were recorded in `environment/manifest.v1.json`; M05 remains blocked pending a Metal-accessible run.

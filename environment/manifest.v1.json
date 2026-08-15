@@ -20,12 +20,12 @@
   },
   "runtime": {
     "server": "vllm-metal",
-    "server_revision": null,
+    "server_revision": "vllm-metal==0.3.0.dev20260815085651; vllm==0.27.1+cpu",
     "server_revision_required_before_benchmark": true,
     "backend": "paged",
     "multimodal_support": "experimental",
-    "mlx": null,
-    "mlx_vlm": null
+    "mlx": "0.32.0",
+    "mlx_vlm": "0.6.4"
   },
   "application_lock": "requirements.txt",
   "reproducibility": {
