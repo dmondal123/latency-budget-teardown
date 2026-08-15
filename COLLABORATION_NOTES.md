@@ -121,3 +121,9 @@ Follow-up:
 - Context: items 4 and 5 requested from `TASKS.md`.
 - Changed: added offline feasibility probes and deterministic PyMuPDF page ingestion with content-addressed evidence IDs; added focused tests and README command documentation.
 - Learning: the system Python was not the pinned environment, and sandboxed `sysctl` can fail even when present. Validation therefore uses `.venv/bin/python`, while the probe records unavailable memory telemetry as an explicit failed capability. `/status` was unavailable in this session, so no token/model record was added.
+
+## 2026-08-16 — M03 approval and M05 gate attempt
+
+- Context: user approved M03 and requested M05 execution.
+- Evidence: environment manifest validation passed; the offline feasibility probe passed text, swap-command, prefix-hash, and runtime-configuration checks. `vllm`, `mlx`, and `mlx_vlm` were absent, `runtime.server_revision` was unset, and sandboxed `sysctl` memory telemetry failed.
+- Decision: M03 is complete. M05 remains blocked because real multimodal smoke, image identity, OOM/CPU-fallback/swap, and prefix-cache checks require the target runtime and hardware environment.

@@ -6,12 +6,12 @@ This file is the current project status. Update it after each meaningful milesto
 
 | Field | Value |
 |---|---|
-| Overall state | Foundation tooling implemented; runtime feasibility gate pending |
+| Overall state | Foundation tooling implemented; runtime feasibility gate blocked |
 | Current phase | D1 contract, fixtures, and vLLM-Metal feasibility |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, approved 2026-08-16 |
 | Latest milestone | Deterministic PDF ingestion and offline feasibility probes implemented |
 | Authoritative measurements | None yet |
-| Active blocker | None recorded |
+| Active blocker | Target vLLM-Metal/MLX runtime is not installed; sandbox denies memory telemetry |
 | Next gate | Run the real vLLM-Metal smoke, image identity, memory, swap, and prefix-cache gates |
 
 ## Milestones
@@ -20,9 +20,9 @@ This file is the current project status. Update it after each meaningful milesto
 |---|---|---|---|---|
 | M01 | Refine and approve the RAG latency plan | Complete | `RAG_PIPELINE_PLAN.md` | 2026-08-16 |
 | M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
-| M03 | Freeze behavioral contract and quality gates | In progress | `contracts/behavioral_contract.v1.json`, `contracts/thresholds.2026-08-16.json`; awaiting G1 approval | 2026-08-16 |
+| M03 | Freeze behavioral contract and quality gates | Complete | User approved M03; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` | 2026-08-16 |
 | M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
-| M05 | Pass vLLM-Metal feasibility gate | In progress | `scripts/probe_feasibility.py` implemented; real runtime smoke and memory gate still required | 2026-08-16 |
+| M05 | Pass vLLM-Metal feasibility gate | Blocked | Manifest validates; offline probe ran, but vLLM/MLX packages and server revision are missing; memory telemetry denied | 2026-08-16 |
 | M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
 | M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
 | M08 | Run accepted combined condition and holdout | Not started | Expected combined-run report | 2026-08-16 |
@@ -46,7 +46,7 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 | P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
 | P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
 | P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
-| P0 | Run the real text, image, memory, swap, and prefix-cache correctness probes | Feasibility experiment record; offline probe is available via `scripts/probe_feasibility.py` |
+| P0 | Install/pin the target vLLM-Metal, MLX, and MLX-VLM runtime, then run real feasibility probes | Runtime smoke record and immutable server revision |
 | P0 | Build the deterministic PDF evidence manifest from the corpus | `scripts/ingest_pdfs.py` output and ingestion tests |
 | P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
 | P1 | Run B0 baseline with at least 150 valid requests | Baseline raw data and report |
@@ -126,3 +126,15 @@ Evidence: `scripts/ingest_pdfs.py`, `scripts/probe_feasibility.py`, `tests/test_
 Decision or blocker: Marked the implementation work complete, but kept M05 in progress. The sandbox denied `sysctl` memory telemetry, and the real model smoke, image identity, OOM, CPU-fallback, and sustained-swap checks remain outstanding.
 
 Next action: Run the probes and pinned vLLM-Metal smoke checks in the target environment, then record the feasibility result before baseline execution.
+
+### 2026-08-16: M03 approval and M05 feasibility attempt
+
+Status: Blocked
+
+What changed: M03 was explicitly approved. The pinned environment manifest and offline feasibility probe were run for M05.
+
+Evidence: `scripts/verify_environment.py` passed. `scripts/probe_feasibility.py` passed text, swap-command, prefix-hash, and runtime-configuration checks, but reported missing memory telemetry. `vllm`, `mlx`, and `mlx_vlm` are not installed; `runtime.server_revision` remains unset.
+
+Decision or blocker: Keep M05 blocked. Real multimodal smoke, image identity, OOM, CPU-fallback, sustained-swap, and multimodal prefix-cache checks cannot run until the target runtime is installed and pinned on the target environment.
+
+Next action: Install the approved runtime outside this restricted sandbox, record immutable revisions, then rerun M05.
