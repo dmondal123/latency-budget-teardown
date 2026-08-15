@@ -13,6 +13,19 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 class VerifyEvalSuiteTest(unittest.TestCase):
+    def test_environment_manifest_is_pinned_and_transparent(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "scripts/verify_environment.py"],
+            cwd=REPOSITORY_ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Qwen3-VL-4B-Instruct-4bit@2fd8dac", result.stdout)
+        self.assertIn("runtime revision pending feasibility gate", result.stdout)
+
     def test_versioned_case_schema_is_present(self) -> None:
         schema_path = REPOSITORY_ROOT / "eval/v1/case.schema.json"
         with schema_path.open(encoding="utf-8") as stream:

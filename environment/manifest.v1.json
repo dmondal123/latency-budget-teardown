@@ -1,0 +1,37 @@
+{
+  "schema_version": "environment.v1",
+  "manifest_status": "candidate_pending_feasibility_gate",
+  "recorded_on": "2026-08-16",
+  "owner": "dmondal",
+  "target": {
+    "os": "macOS 26.5.1",
+    "architecture": "arm64",
+    "chip": "Apple M4 Pro",
+    "unified_memory_gib": 16,
+    "python": "3.12.7",
+    "power_mode": "AC"
+  },
+  "model": {
+    "checkpoint": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+    "revision": "2fd8dac",
+    "revision_source": "https://huggingface.co/mlx-community/Qwen3-VL-4B-Instruct-4bit/tree/2fd8dac",
+    "quantization": "4-bit",
+    "status": "candidate; smoke, cache-correctness, and memory gates pending"
+  },
+  "runtime": {
+    "server": "vllm-metal",
+    "server_revision": null,
+    "server_revision_required_before_benchmark": true,
+    "backend": "paged",
+    "multimodal_support": "experimental",
+    "mlx": null,
+    "mlx_vlm": null
+  },
+  "application_lock": "requirements.txt",
+  "reproducibility": {
+    "index_snapshot_required": true,
+    "model_files_must_be_cached_outside_repo": true,
+    "environment_capture_command": "python scripts/verify_environment.py --manifest environment/manifest.v1.json",
+    "benchmark_blocked_until_runtime_revision_is_set": true
+  }
+}
