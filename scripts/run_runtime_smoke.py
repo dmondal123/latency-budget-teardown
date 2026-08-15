@@ -29,8 +29,9 @@ def wait_ready(base_url: str, process: subprocess.Popen, timeout: float) -> None
         if process.poll() is not None:
             raise RuntimeError(f"server exited before readiness (code {process.returncode})")
         try:
-            request_json(f"{base_url}/health", timeout=2)
-            return
+            with urllib.request.urlopen(f"{base_url}/health", timeout=2) as response:
+                if response.status == 200:
+                    return
         except (OSError, urllib.error.URLError, TimeoutError):
             time.sleep(1)
     raise TimeoutError(f"server did not become ready within {timeout:.0f}s")
