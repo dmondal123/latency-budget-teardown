@@ -6,13 +6,13 @@ This file is the current project status. Update it after each meaningful milesto
 
 | Field | Value |
 |---|---|
-| Overall state | Planning and documentation scaffolding |
+| Overall state | Foundation tooling implemented; runtime feasibility gate pending |
 | Current phase | D1 contract, fixtures, and vLLM-Metal feasibility |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, approved 2026-08-16 |
-| Latest milestone | Measurement-first RAG pipeline plan approved |
+| Latest milestone | Deterministic PDF ingestion and offline feasibility probes implemented |
 | Authoritative measurements | None yet |
 | Active blocker | None recorded |
-| Next gate | Approve the behavioral contract, eval cases, pinned runtime identity, and numeric budgets before baseline execution |
+| Next gate | Run the real vLLM-Metal smoke, image identity, memory, swap, and prefix-cache gates |
 
 ## Milestones
 
@@ -22,7 +22,7 @@ This file is the current project status. Update it after each meaningful milesto
 | M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
 | M03 | Freeze behavioral contract and quality gates | In progress | `contracts/behavioral_contract.v1.json`, `contracts/thresholds.2026-08-16.json`; awaiting G1 approval | 2026-08-16 |
 | M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
-| M05 | Pass vLLM-Metal feasibility gate | Not started | Expected environment manifest and smoke-test record | 2026-08-16 |
+| M05 | Pass vLLM-Metal feasibility gate | In progress | `scripts/probe_feasibility.py` implemented; real runtime smoke and memory gate still required | 2026-08-16 |
 | M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
 | M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
 | M08 | Run accepted combined condition and holdout | Not started | Expected combined-run report | 2026-08-16 |
@@ -46,7 +46,8 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 | P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
 | P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
 | P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
-| P0 | Run text, image, memory, swap, and prefix-cache correctness probes | Feasibility experiment record |
+| P0 | Run the real text, image, memory, swap, and prefix-cache correctness probes | Feasibility experiment record; offline probe is available via `scripts/probe_feasibility.py` |
+| P0 | Build the deterministic PDF evidence manifest from the corpus | `scripts/ingest_pdfs.py` output and ingestion tests |
 | P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
 | P1 | Run B0 baseline with at least 150 valid requests | Baseline raw data and report |
 
@@ -113,3 +114,15 @@ Evidence: `PROGRESS.md`, `EXPERIMENT_LOG.md`, and `COLLABORATION_NOTES.md` passe
 Decision: Use these files continuously throughout implementation and before each commit.
 
 Next action: Begin the D1 contract, eval-fixture, and vLLM-Metal feasibility work.
+
+### 2026-08-16: Ingestion and feasibility tooling implemented
+
+Status: In progress
+
+What changed: Added deterministic PyMuPDF page ingestion with document/page hashes and stable evidence IDs, plus offline host/configuration feasibility probes. Added focused tests and documented the commands in `README.md`.
+
+Evidence: `scripts/ingest_pdfs.py`, `scripts/probe_feasibility.py`, `tests/test_ingest_and_feasibility.py`; full test suite passes with 5 tests.
+
+Decision or blocker: Marked the implementation work complete, but kept M05 in progress. The sandbox denied `sysctl` memory telemetry, and the real model smoke, image identity, OOM, CPU-fallback, and sustained-swap checks remain outstanding.
+
+Next action: Run the probes and pinned vLLM-Metal smoke checks in the target environment, then record the feasibility result before baseline execution.
