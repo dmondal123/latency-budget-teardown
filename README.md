@@ -58,6 +58,14 @@ The current implementation also provides two offline foundation commands:
 
 The first writes explicit host/configuration probe results and does not claim a model smoke test. The second reads PDFs in stable filename/page order and writes content-addressed page evidence records.
 
+With Metal visible (`Device(gpu, 0)`), run the bounded runtime smoke test:
+
+```bash
+/Users/dmondal/.venv-vllm-metal/bin/python scripts/run_runtime_smoke.py --output artifacts/runtime_smoke.v1.json
+```
+
+It starts and stops only its own server, checks readiness, sends text and image requests, and preserves failure logs in the JSON artifact.
+
 ## Data and repository hygiene
 
 Source PDFs, downloaded model weights, virtual environments, caches, build outputs, credentials, and `.env` files are excluded from version control. Generated benchmark artifacts will be added only when required by the submission and when their provenance and size are verified.

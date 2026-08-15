@@ -11,7 +11,7 @@ This file is the current project status. Update it after each meaningful milesto
 | Approved plan | `RAG_PIPELINE_PLAN.md`, approved 2026-08-16 |
 | Latest milestone | Deterministic PDF ingestion and offline feasibility probes implemented |
 | Authoritative measurements | None yet |
-| Active blocker | Metal device is unavailable in the sandbox; real model smoke cannot run here |
+| Active blocker | None for target-device smoke; model download/startup may still fail and must be recorded |
 | Next gate | Run the real vLLM-Metal smoke, image identity, memory, swap, and prefix-cache gates |
 
 ## Milestones
@@ -22,7 +22,7 @@ This file is the current project status. Update it after each meaningful milesto
 | M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
 | M03 | Freeze behavioral contract and quality gates | Complete | User approved M03; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` | 2026-08-16 |
 | M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
-| M05 | Pass vLLM-Metal feasibility gate | Blocked | Runtime installed and versions recorded; vLLM exits because no Metal device is available in the sandbox | 2026-08-16 |
+| M05 | Pass vLLM-Metal feasibility gate | In progress | `scripts/run_runtime_smoke.py` implemented; target reports `Device(gpu, 0)`, smoke run pending | 2026-08-16 |
 | M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
 | M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
 | M08 | Run accepted combined condition and holdout | Not started | Expected combined-run report | 2026-08-16 |

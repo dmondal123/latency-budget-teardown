@@ -133,3 +133,9 @@ Follow-up:
 - Context: user requested package installation to continue M05.
 - Evidence: official installer created `/Users/dmondal/.venv-vllm-metal` with vLLM `0.27.1+cpu`, vLLM-Metal `0.3.0.dev20260815085651`, MLX `0.32.0`, and MLX-VLM `0.6.4`; native architecture is `arm64`.
 - Blocker: `vllm --version` terminated with `No Metal device available`, so the sandbox cannot run the GPU-backed smoke test. Exact installed versions were recorded in `environment/manifest.v1.json`; M05 remains blocked pending a Metal-accessible run.
+
+## 2026-08-16 — bounded runtime smoke script
+
+- Context: target MLX reported `Device(gpu, 0)` and the user requested implementation of the remaining M05 runner.
+- Changed: added `scripts/run_runtime_smoke.py`, which launches only its own OpenAI-compatible vLLM server, bounds startup and request time, exercises text and image requests, captures server-log failure evidence, and cleans up the child process.
+- Next step: run it on the Metal-accessible M4 Pro and inspect `artifacts/runtime_smoke.v1.json` before declaring M05 passed.
