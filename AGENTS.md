@@ -11,6 +11,7 @@ Repo rules for Codex and other agents working in this workspace.
 - Keep changes small and reviewable.
 - Commit every completed feature or fix promptly in a small, self-contained commit; do not defer unrelated completed work. Make follow-up commits whenever a coherent change, test, or correction is ready for review.
 - Use a short Conventional Commit subject: `type(scope): imperative summary` (for example, `docs(agents): clarify tool-use policy`). Include validation command(s) in the body only when they are not self-evident.
+- Before every commit, update `TASKS.md` so each completed or newly discovered work item reflects the current checklist state.
 - Before every commit, run `/status` and record the reported token use and model in `COLLABORATION_NOTES.md` only when the commit or session produced a significant decision, correction, failure investigation, or learning.
 
 ## Core documentation
