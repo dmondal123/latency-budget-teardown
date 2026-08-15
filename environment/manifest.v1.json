@@ -7,7 +7,7 @@
     "os": "macOS 26.5.1",
     "architecture": "arm64",
     "chip": "Apple M4 Pro",
-    "unified_memory_gib": 16,
+    "unified_memory_gib": 24,
     "python": "3.12.7",
     "power_mode": "AC"
   },

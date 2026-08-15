@@ -22,7 +22,7 @@ This file is the current project status. Update it after each meaningful milesto
 | M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
 | M03 | Freeze behavioral contract and quality gates | Complete | User approved M03; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` | 2026-08-16 |
 | M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
-| M05 | Pass vLLM-Metal feasibility gate | In progress | `scripts/run_runtime_smoke.py` implemented; target reports `Device(gpu, 0)`, smoke run pending | 2026-08-16 |
+| M05 | Pass vLLM-Metal feasibility gate | In progress | `runtime_smoke.v4.json` passes text/image/health; remaining memory, swap, CPU-fallback, cache, and repeatability checks are planned | 2026-08-16 |
 | M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
 | M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
 | M08 | Run accepted combined condition and holdout | Not started | Expected combined-run report | 2026-08-16 |
@@ -46,7 +46,7 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 | P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
 | P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
 | P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
-| P0 | Run the installed runtime on a Metal-accessible target and complete real feasibility probes | Runtime smoke record, image identity, memory/swap, CPU-fallback, and prefix-cache evidence |
+| P0 | Complete M05 runtime feasibility checks | Smoke, memory-fraction/OOM, swap, CPU-fallback, prefix-cache, and repeatability evidence |
 | P0 | Build the deterministic PDF evidence manifest from the corpus | `scripts/ingest_pdfs.py` output and ingestion tests |
 | P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
 | P1 | Run B0 baseline with at least 150 valid requests | Baseline raw data and report |
@@ -56,7 +56,7 @@ Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, a
 | Risk or decision | Current treatment | Trigger for update |
 |---|---|---|
 | Qwen3-VL support is experimental on vLLM-Metal | Hard feasibility gate before authoritative measurement | Smoke failure, incorrect image identity, CPU fallback, OOM, or sustained swap |
-| M4 Pro has 16 GB unified memory | Preflight memory-fraction sweep and worst-case two-image probe | Memory pressure or swap changes the tail |
+| Target has 24 GB unified memory | Preflight memory-fraction sweep and worst-case two-image probe; v4 peaked at 17.08 GB | Memory pressure or swap changes the tail |
 | Thirty eval cases are below the preferred 48 to 60 | Record as a quality-coverage limitation; do not treat latency repetitions as independent quality cases | Coverage gap or unstable slice result |
 | Prefix caching may behave differently on the experimental multimodal path | Correctness-gated fixed policy; separate from application caches | Same-text/different-image or concurrent parity failure |
 | p95 may be unstable at 150 samples | Bootstrap by case and extend in 30-request blocks up to 300 | Relative p95 TTC confidence-interval width exceeds 20% |
@@ -138,3 +138,23 @@ Evidence: `scripts/verify_environment.py` passed. `scripts/probe_feasibility.py`
 Decision or blocker: Keep M05 blocked. The runtime is now installed and pinned, but `vllm --version` fails with `No Metal device available`, which is expected for this sandbox. Real multimodal smoke, image identity, OOM, CPU-fallback, sustained-swap, and multimodal prefix-cache checks require a Metal-accessible target.
 
 Next action: Run M05 on the user’s Metal-accessible M4 Pro environment using the installed runtime, then record the smoke and memory evidence.
+
+### 2026-08-16: Runtime smoke passed
+
+Status: In progress
+
+What changed: `artifacts/runtime_smoke.v4.json` passed server health, text generation, and image generation on the Metal-backed runtime. Peak observed memory was 17.08 GB on a machine with 24 GB available.
+
+Evidence: Qwen3-VL returned `READY` for text and `black` for the image probe; the vLLM Metal worker shut down cleanly.
+
+Decision or blocker: Treat the basic runtime smoke as passed, but do not close M05 yet. The 1×1 image produced a non-fatal channel-dimension warning, and the safety/cache checks remain open.
+
+Remaining M05 plan:
+
+1. Capture baseline memory and swap before startup, during model load, during text/image requests, and after shutdown using `vm_stat` and `sysctl`.
+2. Sweep `VLLM_METAL_MEMORY_FRACTION` conservatively (for example `0.70`, `0.80`, `0.90`) with one fresh server per setting; record startup, success/failure, peak memory, and swap. Stop on OOM or sustained swap.
+3. Verify no CPU fallback by recording `mx.default_device()`, runtime environment variables, and server logs; fail if the selected device is CPU or Metal worker initialization is absent.
+4. Test prefix-cache parity with the same text prefix and changed image, changed text and same image, and cache-disabled control. Compare outputs and record cache-hit telemetry if exposed.
+5. Repeat text and image requests in a fresh server and a warm server, then run concurrency 2 and 4 smoke requests. Record failures, latency, memory, and swap separately.
+
+Next action: Run this checklist on the Metal-accessible machine and attach the resulting JSON evidence before approving M05.

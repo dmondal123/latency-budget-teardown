@@ -139,3 +139,8 @@ Follow-up:
 - Context: target MLX reported `Device(gpu, 0)` and the user requested implementation of the remaining M05 runner.
 - Changed: added `scripts/run_runtime_smoke.py`, which launches only its own OpenAI-compatible vLLM server, bounds startup and request time, exercises text and image requests, captures server-log failure evidence, and cleans up the child process.
 - Next step: run it on the Metal-accessible M4 Pro and inspect `artifacts/runtime_smoke.v1.json` before declaring M05 passed.
+
+## 2026-08-16 — M05 smoke result and memory target correction
+
+- Evidence: `runtime_smoke.v4.json` passed health, text, and image requests; observed peak memory was 17.08 GB.
+- Decision: User confirmed 24 GB available memory, so `environment/manifest.v1.json` now records `unified_memory_gib: 24`. M05 remains open pending swap/OOM, CPU-fallback, prefix-cache, and repeatability checks; the detailed checklist is recorded in `PROGRESS.md`.
