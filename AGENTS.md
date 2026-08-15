@@ -9,6 +9,36 @@ Repo rules for Codex and other agents working in this workspace.
 - Do not write into `.git/`, `.codex/` internals, or generated outputs unless a task explicitly requires it.
 - Do not use destructive git commands.
 - Keep changes small and reviewable.
+- Commit every completed feature or fix promptly in a small, self-contained commit; do not defer unrelated completed work. Make follow-up commits whenever a coherent change, test, or correction is ready for review.
+- Use a short Conventional Commit subject: `type(scope): imperative summary` (for example, `docs(agents): clarify tool-use policy`). Include validation command(s) in the body only when they are not self-evident.
+- Before every commit, run `/status` and record the reported token use and model in `COLLABORATION_NOTES.md` only when the commit or session produced a significant decision, correction, failure investigation, or learning.
+
+## Core documentation
+
+Read the smallest relevant set of these documents before changing the corresponding area. The [problem statement](PROBLEM_STATEMENT.md) is authoritative; plans and logs do not override it.
+
+| Document | Use it for |
+| --- | --- |
+| [README.md](README.md) | Project purpose, current state, and reproduction contract |
+| [PROBLEM_STATEMENT.md](PROBLEM_STATEMENT.md) | Authoritative assignment requirements and acceptance criteria |
+| [RAG_PIPELINE_PLAN.md](RAG_PIPELINE_PLAN.md) | Approved pipeline, evaluation, latency, and model plan |
+| [PROGRESS.md](PROGRESS.md) | Milestones, gates, risks, and next actions |
+| [EXPERIMENT_LOG.md](EXPERIMENT_LOG.md) | Pre-registered experiments and measured evidence |
+| [COLLABORATION_NOTES.md](COLLABORATION_NOTES.md) | Human/AI decisions, corrections, and learnings |
+| [TASKS.md](TASKS.md) | Task sequence and current work items |
+| [AGENTS.md](AGENTS.md) | Repository operating rules |
+
+## Collaboration and tool budget
+
+- Use parallel agents only for two or more independent, read-safe or disjoint-file tasks whose results can be merged without ordering dependencies. Assign each agent explicit ownership and keep one agent responsible for integration and validation.
+- Keep sequential work sequential when tasks share files, modify the same symbols, depend on earlier results, or require a single coherent decision.
+- Enable skills and MCPs selectively for the current task; disable or avoid unused integrations. Prefer a deterministic local CLI when it provides the needed capability.
+- Keep at most **three MCP servers active** at any time, including any needed by subagents. Treat this as an ongoing operating limit, not a one-time setup step.
+
+## Project logs
+
+- `COLLABORATION_NOTES.md` is a concise reflection log, not a transcript or per-task journal. Add an entry only for a significant human decision, agent error or suboptimal approach, failed investigation, changed direction, or reusable learning. Each entry should state the context, what changed or was learned, evidence, and—when it followed a commit—the `/status` token use and model. If nothing significant happened, do not update the file.
+- `EXPERIMENT_LOG.md` starts when RAG-pipeline building and benchmark execution start. Until then, leave it empty or use only a short “not started” placeholder. Once experiments begin, record pre-registered conditions, commands, raw evidence, and measured decisions; do not use it for plans, estimates, or routine progress updates.
 
 ## Validation
 
@@ -50,14 +80,16 @@ The canonical index is `.codex/.agents/skills/SKILLS.md`; its paths are relative
 | `rlm-based-rag` | Evaluate adaptive RLM retrieval for large or context-rot-prone corpora |
 | `review-plan` | Audit a plan for coverage, ordering, safety, and verification |
 
-For code navigation, impact analysis, debugging, refactoring, and GitNexus operations, use the matching skills under `.claude/skills/gitnexus/`. Read only the relevant skill file; the registry is the persistent discovery mechanism.
+For code navigation, impact analysis, debugging, refactoring, and GitNexus operations, use the matching GitNexus skill when it is available in the agent environment. Read only the relevant skill; the registry is the persistent discovery mechanism.
 
 For this project, begin with `eval-first-rag` for end-to-end work, and pair it with `reducing-llm-latency` and `evaluating-llm-systems`. Add focused skills only when the task requires them.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **latency-budget-teardown** (2379 symbols, 2314 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **latency-budget-teardown** (2379 symbols, 2314 relationships, 0 execution flows). Invoke GitNexus **on demand**, never as an automatic hook: automatic invocation adds friction and context/tool overhead. The targeted rules below provide the required protection.
+
+Use the GitNexus MCP only for an unfamiliar-code query, an impact or refactoring analysis, debugging/tracing, security-taint inspection, or the required pre-commit change check. Prefer its CLI for indexing and repository maintenance. Do not enable it for routine documentation-only edits that do not touch a symbol.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -85,16 +117,5 @@ This project is indexed by GitNexus as **latency-budget-teardown** (2379 symbols
 | `gitnexus://repo/latency-budget-teardown/clusters` | All functional areas |
 | `gitnexus://repo/latency-budget-teardown/processes` | All execution flows |
 | `gitnexus://repo/latency-budget-teardown/process/{name}` | Step-by-step execution trace |
-
-## CLI
-
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->

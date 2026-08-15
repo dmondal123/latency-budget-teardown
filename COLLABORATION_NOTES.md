@@ -2,7 +2,7 @@
 
 This file records how the human and AI worked together, especially decisions, corrections, rejected assumptions, approval gates, and changes in direction. It is not a transcript. Keep entries short, factual, and linked to repository evidence.
 
-Update this file after significant agent decisions or corrections and before each commit. The final submission must include at least two cases where the agent was wrong or suboptimal and explain how the issue was caught and corrected.
+Update this file only after a significant decision, correction, failure investigation, changed direction, or reusable learning. It is not a per-commit or per-task journal. Before every commit, run `/status`; include the reported token use and model only when the related work merits an entry. If nothing significant happened, do not update this file. The final submission must include at least two cases where the agent was wrong or suboptimal and explain how the issue was caught and corrected.
 
 ## Working agreement
 
@@ -15,6 +15,8 @@ Update this file after significant agent decisions or corrections and before eac
 | Experiments | Register before execution and log immediately in `EXPERIMENT_LOG.md` |
 | Progress | Update `PROGRESS.md` after meaningful milestones or blockers |
 | Corrections | Preserve the original issue, how it was found, and the resulting preventive rule |
+| Entry threshold | Log only significant decisions, corrections, failures, direction changes, or reusable learnings |
+| Commit metadata | Run `/status` before every commit; record its token use and model only in significant related entries |
 
 ## Decision and correction index
 
@@ -75,6 +77,8 @@ Preventive rule: Run independent discovery checks independently. Treat an empty 
 Date:
 Participants:
 Type: Human direction | Human approval | Agent proposal | Agent correction | Rejected approach
+Related commit (if applicable):
+`/status` model and token use (significant entries only):
 
 Context:
 
