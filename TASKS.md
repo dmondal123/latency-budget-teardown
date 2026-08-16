@@ -42,7 +42,7 @@ Dataset evaluation and retrieval implementation run in parallel after `C01`.
 - [x] **T09 [PAR-A; 0:45–1:30; depends: C01]** Implement deterministic passage normalization, BM25 indexing, retrieval, hashes, and focused retrieval tests.
 - [x] **T10 [PAR-A; 1:30–2:15; depends: T09]** Implement bounded context assembly and stable `SOURCE N` citation binding with focused tests.
 - [x] **T09b [SEQ; depends: T09a]** Remove the stale multimodal verifier tests that conflict with the approved text-RAG fixtures and runtime contract.
-- [ ] **T11 [PAR-B; 0:45–2:15; depends: C01]** Implement the Ollama NDJSON client, buffered/streamed display, validation, abstention, timeout/error handling, and focused tests.
+- [x] **T11 [PAR-B; 0:45–2:15; depends: C01]** Implement the Ollama NDJSON client, buffered/streamed display, validation, abstention, timeout/error handling, and focused tests.
 - [x] **T11a [SEQ; depends: T09a]** Selectively integrate the Wave 2 Ollama client, deterministic answer validation, and offline evaluation-preparation tooling without importing its competing retriever or unverified fixture data.
 - [ ] **C02 [GATE; at 2:00; depends: T08, T09]** Confirm 30 verified mappings, sealed 24/6 split, reproducible corpus/index hashes, and working BM25 retrieval.
 
