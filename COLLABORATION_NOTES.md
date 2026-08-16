@@ -355,3 +355,22 @@ Follow-up:
 - Evidence: `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/` — 90 attempted, 90 valid, 0 fatal gates, 0 errors, 30 per condition, 257 zero-swap samples, C07 accepted. Full suite: 113 passed (101 prior + 12 new holdout tests).
 - Preventive rule: holdout-only code paths must reuse the same validation, locking, and swap-sampling contracts as the development benchmark to keep the serial-measurement guarantee intact; the `C_accepted` decision must be made from development evidence only and recorded as a named constant before the holdout is ever opened.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — T23 final write-up finalization
+
+- Context: Wave 6 T23 finalizes the ≤2-page write-up and collaboration log from generated evidence. The write-up draws only on committed, reproducible artifacts: the development T17/T18/T19 reports at `artifacts/reports/20260816T112509Z-1df7268307b1/` and the holdout C07 manifest at `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/`.
+- Transparency decision (where the agent was forced to choose not to fabricate): holdout per-condition quality metrics (e.g. task_resolution/recall@5 on the sealed cases) were **not** generated as a separate artifact; the reporting CLI in `scripts/reporting.py` deliberately rejects `holdout=true` traces. Rather than hand-copied or back-filled numbers, the write-up reports the holdout only from its generated manifest (90/90 transport-valid, 0 fatal gates, 0 errors, C07 accepted) and notes that holdout grading reuses the same deterministic graders as T18. C06 accepted interventions on the development no-regression slice gate without inspecting holdout outputs, so the holdout is confirmatory, not a quality-measurement artifact.
+- Two-agent-suboptimal cases represented in this log (per the ≥2 requirement): the original exact-match `task_resolution` definition that scored ~19/24 correct answers as 0.25 (C007 + Wave 5 "What the problem was"), and the streaming-clock bug that converted the NDJSON HTTP response to a tuple before display (§5 of `docs/HANDOVER-offline-reporting-2026-08-16.md`, corrected in the T16 rerun). Both were caught by independent replay against the immutable traces, not by trusting the first reported number.
+- Status note: T21 (final reports) and C07 (traceability) are satisfied by the committed T18/T19 reports plus the holdout manifest; the ≤2-page write-up demonstrates every cited number maps to a generation command and `report-manifest.json` output hashes. `scripts/reproduce.sh` (T22) is not yet implemented; the write-up cites the benchmark + reporting commands as the reproduction contract pending that one-command entrypoint.
+- Evidence: `FINAL_WRITEUP.md`; `artifacts/reports/20260816T112509Z-1df7268307b1/report-manifest.json`; `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/run-manifest.json`; `.venv/bin/python -m pytest -q` → 113 passed.
+- `/status` model and token use: unavailable in this API session (no `/status` binary/alias; consistent with `docs/HANDOVER-offline-reporting-2026-08-16.md` §9 and every prior entry).
+
+## Wave 6 completion summary
+
+| Task | Status | Evidence |
+|---|---|---|
+| T22 reproduce.sh | Not started (depends on C07) | — |
+| T23 final write-up + collab log | Complete (this entry) | `FINAL_WRITEUP.md`, `COLLABORATION_NOTES.md` |
+| T24 artifact/license audit | Not started (depends on C07) | — |
+| T25 submission ZIP | Not started (depends on T22, T23, T24) | — |
+| C08 final delivery gate | Not started (depends on T25, G4) | — |

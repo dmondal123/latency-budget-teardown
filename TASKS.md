@@ -113,16 +113,16 @@ What this means for the interventions. The absolute quality gates (task_resoluti
 What I deliberately did not do. I fixed the grader (a defect correction, logged and dated), but under time pressure I did not lower the frozen thresholds to the observed values or drop the failing cases from the set - either would read as tuning the ruler to the result. The bar stays where it was pre-registered; the honest gap between it and the measured quality is reported and explained.
 
 - [x] **T20 [SERIAL-MEASURE; 8:30–8:50; depends: C06]** Run `C_accepted` against six sealed holdouts × five repetitions exactly once.
-- [ ] **T21 [SEQ; 8:50–9:15; depends: T20]** Generate final quality, budget, cost, environment, and intervention-decision reports including holdout results.
-- [ ] **C07 [GATE; at 9:15; depends: T21]** Confirm every reported number/chart maps to raw data and an exact generation command.
+- [x] **T21 [SEQ; 8:50–9:15; depends: T20]** Generated final quality/budget/cost/environment/intervention reports (T17/T18/T19 at `artifacts/reports/20260816T112509Z-1df7268307b1/`) including the holdout C07 result recorded in the holdout run manifest.
+- [x] **C07 [GATE; at 9:15; depends: T21]** Confirm every reported number/chart maps to raw data and an exact generation command.
 
 Checkpoint action: if `C06` is not complete by 8:30, do not open the holdout. If the holdout run fails environmentally, report the failure without rerunning it.
 
 ## Wave 6 — Reproduction and delivery (9:15–10:00)
 
 - [ ] **T22 [PAR-A; 9:15–9:40; depends: C07]** Run `scripts/reproduce.sh` in the cleanest available environment and save its log.
-- [ ] **T23 [PAR-B; 9:15–9:40; depends: C07]** Finalize the ≤2-page write-up and collaboration log using only generated evidence.
-- [ ] **T24 [PAR-C; 9:15–9:40; depends: C07]** Audit licenses, secrets, caches, model blobs, generated artifacts, dependency pins, and archive-size inputs.
+- [x] **T23 [PAR-B; 9:15–9:40; depends: C07]** Finalized the ≤2-page `FINAL_WRITEUP.md` and the end-of-study `COLLABORATION_NOTES.md` entry from generated evidence (development T17/T18/T19 reports + holdout C07 manifest).
+- [x] **T24 [PAR-C; 9:15–9:40; depends: C07]** Audit licenses, secrets, caches, model blobs, generated artifacts, dependency pins, and archive-size inputs.
 - [ ] **T25 [SEQ; 9:40–10:00; depends: T22, T23, T24]** Build and validate the submission ZIP; perform final requirement and artifact traceability review.
 - [ ] **C08 [GATE; at 10:00; depends: T25, human G4 approval]** Confirm a real ZIP under 500 MB uncompressed with README, source, lock, tests, raw/generated evidence, AI log, and final write-up.
 

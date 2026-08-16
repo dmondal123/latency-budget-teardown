@@ -1,0 +1,41 @@
+scripts/reproduce.sh — offline reproduction of published T17-T19 reports
+scripts/reproduce.sh — offline reproduction of published T17-T19 reports
+started (UTC): 20260816T181902Z
+started (UTC): 20260816T181902Z
+repo_root: /Users/dmondal/Documents/week-1-fde
+repo_root: /Users/dmondal/Documents/week-1-fde
+python: Python 3.12.7
+python: Python 3.12.7
+platform: Darwin arm64 (25.5.0)
+platform: Darwin arm64 (25.5.0)
+run_dir (immutable C05 raw traces): artifacts/authoritative-runs/20260816T112509Z-1df7268307b1
+run_dir (immutable C05 raw traces): artifacts/authoritative-runs/20260816T112509Z-1df7268307b1
+published_reports (reproduction target): artifacts/reports/20260816T112509Z-1df7268307b1
+published_reports (reproduction target): artifacts/reports/20260816T112509Z-1df7268307b1
+log: artifacts/repro-logs/reproduce.20260816T181902Z.log
+log: artifacts/repro-logs/reproduce.20260816T181902Z.log
+NOTE: offline — Ollama is not started or contacted; reports are regenerated
+NOTE: offline — Ollama is not started or contacted; reports are regenerated
+      from saved raw traces only.
+      from saved raw traces only.
+
+=== 1/4  environment + model/runtime identity (offline manifest check) ===
++ .venv/bin/python scripts/verify_environment.py
+validated environment manifest: Python 3.12.7, arm64, model qwen3:4b-instruct@sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0
+host observed: Darwin arm64 Python 3.12.7
+
+=== 2/4  evaluation fixtures, dataset cache, and frozen contract ===
++ .venv/bin/python scripts/verify_eval.py
+validated 30 text-RAG cases; sealed 6 holdouts; contract and thresholds are internally consistent
+
+=== 3/4  regenerate reported metrics and charts from saved raw traces ===
++ .venv/bin/python -m scripts.reporting --run-dir artifacts/authoritative-runs/20260816T112509Z-1df7268307b1 --output-dir /tmp/reproduce-reports.qEm0Hi
+wrote 8 reports to /tmp/reproduce-reports.qEm0Hi
+
+=== 4/4  self-verification: regenerated reports vs published reports (sha256) ===
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+TypeError: unsupported operand type(s) for &: 'list' and 'list'
+RESULT: FAIL — regenerated reports do not match the committed published reports
+completed (UTC): 20260816T181903Z
+log saved: artifacts/repro-logs/reproduce.20260816T181902Z.log

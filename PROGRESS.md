@@ -6,13 +6,13 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Wave 5 holdout complete (T20 done); Wave 6 reproduction and delivery remain |
+| Overall state | Wave 6 T23 complete (final write-up + collaboration log); T22/T25/C08 remain |
 | Current phase | Wave 6 reproduction and packaging |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | T20 holdout completed: 90 attempts, 0 fatal gates, 0 errors, C07 accepted |
+| Latest milestone | T23 finalized: ≤2-page `FINAL_WRITEUP.md` and end-of-study `COLLABORATION_NOTES.md` from generated evidence; T21 reports and C07 traceability complete |
 | Authoritative measurements | `artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/` (development C05) and `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/` (holdout C07) |
-| Active blocker | C07 requires T21 final-report generation before package delivery |
-| Next gate | C07 traceability of holdout reports |
+| Active blocker | None — C07 traceability confirmed in `FINAL_WRITEUP.md`; every cited number maps to committed raw data and a generation command |
+| Next gate | T22 `scripts/reproduce.sh`, T24/T25 packaging, C08 (G4)
 
 ## Milestones
 
@@ -26,7 +26,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M06 | Implement instrumented text-RAG pipeline | Complete | T12–T15.2 stage spans, telemetry, raw traces, condition/report fixtures, representative tail diagnostics, and local manual-query CLI |
 | M07 | Run baseline and two isolated interventions | Complete | T16 raw traces, validations, warmups, and C05-accepted manifest |
 | M08 | Generate waterfalls, tails, quality, and decisions | Complete | T17/T18/T19 reports and scripts |
-| M09 | Run accepted holdout and reproduce/package | In progress | T20 holdout run complete; T21–T25 packaging remain |
+| M09 | Run accepted holdout and reproduce/package | In progress | T20 holdout complete; T21/C07/T23 done (reports + write-up + collab log); T22/T24/T25/C08 packaging remain |
 
 ## Approval gates
 

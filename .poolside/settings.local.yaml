@@ -12,3 +12,8 @@ tools:
             - sed *
             - git show *
             - tail *
+            - printf *
+            - find *
+            - cat *
+            - git check-ignore *
+            - git ls-files *
