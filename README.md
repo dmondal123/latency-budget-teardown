@@ -76,6 +76,21 @@ bash scripts/reproduce.sh
 
 It is intentionally not implemented until the pipeline instrumentation, benchmark runner, and report generation work are complete. When available, it will regenerate all reported metrics and charts from saved raw traces.
 
+## Authoritative development matrix
+
+After a passing preflight and explicit operator approval, run the serial T16 matrix with:
+
+```bash
+.venv/bin/python -m scripts.benchmark \
+  --conditions B0_buffered_256,I1_streaming_256,I2_buffered_128
+```
+
+The runner uses six excluded development-only warmups, then persists all 360
+scheduled development attempts under a unique `artifacts/authoritative-runs/`
+directory. It does not start or manage Ollama, retry attempts, or open
+holdouts. The manifest records sustained-swap validity and explicitly marks
+thermal observation as unavailable because no approved host metric exists.
+
 ## Planned evidence
 
 The final study will report:
