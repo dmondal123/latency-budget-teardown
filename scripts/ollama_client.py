@@ -21,7 +21,9 @@ class OllamaClientError(RuntimeError):
     pass
 
 
-def parse_ndjson(lines: Iterable[bytes]) -> ModelResult:
+def parse_ndjson(
+    lines: Iterable[bytes], *, on_response_chunk: Callable[[str], None] | None = None
+) -> ModelResult:
     chunks: list[dict[str, object]] = []
     for raw in lines:
         if not raw.strip():
@@ -35,6 +37,9 @@ def parse_ndjson(lines: Iterable[bytes]) -> ModelResult:
         if item.get("error"):
             raise OllamaClientError(str(item["error"]))
         chunks.append(item)
+        response = item.get("response")
+        if on_response_chunk is not None and isinstance(response, str) and response:
+            on_response_chunk(response)
     if not chunks or chunks[-1].get("done") is not True:
         raise OllamaClientError("stream is missing a done terminal")
     text = "".join(str(chunk.get("response") or "") for chunk in chunks)
@@ -68,9 +73,16 @@ class OllamaClient:
         except (OSError, urllib.error.URLError, TimeoutError) as exc:
             raise OllamaClientError(f"service_unavailable: {type(exc).__name__}: {exc}") from exc
 
-    def generate(self, prompt: str, *, stream: bool, max_tokens: int) -> ModelResult:
+    def generate(
+        self,
+        prompt: str,
+        *,
+        stream: bool,
+        max_tokens: int,
+        on_response_chunk: Callable[[str], None] | None = None,
+    ) -> ModelResult:
         payload: dict[str, object] = {
             "model": "qwen3:4b-instruct", "prompt": prompt, "stream": stream, "think": False, "keep_alive": "5m",
             "options": {"temperature": 0, "seed": 20260816, "num_predict": max_tokens},
         }
-        return parse_ndjson(self._transport(payload, stream))
+        return parse_ndjson(self._transport(payload, stream), on_response_chunk=on_response_chunk)

@@ -104,6 +104,18 @@ class TelemetryTrace:
     def request_dispatched(self) -> None:
         self._transition("context_assembly", "model_dispatch_to_first_token", self._now())
 
+    def record_retrieval_result(
+        self, *, retrieved_evidence_ids: list[str], admitted_evidence_ids: list[str], retrieved_ranks: Mapping[str, int]
+    ) -> None:
+        """Attach the immutable evidence result before model dispatch."""
+        if self._active_stage != "context_assembly":
+            raise TelemetryError("retrieval result must be recorded after ranking and before dispatch")
+        self._row.update({
+            "retrieved_evidence_ids": retrieved_evidence_ids,
+            "admitted_evidence_ids": admitted_evidence_ids,
+            "retrieved_ranks": dict(retrieved_ranks),
+        })
+
     def first_answer_token(self, token: str) -> None:
         if not isinstance(token, str) or not token:
             raise TelemetryError("first answer token must be non-empty")

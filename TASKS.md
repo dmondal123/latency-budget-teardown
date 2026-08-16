@@ -56,7 +56,7 @@ After each component's interface is stable, instrumentation and independent cont
 
 - [x] **T12 [PAR-A; 2:15–3:30; depends: T10]** Implement stage spans, TTFE/TTFT/first-token-displayed/TTC clocks, telemetry, and raw JSONL persistence with arithmetic tests.
 - [x] **T13 [PAR-C; 2:00–3:30; depends: T08]** Add contract, dataset-selection, grading, bootstrap, aligned-waterfall, and tail-analysis fixture tests in disjoint test files.
-- [ ] **T14 [SEQ; 3:30–4:30; depends: T11, T12, T13]** Integrate the retrieval trace; pass one buffered and one streamed end-to-end fixture, including Ollama validation.
+- [x] **T14 [SEQ; 3:30–4:30; depends: T11, T12, T13]** Integrate the retrieval trace; pass one buffered and one streamed end-to-end fixture, including Ollama validation.
 - [ ] **C03 [GATE; at 4:30; depends: T14]** Confirm a complete raw trace, additive TTC arithmetic, citation resolution, thinking disabled, and deterministic final-text parity.
 - [ ] **T15 [SEQ; 4:30–5:30; depends: C03]** Implement the condition runner, single-delta assertions, report generation, and fixed-JSONL regression tests.
 - [ ] **C04 [GATE; at 5:30; depends: T15]** Confirm the runner can interleave all conditions and regenerate correct fixture waterfalls and marginal tables.
