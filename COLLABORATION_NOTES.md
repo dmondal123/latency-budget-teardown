@@ -284,3 +284,10 @@ Follow-up:
 - Evidence: `scripts/verify_eval.py`, `scripts/verify_environment.py`, and the full test suite passed; the first lock attempt failed only because sandbox DNS could not resolve PyPI, while the same isolated proof passed with approved network access.
 - Learning: an external cache path must be persistent, not merely outside the repository; validation status is updated only after the corresponding reproducibility proof succeeds.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — T16 benchmark-driver resource-observation decision
+
+- Context: the authoritative 360-request benchmark requires a C05 resource-validity decision, but the repository has a tested macOS sustained-swap sampler and no approved thermal sensor or threshold.
+- Decision: the user approved a dedicated serial benchmark CLI that uses an already-running preflight-qualified local Ollama service; it will enforce whole-run sustained-swap validity and truthfully record thermal observation as unavailable rather than claiming a thermal pass.
+- Evidence: approved design in `docs/superpowers/specs/2026-08-16-authoritative-benchmark-driver-design.md`; G1-approved contracts; `scripts/preflight_ollama.py` swap sampler.
+- `/status` model and token use: unavailable in this API session.
