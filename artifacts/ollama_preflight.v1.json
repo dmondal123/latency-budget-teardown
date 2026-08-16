@@ -1,0 +1,32 @@
+{
+  "command": "python scripts/preflight_ollama.py",
+  "elapsed_ms": 15.326166,
+  "endpoint": "http://127.0.0.1:11434",
+  "failures": [
+    {
+      "error_type": "service_unavailable",
+      "message": "/api/version: URLError: <urlopen error [Errno 1] Operation not permitted>"
+    }
+  ],
+  "identity": {
+    "model_digest": null,
+    "ollama_version": null
+  },
+  "invocation": "scripts/preflight_ollama.py --timeout 3 --pull-timeout 5 --output artifacts/ollama_preflight.v1.json",
+  "local_only": true,
+  "model": "qwen3:4b",
+  "resource_checks": {
+    "reason": "not observable because Ollama preflight was blocked",
+    "sustained_swap": null
+  },
+  "schema_version": "ollama-preflight.v1",
+  "seed": 20260816,
+  "smoke": {
+    "buffered": null,
+    "final_text_parity": false,
+    "streaming": null
+  },
+  "status": "blocked",
+  "temperature": 0,
+  "think": false
+}

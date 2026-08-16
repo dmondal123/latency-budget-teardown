@@ -24,9 +24,9 @@ Use at most three implementation lanes plus one integration owner. The integrati
 
 These three lanes start together.
 
-- [ ] **T04 [PAR-A; 0:00–0:30; depends: T03]** Lock installs under Python 3.12. Regenerate `requirements.txt` from `requirements.in`; prove the lock is installable.
-- [ ] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pull `qwen3:4b`, capture the Ollama version/model digest, and pass buffered/streaming smoke tests with thinking disabled.
-- [ ] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialize both pinned dataset configurations and record downloaded-file and normalized-corpus hashes.
+- [x] **T04 [PAR-A; 0:00–0:30; depends: T03]** Lock installs under Python 3.12. Regenerate `requirements.txt` from `requirements.in`; prove the lock is installable. Evidence: `artifacts/lock.v1.json`.
+- [ ] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pull `qwen3:4b`, capture the Ollama version/model digest, and pass buffered/streaming smoke tests with thinking disabled. Tooling and truthful blocked artifact added; Ollama is unavailable in this environment.
+- [ ] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialize both pinned dataset configurations and record downloaded-file and normalized-corpus hashes. Tooling and truthful blocked artifact added; `datasets` is unavailable in this environment.
 - [ ] **C01 [GATE; at 0:45; depends: T04, T05, T06]** Confirm installable lock, expected dataset schemas, immutable model/runtime identity, valid NDJSON streaming, and no sustained swap.
 
 Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker. Do not silently change the dataset, runtime, model tag, digest, or thinking mode.

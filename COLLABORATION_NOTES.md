@@ -103,6 +103,26 @@ Evidence: `scripts/retrieval.py`, `tests/test_retrieval.py`, `RAG_PIPELINE_PLAN.
 
 Preventive rule: Review each plan step against both the pipeline requirement and an executable verification assertion before implementation.
 
+### C007: Parallel Wave 1 preflight implementation
+
+Date: 2026-08-16
+Participants: Human, Codex, three parallel implementation workers
+Type: Agent correction and blocker
+Related commit: pending
+`/status` model and token use: unavailable in this API session.
+
+Context: The human requested parallel implementation of T04, T05, and T06. The three lanes were assigned disjoint files and reviewed by the integration owner.
+
+What was learned: T04 was fully reproducible and passed a temporary Python 3.12.7 install of all 56 locked packages. T05 and T06 required external state unavailable to this environment: Ollama was not reachable and the `datasets` package was not available to the execution interpreter.
+
+How it was caught: Focused tests passed (13 total), but the preflight commands returned blocked status with null identity/hash fields. The full suite remained at 31 passed and three pre-existing migration failures in `test_verify_eval.py`; those failures were not changed because they are outside T04–T06 scope.
+
+Correction: Added bounded rerunnable tooling and preserved explicit blocked artifacts rather than fabricating model digests, downloaded-file hashes, row counts, or smoke results. C01 remains blocked until the host provides Ollama and the pinned dataset tooling/cache.
+
+Evidence: `scripts/lock_install.py`, `artifacts/lock.v1.json`, `scripts/preflight_ollama.py`, `artifacts/ollama_preflight.v1.json`, `scripts/materialize_dataset.py`, `artifacts/dataset_materialization.v1.json`, and `TASKS.md` T04–T06.
+
+Preventive rule: External preflight tasks may be implemented in parallel, but their completion checkboxes stay open until the captured identity and materialization evidence actually exists.
+
 ## Entry template
 
 ```markdown

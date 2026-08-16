@@ -1,0 +1,47 @@
+{
+  "cache_root": "/private/tmp/t06-dataset-cache",
+  "configurations": [
+    {
+      "columns": null,
+      "config": "text-corpus",
+      "downloaded_files": [],
+      "error": "datasets tooling is unavailable; install requirements.txt (or run in the Python 3.12 environment)",
+      "expected_schema": {
+        "id": "integer",
+        "passage": "string"
+      },
+      "normalized_corpus_sha256": null,
+      "row_count": null,
+      "source_revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
+      "split": "passages",
+      "status": "blocked"
+    },
+    {
+      "columns": null,
+      "config": "question-answer",
+      "downloaded_files": [],
+      "error": "datasets tooling is unavailable; install requirements.txt (or run in the Python 3.12 environment)",
+      "expected_schema": {
+        "answer": "string",
+        "id": "integer",
+        "question": "string"
+      },
+      "normalized_corpus_sha256": null,
+      "row_count": null,
+      "source_revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
+      "split": "test",
+      "status": "blocked"
+    }
+  ],
+  "dataset": {
+    "license": "CC BY 3.0",
+    "repository": "rag-datasets/rag-mini-wikipedia",
+    "revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6"
+  },
+  "normalized_corpus_hashes": {
+    "question-answer": null,
+    "text-corpus": null
+  },
+  "schema_version": "dataset-materialization.v1",
+  "status": "blocked"
+}

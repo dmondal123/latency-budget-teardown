@@ -6,12 +6,12 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Text-RAG plan approved; implementation not started |
+| Overall state | Wave 1 preflight tooling implemented; C01 blocked by unavailable external artifacts |
 | Current phase | G1 dataset/eval/runtime migration and preflight |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
 | Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
 | Authoritative measurements | None |
-| Active blocker | Exact Ollama version/model digest and 30 verified QA-to-passage mappings are not yet captured |
+| Active blocker | Ollama is unavailable and pinned dataset materialization is blocked because `datasets` is unavailable; exact runtime/dataset hashes are not captured |
 | Next gate | G1 approval of migrated cases, immutable runtime identity, and numeric budgets |
 
 ## Milestones
@@ -19,10 +19,10 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | ID | Milestone | Status | Evidence |
 | --- | --- | --- | --- |
 | M01 | Approve revised ten-hour text-RAG plan | Complete | `RAG_PIPELINE_PLAN.md` |
-| M02 | Pin dataset repository/revision and observed schemas | Complete | `eval/v1/dataset_manifest.json` |
+| M02 | Pin dataset repository/revision and observed schemas | In progress | `eval/v1/dataset_manifest.json`; materialization blocked, hashes pending |
 | M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
 | M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
-| M05 | Pin and smoke-test Ollama `qwen3:4b` | Not started | Expected digest and buffered/streaming record |
+| M05 | Pin and smoke-test Ollama `qwen3:4b` | Blocked | `scripts/preflight_ollama.py`, `artifacts/ollama_preflight.v1.json`; service unavailable |
 | M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
 | M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
 | M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
@@ -41,8 +41,8 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Pin Ollama version and `qwen3:4b` digest; verify `think=false` streaming | Environment manifest and smoke trace |
-| P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification |
+| P0 | Pin Ollama version and `qwen3:4b` digest; verify `think=false` streaming | Environment manifest and smoke trace; tooling is ready, host preflight blocked |
+| P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification; tooling is ready, materialization blocked |
 | P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
 | P1 | Implement BM25 pipeline and request trace schema | Focused tests |
