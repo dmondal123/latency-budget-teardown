@@ -1,6 +1,6 @@
 """Text-corpus ingestion package."""
 
-from .corpus import ingest_from_materialization, load_cached_passages
+from .corpus import TextRagError, ingest_from_materialization, ingest_passages, load_cached_passages, normalize_text
 from .materialize import (
     CONFIGURATIONS,
     DATASET_REPOSITORY,
@@ -19,7 +19,9 @@ __all__ = [
     "DATASET_REVISION",
     "LoadedRows",
     "MaterializationError",
+    "TextRagError",
     "ingest_from_materialization",
+    "ingest_passages",
     "load_cached_passages",
     "load_huggingface",
     "materialize",

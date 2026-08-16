@@ -6,10 +6,11 @@ import sys
 from pathlib import Path
 import json
 
+from scripts.ingestion.corpus import ingest_from_materialization, ingest_passages
 from scripts.text_rag import (
+    TextRagError,
     assemble_context,
     build_index,
-    ingest_passages,
     retrieve,
 )
 
@@ -46,6 +47,42 @@ def test_context_admission_skips_over_budget_passages_and_abstains_when_none_fit
     assert context.abstained is True
     assert context.reason == "zero_admissible_evidence"
     assert context.text == ""
+
+
+def test_ingestion_uses_only_the_pinned_materialized_text_corpus_identity():
+    materialization = {
+        "dataset": {"repository": "rag-datasets/rag-mini-wikipedia", "revision": "pinned"},
+        "configurations": [
+            {
+                "config": "text-corpus",
+                "split": "passages",
+                "status": "materialized",
+                "normalized_corpus_sha256": "b" * 64,
+            }
+        ],
+    }
+
+    manifest = ingest_from_materialization(_rows(), materialization)
+
+    assert manifest["dataset"] == materialization["dataset"]
+    assert manifest["corpus_hash"] == "b" * 64
+    with pytest.raises(TextRagError, match="not materialized"):
+        ingest_from_materialization(_rows(), {"dataset": {}, "configurations": []})
+
+
+def test_ingestion_cli_runs_directly_from_the_repository_root():
+    repo_root = Path(__file__).resolve().parents[1]
+
+    result = subprocess.run(
+        [sys.executable, "-m", "scripts.ingestion.run", "--help"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Create the durable text-passage manifest" in result.stdout
 
 
 def test_retrieval_cli_returns_ranked_and_admitted_evidence(tmp_path):

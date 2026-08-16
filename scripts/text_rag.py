@@ -11,21 +11,17 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-import unicodedata
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 from rank_bm25 import BM25Okapi
 
+from scripts.ingestion.corpus import TextRagError, normalize_text
+
 
 _TOKEN_RE = re.compile(r"[\w]+", re.UNICODE)
-_WHITESPACE_RE = re.compile(r"\s+")
 _MANIFEST_VERSION = "text-evidence-manifest.v1"
 _BM25_CONFIG = {"algorithm": "BM25Okapi", "k1": 1.2, "b": 0.75}
-
-
-class TextRagError(ValueError):
-    """Raised when a corpus or retrieval contract is malformed."""
 
 
 @dataclass(frozen=True)
@@ -62,13 +58,6 @@ class BM25Index:
     _index: BM25Okapi
 
 
-def normalize_text(value: str) -> str:
-    """Apply the ingestion normalization shared with dataset materialization."""
-    if not isinstance(value, str):
-        raise TextRagError(f"passage must be a string, got {type(value).__name__}")
-    return _WHITESPACE_RE.sub(" ", unicodedata.normalize("NFKC", value)).strip()
-
-
 def tokenize(value: str) -> list[str]:
     return _TOKEN_RE.findall(value.casefold())
 
@@ -97,45 +86,6 @@ def _snapshot(corpus_hash: str, passages: Sequence[Passage]) -> str:
         ],
     }
     return _sha256_text(_canonical_json(payload))
-
-
-def ingest_passages(rows: Sequence[Mapping[str, Any]], *, corpus_hash: str) -> dict[str, Any]:
-    """Produce a sorted, content-addressed durable manifest from HF corpus rows."""
-    _validate_hash(corpus_hash, "corpus_hash")
-    passages: list[Passage] = []
-    seen_ids: set[int] = set()
-    for number, row in enumerate(rows):
-        if not isinstance(row, Mapping):
-            raise TextRagError(f"row {number} must be an object")
-        passage_id = row.get("id")
-        if isinstance(passage_id, bool) or not isinstance(passage_id, int):
-            raise TextRagError(f"row {number} id must be an integer")
-        if passage_id in seen_ids:
-            raise TextRagError(f"duplicate passage id: {passage_id}")
-        seen_ids.add(passage_id)
-        text = normalize_text(row.get("passage"))
-        if not text:
-            raise TextRagError(f"row {number} passage must be non-empty")
-        passages.append(Passage(f"passage:{passage_id}", passage_id, text, _sha256_text(text)))
-    passages.sort(key=lambda passage: passage.passage_id)
-    snapshot = _snapshot(corpus_hash, passages)
-    return {
-        "schema_version": _MANIFEST_VERSION,
-        "corpus_hash": corpus_hash,
-        "index_snapshot": snapshot,
-        "bm25": dict(_BM25_CONFIG),
-        "passages": [
-            {
-                "evidence_id": passage.evidence_id,
-                "passage_id": passage.passage_id,
-                "passage": passage.text,
-                "text_sha256": passage.text_sha256,
-            }
-            for passage in passages
-        ],
-    }
-
-
 def build_index(manifest: Mapping[str, Any]) -> BM25Index:
     """Build the fixed BM25 index and reject manifest/snapshot drift."""
     if manifest.get("schema_version") != _MANIFEST_VERSION:

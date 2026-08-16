@@ -8,9 +8,7 @@ import os
 import sys
 from pathlib import Path
 
-from scripts.text_rag import TextRagError
-
-from .corpus import ingest_from_materialization, load_cached_passages, load_json, write_manifest
+from .corpus import TextRagError, ingest_from_materialization, load_cached_passages, load_json, write_manifest
 from .materialize import MaterializationError
 
 

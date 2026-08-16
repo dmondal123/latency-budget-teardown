@@ -2,13 +2,91 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
+import unicodedata
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from scripts.text_rag import TextRagError, ingest_passages
-
 from .materialize import DATASET_REVISION
+
+_MANIFEST_VERSION = "text-evidence-manifest.v1"
+_BM25_CONFIG = {"algorithm": "BM25Okapi", "k1": 1.2, "b": 0.75}
+_WHITESPACE_RE = re.compile(r"\s+")
+
+
+class TextRagError(ValueError):
+    """Raised when a corpus or retrieval contract is malformed."""
+
+
+def normalize_text(value: str) -> str:
+    """Apply the ingestion normalization shared with dataset materialization."""
+    if not isinstance(value, str):
+        raise TextRagError(f"passage must be a string, got {type(value).__name__}")
+    return _WHITESPACE_RE.sub(" ", unicodedata.normalize("NFKC", value)).strip()
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _canonical_json(value: Mapping[str, Any]) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+
+def _validate_hash(value: str, field: str) -> None:
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+        raise TextRagError(f"{field} must be a lowercase SHA-256 hex digest")
+
+
+def _snapshot(corpus_hash: str, passages: Sequence[dict[str, Any]]) -> str:
+    payload = {
+        "schema_version": _MANIFEST_VERSION,
+        "corpus_hash": corpus_hash,
+        "bm25": _BM25_CONFIG,
+        "passages": [
+            {"evidence_id": passage["evidence_id"], "text_sha256": passage["text_sha256"]}
+            for passage in passages
+        ],
+    }
+    return _sha256_text(_canonical_json(payload))
+
+
+def ingest_passages(rows: Sequence[Mapping[str, Any]], *, corpus_hash: str) -> dict[str, Any]:
+    """Produce a sorted, content-addressed durable manifest from HF corpus rows."""
+    _validate_hash(corpus_hash, "corpus_hash")
+    passages: list[dict[str, Any]] = []
+    seen_ids: set[int] = set()
+    for number, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise TextRagError(f"row {number} must be an object")
+        passage_id = row.get("id")
+        if isinstance(passage_id, bool) or not isinstance(passage_id, int):
+            raise TextRagError(f"row {number} id must be an integer")
+        if passage_id in seen_ids:
+            raise TextRagError(f"duplicate passage id: {passage_id}")
+        seen_ids.add(passage_id)
+        text = normalize_text(row.get("passage"))
+        if not text:
+            raise TextRagError(f"row {number} passage must be non-empty")
+        passages.append(
+            {
+                "evidence_id": f"passage:{passage_id}",
+                "passage_id": passage_id,
+                "passage": text,
+                "text_sha256": _sha256_text(text),
+            }
+        )
+    passages.sort(key=lambda passage: int(passage["passage_id"]))
+    snapshot = _snapshot(corpus_hash, passages)
+    return {
+        "schema_version": _MANIFEST_VERSION,
+        "corpus_hash": corpus_hash,
+        "index_snapshot": snapshot,
+        "bm25": dict(_BM25_CONFIG),
+        "passages": passages,
+    }
 
 
 def ingest_from_materialization(
