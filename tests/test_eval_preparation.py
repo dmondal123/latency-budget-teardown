@@ -1,6 +1,11 @@
 """Deterministic text-evaluation selection contracts."""
 
-from scripts.prepare_eval import classify_answer, materialize_cases, select_candidates
+from collections import Counter
+import json
+
+import pyarrow as pa
+
+from scripts.prepare_eval import classify_answer, load_arrow_rows, materialize_cases, select_candidates, write_candidate_ledger
 
 
 def test_selection_is_seeded_and_never_uses_a_qa_id_as_passage_id():
@@ -16,6 +21,15 @@ def test_selection_is_seeded_and_never_uses_a_qa_id_as_passage_id():
     assert first == second
     assert [item["candidate_passage_ids"] for item in first] == [[1], [2], [3], [4]]
     assert all(item["source_row_id"] not in item["candidate_passage_ids"] for item in first)
+    assert all(item["disposition"] == "pending_manual_review" for item in first)
+
+
+def test_selection_marks_overbroad_answer_containment_as_ambiguous():
+    qa = [{"id": 1, "question": "How many?", "answer": "1"}]
+    corpus = [{"id": index, "passage": f"item 1 number {index}"} for index in range(12)]
+    candidate = select_candidates(qa, corpus, seed=20260816, max_candidates=10)[0]
+    assert candidate["disposition"] == "rejected_ambiguous"
+    assert candidate["candidate_count"] == 12
 
 
 def test_answer_classification_uses_the_four_frozen_types():
@@ -26,13 +40,24 @@ def test_answer_classification_uses_the_four_frozen_types():
 
 
 def test_materializer_seals_a_deterministic_24_6_split_from_approved_rows():
-    approved = [
-        {"source_row_id": index, "question": f"q{index}", "reference_answer": "yes", "answer_type": "boolean",
-         "gold_evidence_ids": [index + 100], "support_quote": "yes"}
-        for index in range(30)
-    ]
+    types = ["boolean"] * 8 + ["numeric_or_date"] * 8 + ["short_phrase"] * 7 + ["free_form"] * 7
+    approved = [{"source_row_id": index, "question": f"q{index}", "reference_answer": "yes", "answer_type": kind,
+                 "gold_evidence_ids": [index + 100], "support_quote": "yes"} for index, kind in enumerate(types)]
     development, holdouts, manifest = materialize_cases(approved, seed=20260816, sealed_at="2026-08-16T00:00:00Z")
     assert len(development) == 24
     assert len(holdouts) == 6
     assert {case["case_id"] for case in holdouts} == set(manifest["case_ids"])
+    assert Counter(case["answer_type"] for case in holdouts) == {"boolean": 2, "numeric_or_date": 2, "short_phrase": 1, "free_form": 1}
+    assert Counter(case["answer_type"] for case in development) == {"boolean": 6, "numeric_or_date": 6, "short_phrase": 6, "free_form": 6}
     assert all(case["verification_status"] == "manually_verified" for case in development + holdouts)
+
+
+def test_offline_arrow_loader_and_ledger_writer_do_not_need_a_dataset_service(tmp_path):
+    arrow = tmp_path / "rows.arrow"
+    with pa.OSFile(str(arrow), "wb") as sink:
+        with pa.ipc.new_stream(sink, pa.table({"id": [1], "passage": ["Paris"]}).schema) as writer:
+            writer.write_table(pa.table({"id": [1], "passage": ["Paris"]}))
+    assert load_arrow_rows(arrow) == [{"id": 1, "passage": "Paris"}]
+    ledger = tmp_path / "ledger.json"
+    write_candidate_ledger(ledger, [{"source_row_id": 9, "candidate_passage_ids": [1]}])
+    assert json.loads(ledger.read_text())["candidates"][0]["candidate_passage_ids"] == [1]

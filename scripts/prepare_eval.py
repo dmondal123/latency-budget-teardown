@@ -4,9 +4,26 @@ from __future__ import annotations
 
 import random
 import re
+import json
+from collections import Counter
 from typing import Iterable, Mapping
+from pathlib import Path
 
 from scripts.materialize_dataset import normalize_text
+
+
+def load_arrow_rows(path: Path) -> list[dict[str, object]]:
+    """Read a materialized Arrow split directly, without Hugging Face network access."""
+    import pyarrow as pa
+
+    with pa.memory_map(str(path), "r") as source:
+        return [dict(row) for row in pa.ipc.open_stream(source).read_all().to_pylist()]
+
+
+def write_candidate_ledger(path: Path, candidates: Iterable[Mapping[str, object]], *, max_candidates: int = 25) -> None:
+    payload = {"schema_version": "text-rag-candidate-ledger.v1", "selection_seed": 20260816,
+               "max_candidates": max_candidates, "candidates": [dict(candidate) for candidate in candidates]}
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def classify_answer(answer: str) -> str:
@@ -21,7 +38,7 @@ def classify_answer(answer: str) -> str:
 
 
 def select_candidates(
-    qa_rows: Iterable[Mapping[str, object]], corpus_rows: Iterable[Mapping[str, object]], *, seed: int
+    qa_rows: Iterable[Mapping[str, object]], corpus_rows: Iterable[Mapping[str, object]], *, seed: int, max_candidates: int = 25
 ) -> list[dict[str, object]]:
     corpus = [(row["id"], normalize_text(str(row["passage"]))) for row in corpus_rows]
     if any(isinstance(identifier, bool) or not isinstance(identifier, int) for identifier, _ in corpus):
@@ -44,7 +61,8 @@ def select_candidates(
             positions[kind] += 1
             answer = normalize_text(str(row["answer"])).casefold()
             matches = [identifier for identifier, passage in corpus if answer and answer in passage.casefold()]
-            candidates.append({"source_row_id": row["id"], "question": row["question"], "reference_answer": row["answer"], "answer_type": kind, "candidate_passage_ids": matches})
+            disposition = "pending_manual_review" if matches and len(matches) <= max_candidates else "rejected_ambiguous"
+            candidates.append({"source_row_id": row["id"], "question": row["question"], "reference_answer": row["answer"], "answer_type": kind, "candidate_passage_ids": matches, "candidate_count": len(matches), "disposition": disposition})
     return candidates
 
 
@@ -57,9 +75,25 @@ def materialize_cases(
         raise ValueError("exactly 30 approved mappings are required")
     if len({row.get("source_row_id") for row in rows}) != 30:
         raise ValueError("approved mappings must have unique source row IDs")
+    expected = {"boolean": 8, "numeric_or_date": 8, "short_phrase": 7, "free_form": 7}
+    grouped = {kind: [] for kind in expected}
+    for row in rows:
+        kind = row.get("answer_type")
+        if kind not in grouped:
+            raise ValueError(f"unsupported answer type: {kind}")
+        grouped[kind].append(row)
+    if Counter({kind: len(group) for kind, group in grouped.items()}) != Counter(expected):
+        raise ValueError("approved mappings must use the 8/8/7/7 answer-type allocation")
+    holdout_counts = {"boolean": 2, "numeric_or_date": 2, "short_phrase": 1, "free_form": 1}
     rng = random.Random(seed)
-    rng.shuffle(rows)
-    holdout_positions = set(range(0, 30, 5))
+    development_rows: list[dict[str, object]] = []
+    holdout_rows: list[dict[str, object]] = []
+    for kind in expected:
+        group = sorted(grouped[kind], key=lambda row: int(row["source_row_id"]))
+        rng.shuffle(group)
+        holdout_rows.extend(group[:holdout_counts[kind]])
+        development_rows.extend(group[holdout_counts[kind]:])
+    rows = development_rows + holdout_rows
     development: list[dict[str, object]] = []
     holdouts: list[dict[str, object]] = []
     for ordinal, row in enumerate(rows, 1):
@@ -68,9 +102,11 @@ def materialize_cases(
             "question": row["question"], "reference_answer": row["reference_answer"],
             "answer_type": row["answer_type"], "gold_evidence_ids": row["gold_evidence_ids"],
             "support_quote": row["support_quote"], "expected_abstention": False,
-            "verification_status": "manually_verified", "holdout": ordinal - 1 in holdout_positions,
+            "verification_status": "manually_verified", "holdout": False,
         }
-        (holdouts if case["holdout"] else development).append(case)
+        target = holdouts if row in holdout_rows else development
+        case["holdout"] = target is holdouts
+        target.append(case)
     manifest = {"suite_id": "text-rag-latency-eval/v1", "status": "sealed", "selection_seed": seed,
                 "sealed_at": sealed_at, "case_ids": [case["case_id"] for case in holdouts]}
     return development, holdouts, manifest

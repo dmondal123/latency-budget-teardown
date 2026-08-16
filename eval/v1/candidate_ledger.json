@@ -1,0 +1,596 @@
+{
+  "candidates": [
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Was Wilson a member of the Phi Kappa Psi fraternity?",
+      "reference_answer": "yes",
+      "source_row_id": 1686
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Is the Polar Bear the mascot of Bowdoin college ?",
+      "reference_answer": "yes",
+      "source_row_id": 1317
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 3,
+      "candidate_passage_ids": [
+        151,
+        153,
+        2826
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When was the first factory opened?",
+      "reference_answer": "1836",
+      "source_row_id": 1057
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 2,
+      "candidate_passage_ids": [
+        2386,
+        2397
+      ],
+      "disposition": "pending_manual_review",
+      "question": "What are the similarities between beetles and grasshoppers?",
+      "reference_answer": "mouthparts",
+      "source_row_id": 172
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Is it widely considered the most secular nation in Latin America ?",
+      "reference_answer": "Yes",
+      "source_row_id": 1666
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 11,
+      "candidate_passage_ids": [
+        114,
+        277,
+        769,
+        781,
+        784,
+        1509,
+        1679,
+        1834,
+        1875,
+        2847,
+        2856
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Is uruguay's landscape mountainous?",
+      "reference_answer": "No.",
+      "source_row_id": 1618
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        2971
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Who was Roosevelt's presidential hero?",
+      "reference_answer": "Lincoln was Roosevelt's presidential hero.",
+      "source_row_id": 1500
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Is singapore -LRB- ; (: ; , -RRB- , officially the republic of singapore -LRB- ; (: ; , -RRB- , an island nation located at the southern tip of the malay peninsula?",
+      "reference_answer": "Yes",
+      "source_row_id": 1472
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        1550,
+        1560,
+        1608,
+        1609,
+        1614,
+        1618,
+        1624,
+        1635,
+        1663,
+        1664,
+        1666,
+        1667,
+        1668,
+        1671,
+        1674,
+        1682,
+        1694,
+        1715,
+        1994,
+        2067,
+        2074
+      ],
+      "disposition": "pending_manual_review",
+      "question": "What is the capital city?",
+      "reference_answer": "Helsinki",
+      "source_row_id": 524
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Are Male otters dog-otters , females are bitches and babies are cubs or pups ?",
+      "reference_answer": "yes",
+      "source_row_id": 1220
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        2506
+      ],
+      "disposition": "pending_manual_review",
+      "question": "In which years were John Monroe elected as President?",
+      "reference_answer": "1817-1825",
+      "source_row_id": 842
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        407
+      ],
+      "disposition": "pending_manual_review",
+      "question": "In 1905 Coolidge met and married whom?",
+      "reference_answer": "Grace Anna Goodhue",
+      "source_row_id": 249
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        1359
+      ],
+      "disposition": "pending_manual_review",
+      "question": "What is the weather like at Lake Volta?",
+      "reference_answer": "Warm and comparatively dry",
+      "source_row_id": 621
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Do sea turtles lay eggs on dry sandy beaches?",
+      "reference_answer": "Yes",
+      "source_row_id": 1527
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 2,
+      "candidate_passage_ids": [
+        742,
+        2512
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When was James Monroe appointed to Secretary of War?",
+      "reference_answer": "1814",
+      "source_row_id": 846
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        1922
+      ],
+      "disposition": "pending_manual_review",
+      "question": "What do river otters eat?",
+      "reference_answer": "a variety of fish and shellfish, as well as small land mammals and birds",
+      "source_row_id": 1169
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Is Liechtenstein bordered by Switzerland?",
+      "reference_answer": "Yes",
+      "source_row_id": 1051
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 12,
+      "candidate_passage_ids": [
+        712,
+        1336,
+        1342,
+        1347,
+        1348,
+        1364,
+        1471,
+        1686,
+        1877,
+        1893,
+        2312,
+        2759
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When did Ghana achieve independence from the United Kingdom?",
+      "reference_answer": "1957",
+      "source_row_id": 611
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        2708
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When is the first record of S08_settlement in Singapore?",
+      "reference_answer": "second century AD",
+      "source_row_id": 1437
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        1954
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Four years after opening his shop , Watt began what?",
+      "reference_answer": "Watt began to experiment with steam after his friend, Professor John Robison, called his attention to it.",
+      "source_row_id": 881
+    },
+    {
+      "answer_type": "boolean",
+      "candidate_count": 21,
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Are Kangaroos Shy?",
+      "reference_answer": "Yes",
+      "source_row_id": 966
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        2132
+      ],
+      "disposition": "pending_manual_review",
+      "question": "What was Scots-Irish and Scottish?",
+      "reference_answer": "His ancestry",
+      "source_row_id": 1704
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        2315
+      ],
+      "disposition": "pending_manual_review",
+      "question": "How has Canada helped UN peacekeeping efforts?",
+      "reference_answer": "During the Suez Crisis of 1956, Lester B. Pearson eased tensions by proposing the inception of the United Nations Peacekeeping Force. Canada has since served in 50 peacekeeping missions, including every UN peacekeeping effort until 1989",
+      "source_row_id": 301
+    },
+    {
+      "answer_type": "short_phrase",
+      "candidate_count": 2,
+      "candidate_passage_ids": [
+        2506,
+        2522
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When did James Monroe die?",
+      "reference_answer": "July 4, 1831",
+      "source_row_id": 848
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 2,
+      "candidate_passage_ids": [
+        143,
+        563
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When did he publish a collection?",
+      "reference_answer": "1733",
+      "source_row_id": 141
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        1934
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Why otters are considered as totem animals?",
+      "reference_answer": "The time of year associated with this is also associated with the Aquarius sign of the Zodiac, through which the sun passes January 20-February 19. ",
+      "source_row_id": 1194
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 23,
+      "candidate_passage_ids": [
+        69,
+        306,
+        396,
+        461,
+        697,
+        1096,
+        1123,
+        1177,
+        1201,
+        1573,
+        1645,
+        1708,
+        1877,
+        1893,
+        2001,
+        2311,
+        2495,
+        2650,
+        2787,
+        3096,
+        3110,
+        3123,
+        3124
+      ],
+      "disposition": "pending_manual_review",
+      "question": "How many Eagle Scouts were involved in Ford's funeral procession?",
+      "reference_answer": "400",
+      "source_row_id": 587
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 13,
+      "candidate_passage_ids": [
+        358,
+        636,
+        642,
+        652,
+        655,
+        656,
+        658,
+        725,
+        726,
+        1956,
+        2253,
+        2507,
+        2609
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When did James Monroe graduate from William and Mary?",
+      "reference_answer": "1776",
+      "source_row_id": 850
+    },
+    {
+      "answer_type": "free_form",
+      "candidate_count": 1,
+      "candidate_passage_ids": [
+        518
+      ],
+      "disposition": "pending_manual_review",
+      "question": "Why did Cleveland want to hide his cancer surgery from the public?",
+      "reference_answer": "To avoid further market panic",
+      "source_row_id": 715
+    },
+    {
+      "answer_type": "numeric_or_date",
+      "candidate_count": 20,
+      "candidate_passage_ids": [
+        811,
+        812,
+        817,
+        1122,
+        1131,
+        1272,
+        1381,
+        1423,
+        1424,
+        1522,
+        1523,
+        1754,
+        1897,
+        1900,
+        2006,
+        2340,
+        2638,
+        2654,
+        2741,
+        3154
+      ],
+      "disposition": "pending_manual_review",
+      "question": "When did the first official report of kangaroo blindness take place?",
+      "reference_answer": "1994",
+      "source_row_id": 953
+    }
+  ],
+  "schema_version": "text-rag-candidate-ledger.v1",
+  "selection_seed": 20260816
+}
