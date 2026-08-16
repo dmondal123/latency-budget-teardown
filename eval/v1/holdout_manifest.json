@@ -1,7 +1,29 @@
 {
   "suite_id": "text-rag-latency-eval/v1",
-  "status": "pending_case_materialization",
+  "status": "sealed",
   "selection_seed": 20260816,
-  "sealed_at": null,
-  "case_ids": []
+  "sealed_at": "2026-08-16",
+  "case_ids": [
+    "eval-v1-25",
+    "eval-v1-26",
+    "eval-v1-27",
+    "eval-v1-28",
+    "eval-v1-29",
+    "eval-v1-30"
+  ],
+  "dataset": {
+    "license": "CC BY 3.0",
+    "repository": "rag-datasets/rag-mini-wikipedia",
+    "revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6"
+  },
+  "corpus_hash": "dbe884c22ac0f787287767d5447b18f4172c8ed3e7dd68237206c201d0aa728d",
+  "review_method": "codex_assisted_manual_review",
+  "holdout_source_row_ids": [
+    1241,
+    565,
+    141,
+    846,
+    249,
+    49
+  ]
 }

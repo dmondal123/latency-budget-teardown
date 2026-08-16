@@ -37,14 +37,14 @@ Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker.
 
 Dataset evaluation and retrieval implementation run in parallel after `C01`.
 
-- [ ] **T07 [PAR-C; 0:45–1:45; depends: C01]** Select 30 QA rows with seed `20260816`; manually verify gold passage IDs and support quotes.
-- [ ] **T08 [PAR-C; 1:45–2:00; depends: T07]** Materialize 24 development and six sealed holdout cases; run the authoritative evaluation verifier.
+- [x] **T07 [PAR-C; 0:45–1:45; depends: C01]** Selected 30 QA rows with seed `20260816`; recorded Codex-assisted manual verification, gold passage IDs, exact support quotes, and review rationale in `eval/v1/candidate_ledger.json` and `eval/v1/reviewed_mappings.json`.
+- [x] **T08 [PAR-C; 1:45–2:00; depends: T07]** Materialized 24 development and six sealed holdout cases; the authoritative text-RAG verifier passed against the pinned corpus.
 - [x] **T09 [PAR-A; 0:45–1:30; depends: C01]** Implement deterministic passage normalization, BM25 indexing, retrieval, hashes, and focused retrieval tests.
 - [x] **T10 [PAR-A; 1:30–2:15; depends: T09]** Implement bounded context assembly and stable `SOURCE N` citation binding with focused tests.
 - [x] **T09b [SEQ; depends: T09a]** Remove the stale multimodal verifier tests that conflict with the approved text-RAG fixtures and runtime contract.
 - [x] **T11 [PAR-B; 0:45–2:15; depends: C01]** Implement the Ollama NDJSON client, buffered/streamed display, validation, abstention, timeout/error handling, and focused tests.
 - [x] **T11a [SEQ; depends: T09a]** Selectively integrate the Wave 2 Ollama client, deterministic answer validation, and offline evaluation-preparation tooling without importing its competing retriever or unverified fixture data.
-- [ ] **C02 [GATE; at 2:00; depends: T08, T09]** Confirm 30 verified mappings, sealed 24/6 split, reproducible corpus/index hashes, and working BM25 retrieval.
+- [x] **C02 [GATE; at 2:00; depends: T08, T09]** Confirmed 30 verified mappings, sealed 24/6 split, reproducible corpus/index hashes, and working BM25 retrieval.
 
 Checkpoint action: if `C02` fails, do not fabricate evidence or unseal holdouts. Drop optional diagnostics and escalate the missing mapping/index evidence immediately.
 

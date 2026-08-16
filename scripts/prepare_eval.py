@@ -6,6 +6,7 @@ import random
 import re
 import json
 from collections import Counter
+from datetime import date
 from typing import Iterable, Mapping
 from pathlib import Path
 
@@ -81,8 +82,29 @@ def select_candidates(
     return candidates
 
 
+def validate_reviewed_mapping(row: Mapping[str, object]) -> None:
+    """Reject records that only claim, rather than document, manual review."""
+    candidate_ids = row.get("candidate_passage_ids")
+    gold_ids = row.get("gold_evidence_ids")
+    if not isinstance(candidate_ids, list) or not candidate_ids:
+        raise ValueError("candidate_passage_ids must contain selected corpus passage IDs")
+    if not isinstance(gold_ids, list) or not gold_ids:
+        raise ValueError("gold_evidence_ids must contain selected corpus passage IDs")
+    if any(isinstance(identifier, bool) or not isinstance(identifier, int) for identifier in candidate_ids + gold_ids):
+        raise ValueError("candidate_passage_ids and gold_evidence_ids must contain integer passage IDs")
+    if not set(gold_ids).issubset(candidate_ids):
+        raise ValueError("gold_evidence_ids must be selected candidate_passage_ids")
+    for field in ("support_quote", "review_method", "reviewer", "review_rationale"):
+        if not isinstance(row.get(field), str) or not str(row[field]).strip():
+            raise ValueError(f"{field} is required for a manually verified mapping")
+    if row.get("verification_status") != "manually_verified":
+        raise ValueError("verification_status must be manually_verified")
+
+
 def materialize_cases(
-    approved_rows: Iterable[Mapping[str, object]], *, seed: int, sealed_at: str
+    approved_rows: Iterable[Mapping[str, object]], *, seed: int, sealed_at: str,
+    dataset_identity: Mapping[str, object] | None = None, corpus_hash: str | None = None,
+    review_method: str | None = None,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
     """Create a reproducible split only from rows a human has approved."""
     rows = [dict(row) for row in approved_rows]
@@ -93,6 +115,7 @@ def materialize_cases(
     expected = {"boolean": 8, "numeric_or_date": 8, "short_phrase": 7, "free_form": 7}
     grouped = {kind: [] for kind in expected}
     for row in rows:
+        validate_reviewed_mapping(row)
         kind = row.get("answer_type")
         if kind not in grouped:
             raise ValueError(f"unsupported answer type: {kind}")
@@ -117,11 +140,19 @@ def materialize_cases(
             "question": row["question"], "reference_answer": row["reference_answer"],
             "answer_type": row["answer_type"], "gold_evidence_ids": row["gold_evidence_ids"],
             "support_quote": row["support_quote"], "expected_abstention": False,
-            "verification_status": "manually_verified", "holdout": False,
+            "review_method": row["review_method"], "reviewer": row["reviewer"],
+            "review_rationale": row["review_rationale"], "verification_status": "manually_verified", "holdout": False,
         }
         target = holdouts if row in holdout_rows else development
         case["holdout"] = target is holdouts
         target.append(case)
+    try:
+        sealed_date = date.fromisoformat(sealed_at[:10]).isoformat()
+    except (TypeError, ValueError) as exc:
+        raise ValueError("sealed_at must begin with an ISO date") from exc
     manifest = {"suite_id": "text-rag-latency-eval/v1", "status": "sealed", "selection_seed": seed,
-                "sealed_at": sealed_at, "case_ids": [case["case_id"] for case in holdouts]}
+                "sealed_at": sealed_date, "case_ids": [case["case_id"] for case in holdouts],
+                "dataset": dict(dataset_identity) if dataset_identity is not None else None,
+                "corpus_hash": corpus_hash, "review_method": review_method,
+                "holdout_source_row_ids": [case["source_row_id"] for case in holdouts]}
     return development, holdouts, manifest

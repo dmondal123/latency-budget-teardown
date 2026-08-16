@@ -5,8 +5,8 @@
   "owner": "dmondal",
   "scope": "Local answers grounded in admitted rag-mini-wikipedia passages with deterministic citation validation.",
   "may": [
-    "answer_from_admitted_pdf_evidence",
-    "combine_up_to_five_admitted_pages",
+    "answer_from_admitted_passage",
+    "combine_up_to_five_admitted_passages",
     "state_uncertainty",
     "abstain"
   ],

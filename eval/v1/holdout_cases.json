@@ -1,0 +1,104 @@
+[
+  {
+    "case_id": "eval-v1-25",
+    "source_row_id": 1241,
+    "question": "Are penguins birds?",
+    "reference_answer": "yes",
+    "answer_type": "boolean",
+    "gold_evidence_ids": [
+      962
+    ],
+    "support_quote": "Penguins have an average sense of hearing for birds (Wever et al 1969); this is used by parents and chicks to locate one another in crowded colonies (Jouventin et al 1999).",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  },
+  {
+    "case_id": "eval-v1-26",
+    "source_row_id": 565,
+    "question": "Did ford attend the University of Michigan?",
+    "reference_answer": "Yes",
+    "answer_type": "boolean",
+    "gold_evidence_ids": [
+      2003
+    ],
+    "support_quote": "Attending the University of Michigan as an undergraduate, Ford played center and linebacker for the schoolâs football team and helped the Wolverines to undefeated seasons and national titles in 1932 and 1933.",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  },
+  {
+    "case_id": "eval-v1-27",
+    "source_row_id": 141,
+    "question": "When did he publish a collection?",
+    "reference_answer": "1733",
+    "answer_type": "numeric_or_date",
+    "gold_evidence_ids": [
+      143
+    ],
+    "support_quote": "At Nuremberg in 1733 he published a collection of 316 observations of the aurora borealis made by himself and others over the period 1716-1732.",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  },
+  {
+    "case_id": "eval-v1-28",
+    "source_row_id": 846,
+    "question": "When was James Monroe appointed to Secretary of War?",
+    "reference_answer": "1814",
+    "answer_type": "numeric_or_date",
+    "gold_evidence_ids": [
+      2512
+    ],
+    "support_quote": "When he was appointed to Secretary of War in 1814, he stayed on as the Secretary of State ad interim.",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  },
+  {
+    "case_id": "eval-v1-29",
+    "source_row_id": 249,
+    "question": "In 1905 Coolidge met and married whom?",
+    "reference_answer": "Grace Anna Goodhue",
+    "answer_type": "short_phrase",
+    "gold_evidence_ids": [
+      407
+    ],
+    "support_quote": "In 1905 Coolidge met and married Grace Anna Goodhue, a local schoolteacher and fellow Vermonter.",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  },
+  {
+    "case_id": "eval-v1-30",
+    "source_row_id": 49,
+    "question": "What trail did Lincoln use a Farmers' Almanac in? ",
+    "reference_answer": "he defended William \"Duff\" Armstrong",
+    "answer_type": "free_form",
+    "gold_evidence_ids": [
+      305
+    ],
+    "support_quote": "Possibly the most notable criminal trial of Lincoln's career as a lawyer came in 1858, when he defended William \"Duff\" Armstrong, who has been charged with murder.",
+    "expected_abstention": false,
+    "verification_status": "manually_verified",
+    "holdout": true,
+    "review_method": "codex_assisted_manual_review",
+    "reviewer": "codex/gpt-5.6",
+    "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer."
+  }
+]

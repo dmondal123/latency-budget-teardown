@@ -13,16 +13,17 @@
     "truncation_rate": {"operator": "<=", "value": 0.02},
     "p95_ttft_ms": {"operator": "<=", "value": 3900},
     "p95_ttc_ms": {"operator": "<=", "value": 15000},
-    "max_modality_or_traffic_slice_regression": {"operator": "<=", "value": 0.05},
+    "answer_token_f1": {"operator": ">=", "value": 0.8},
+    "max_answer_type_slice_regression": {"operator": "<=", "value": 0.05},
     "external_runtime_api_cost_per_completed_task": {"operator": "==", "value": 0.0}
   },
   "latency_budget_p95_ms": {
     "admission": 100,
-    "retrieval": 400,
-    "context_media": 600,
-    "model_queue_prefill": 2800,
-    "model_decode": 10800,
-    "validation": 200,
+    "retrieval": 200,
+    "context_assembly": 300,
+    "model_dispatch_to_first_token": 3000,
+    "model_decode": 11200,
+    "validation": 100,
     "contingency": 100,
     "ttc": 15000
   }

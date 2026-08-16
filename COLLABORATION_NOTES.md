@@ -262,6 +262,15 @@ Follow-up:
 - Decision: T06 and C01 are complete. The next dependency is T07's manual QA-to-passage verification, not further runtime setup.
 - `/status` model and token use: unavailable in this API session.
 
+## 2026-08-16 — T07/T08 evidence-suite correction
+
+- Context: the previously integrated Wave 2 branch had generated heuristic evidence mappings, labeled them as manual verification, and retained a verifier for the retired PDF/multimodal schema.
+- Correction: the user approved documented Codex-assisted manual review. The replacement records candidate/rejection evidence, selected corpus IDs, exact quotes, rationale, and reviewer provenance for 30 seeded QA rows; the verifier now recomputes the corpus hash and validates the text-only 24/6 suite.
+- Investigation: an independent replay initially exposed a manifest-contract mismatch: valid cases were reproducible, but the old materializer omitted immutable dataset/review provenance. The user explicitly approved alignment; the materializer now emits the same sealed provenance-rich manifest as the fixture.
+- Evidence: `.venv/bin/python -m pytest -q` reported 71 passed; `.venv/bin/python scripts/verify_eval.py --repo-root .` validated 30 cases and six holdouts; an independent replay exactly matched cases and manifest.
+- Learning: evaluators must validate the same durable evidence contract the materializer emits; status labels and schema validity alone do not prove replayability.
+- `/status` model and token use: unavailable in this API session.
+
 ## 2026-08-16 — Offline text-corpus ingestion boundary
 
 - Context: implementing the approved text-RAG ingestion and BM25 retrieval foundation.

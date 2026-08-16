@@ -1,0 +1,833 @@
+{
+  "schema_version": "text-rag-reviewed-mappings.v1",
+  "dataset": {
+    "license": "CC BY 3.0",
+    "repository": "rag-datasets/rag-mini-wikipedia",
+    "revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6"
+  },
+  "corpus_hash": "dbe884c22ac0f787287767d5447b18f4172c8ed3e7dd68237206c201d0aa728d",
+  "selection_seed": 20260816,
+  "review_method": "codex_assisted_manual_review",
+  "mappings": [
+    {
+      "source_row_id": 1051,
+      "question": "Is Liechtenstein bordered by Switzerland?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2828
+      ],
+      "support_quote": "Until the end of World War I, Liechtenstein first was closely tied to the Austrian Empire and later, to Austria-Hungary; however, the economic devastation caused by WWI forced the country to conclude a customs and monetary union with its other neighbor, Switzerland.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1050,
+      "question": "Is the leopard an agile and graceful predator?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2458
+      ],
+      "support_quote": "They are good, agile climbers, but cannot get down from a tree headfirst, because they do not have the ankle flexibilityâthe only two cats that do are the Margay and the Clouded Leopard.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 565,
+      "question": "Did ford attend the University of Michigan?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2003
+      ],
+      "support_quote": "Attending the University of Michigan as an undergraduate, Ford played center and linebacker for the schoolâs football team and helped the Wolverines to undefeated seasons and national titles in 1932 and 1933.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1241,
+      "question": "Are penguins birds?",
+      "reference_answer": "yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        962
+      ],
+      "support_quote": "Penguins have an average sense of hearing for birds (Wever et al 1969); this is used by parents and chicks to locate one another in crowded colonies (Jouventin et al 1999).",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1243,
+      "question": "Do penguins have a better than average sense of hearing for birds?",
+      "reference_answer": "yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        962
+      ],
+      "support_quote": "Penguins have an average sense of hearing for birds (Wever et al 1969); this is used by parents and chicks to locate one another in crowded colonies (Jouventin et al 1999).",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1266,
+      "question": "Have penguins an average sense of hearing for birds ?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        962
+      ],
+      "support_quote": "Penguins have an average sense of hearing for birds (Wever et al 1969); this is used by parents and chicks to locate one another in crowded colonies (Jouventin et al 1999).",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 243,
+      "question": "Did Coolidge meet and marry Grace Anna Goodhue?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        407
+      ],
+      "support_quote": "In 1905 Coolidge met and married Grace Anna Goodhue, a local schoolteacher and fellow Vermonter.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1041,
+      "question": "Is the leopard solitary?",
+      "reference_answer": "Yes",
+      "answer_type": "boolean",
+      "candidate_passage_ids": [
+        81,
+        129,
+        254,
+        365,
+        407,
+        962,
+        996,
+        1035,
+        1036,
+        1058,
+        1072,
+        1235,
+        1320,
+        1392,
+        1691,
+        1819,
+        2003,
+        2387,
+        2458,
+        2464,
+        2828
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2458
+      ],
+      "support_quote": "These cats are solitary, avoiding one another.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1057,
+      "question": "When was the first factory opened?",
+      "reference_answer": "1836",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        151,
+        153,
+        2826
+      ],
+      "candidate_count": 3,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2826
+      ],
+      "support_quote": "Liechtenstein also had many advances in the nineteenth century, as in 1836, the first factory was opened, making ceramics.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 842,
+      "question": "In which years were John Monroe elected as President?",
+      "reference_answer": "1817-1825",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        2506
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2506
+      ],
+      "support_quote": "James Monroe (April 28, 1758 â July 4, 1831) was the fifth President of the United States (1817-1825).",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 846,
+      "question": "When was James Monroe appointed to Secretary of War?",
+      "reference_answer": "1814",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        742,
+        2512
+      ],
+      "candidate_count": 2,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2512
+      ],
+      "support_quote": "When he was appointed to Secretary of War in 1814, he stayed on as the Secretary of State ad interim.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 611,
+      "question": "When did Ghana achieve independence from the United Kingdom?",
+      "reference_answer": "1957",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        712,
+        1336,
+        1342,
+        1347,
+        1348,
+        1364,
+        1471,
+        1686,
+        1877,
+        1893,
+        2312,
+        2759
+      ],
+      "candidate_count": 12,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1347
+      ],
+      "support_quote": "Formed from the merger of the British colony Gold Coast, The Empire of Ashanti and the British Togoland trust territory by a UN sponsored plebiscite, Ghana became the first democratic sub-Sahara country in colonial Africa to gain its independence in 1957.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 141,
+      "question": "When did he publish a collection?",
+      "reference_answer": "1733",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        143,
+        563
+      ],
+      "candidate_count": 2,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        143
+      ],
+      "support_quote": "At Nuremberg in 1733 he published a collection of 316 observations of the aurora borealis made by himself and others over the period 1716-1732.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 587,
+      "question": "How many Eagle Scouts were involved in Ford's funeral procession?",
+      "reference_answer": "400",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        69,
+        306,
+        396,
+        461,
+        697,
+        1096,
+        1123,
+        1177,
+        1201,
+        1573,
+        1645,
+        1708,
+        1877,
+        1893,
+        2001,
+        2311,
+        2495,
+        2650,
+        2787,
+        3096,
+        3110,
+        3123,
+        3124
+      ],
+      "candidate_count": 23,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2001
+      ],
+      "support_quote": "About 400 Eagle Scouts were part of the funeral procession, where they formed an honor guard as the casket went by in front of the museum, and served as ushers.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 850,
+      "question": "When did James Monroe graduate from William and Mary?",
+      "reference_answer": "1776",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        358,
+        636,
+        642,
+        652,
+        655,
+        656,
+        658,
+        725,
+        726,
+        1956,
+        2253,
+        2507,
+        2609
+      ],
+      "candidate_count": 13,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2507
+      ],
+      "support_quote": "After graduating from William and Mary in 1776, Monroe fought in the Continental Army, serving with distinction at the Battle of Trenton, where he was shot in his left shoulder.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 953,
+      "question": "When did the first official report of kangaroo blindness take place?",
+      "reference_answer": "1994",
+      "answer_type": "numeric_or_date",
+      "candidate_passage_ids": [
+        811,
+        812,
+        817,
+        1122,
+        1131,
+        1272,
+        1381,
+        1423,
+        1424,
+        1522,
+        1523,
+        1754,
+        1897,
+        1900,
+        2006,
+        2340,
+        2638,
+        2654,
+        2741,
+        3154
+      ],
+      "candidate_count": 20,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1754
+      ],
+      "support_quote": "The first official report of kangaroo blindness took place in 1994, in central New South Wales.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 172,
+      "question": "What are the similarities between beetles and grasshoppers?",
+      "reference_answer": "mouthparts",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        2386,
+        2397
+      ],
+      "candidate_count": 2,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2397
+      ],
+      "support_quote": "Beetle larvae can be differentiated from other insect larvae by their hardened, often darkened head, the presence of chewing mouthparts, and spiracles along the sides of the body.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 524,
+      "question": "What is the capital city?",
+      "reference_answer": "Helsinki",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        1550,
+        1560,
+        1608,
+        1609,
+        1614,
+        1618,
+        1624,
+        1635,
+        1663,
+        1664,
+        1666,
+        1667,
+        1668,
+        1671,
+        1674,
+        1682,
+        1694,
+        1715,
+        1994,
+        2067,
+        2074
+      ],
+      "candidate_count": 21,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1550
+      ],
+      "support_quote": "The capital city is Helsinki.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 249,
+      "question": "In 1905 Coolidge met and married whom?",
+      "reference_answer": "Grace Anna Goodhue",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        407
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        407
+      ],
+      "support_quote": "In 1905 Coolidge met and married Grace Anna Goodhue, a local schoolteacher and fellow Vermonter.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1437,
+      "question": "When is the first record of S08_settlement in Singapore?",
+      "reference_answer": "second century AD",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        2708
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2708
+      ],
+      "support_quote": "The first records of settlement in Singapore are from the second century AD.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1704,
+      "question": "What was Scots-Irish and Scottish?",
+      "reference_answer": "His ancestry",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        2132
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2132
+      ],
+      "support_quote": "His ancestry was Scots-Irish and Scottish.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 848,
+      "question": "When did James Monroe die?",
+      "reference_answer": "July 4, 1831",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        2506,
+        2522
+      ],
+      "candidate_count": 2,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2506
+      ],
+      "support_quote": "James Monroe (April 28, 1758 â July 4, 1831) was the fifth President of the United States (1817-1825).",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 182,
+      "question": "When are sperm cells transferred to the female?",
+      "reference_answer": "during pairing",
+      "answer_type": "short_phrase",
+      "candidate_passage_ids": [
+        2404
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2404
+      ],
+      "support_quote": "During pairing sperm cells are transferred to the female to fertilise the egg.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1500,
+      "question": "Who was Roosevelt's presidential hero?",
+      "reference_answer": "Lincoln was Roosevelt's presidential hero.",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        2971
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2971
+      ],
+      "support_quote": "Lincoln was Roosevelt's presidential hero.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 621,
+      "question": "What is the weather like at Lake Volta?",
+      "reference_answer": "Warm and comparatively dry",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        1359
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1359
+      ],
+      "support_quote": "The eastern coastal belt is warm and comparatively dry (see Dahomey Gap); the southwest corner, hot and humid; and the north, hot and dry.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 1169,
+      "question": "What do river otters eat?",
+      "reference_answer": "a variety of fish and shellfish, as well as small land mammals and birds",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        1922
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1922
+      ],
+      "support_quote": "River otters eat a variety of fish and shellfish, as well as small land mammals and birds.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 881,
+      "question": "Four years after opening his shop , Watt began what?",
+      "reference_answer": "Watt began to experiment with steam after his friend, Professor John Robison, called his attention to it.",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        1954
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        1954
+      ],
+      "support_quote": "Four years after opening his shop, Watt began to experiment with steam after his friend, Professor John Robison, called his attention to it.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 301,
+      "question": "How has Canada helped UN peacekeeping efforts?",
+      "reference_answer": "During the Suez Crisis of 1956, Lester B. Pearson eased tensions by proposing the inception of the United Nations Peacekeeping Force. Canada has since served in 50 peacekeeping missions, including every UN peacekeeping effort until 1989",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        2315
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        2315
+      ],
+      "support_quote": "Canada has played a leading role in UN peacekeeping efforts. During the Suez Crisis of 1956, Lester B. Pearson eased tensions by proposing the inception of the United Nations Peacekeeping Force.      Canada has since served in 50 peacekeeping missions, including every UN peacekeeping effort until 1989    ",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 715,
+      "question": "Why did Cleveland want to hide his cancer surgery from the public?",
+      "reference_answer": "To avoid further market panic",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        518
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        518
+      ],
+      "support_quote": "Because of the financial depression of the country, Cleveland decided to have surgery performed on the tumor in secrecy to avoid further market panic.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    },
+    {
+      "source_row_id": 49,
+      "question": "What trail did Lincoln use a Farmers' Almanac in? ",
+      "reference_answer": "he defended William \"Duff\" Armstrong",
+      "answer_type": "free_form",
+      "candidate_passage_ids": [
+        305
+      ],
+      "candidate_count": 1,
+      "disposition": "accepted_manually_verified",
+      "gold_evidence_ids": [
+        305
+      ],
+      "support_quote": "Possibly the most notable criminal trial of Lincoln's career as a lawyer came in 1858, when he defended William \"Duff\" Armstrong, who has been charged with murder.",
+      "review_method": "codex_assisted_manual_review",
+      "reviewer": "codex/gpt-5.6",
+      "review_rationale": "Reviewed the candidate passage against the question; the quoted text directly supports the reference answer.",
+      "verification_status": "manually_verified"
+    }
+  ]
+}

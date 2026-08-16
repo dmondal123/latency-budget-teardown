@@ -11,7 +11,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
 | Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
 | Authoritative measurements | None |
-| Active blocker | G1 approval is pending; T07 must manually verify QA-to-passage mappings before sealed evaluation fixtures can be created |
+| Active blocker | G1 approval of the verified 30-case suite, text-RAG contract, and provisional budgets is pending |
 | Next gate | G1 approval of migrated cases, immutable runtime identity, and numeric budgets |
 
 ## Milestones
@@ -21,7 +21,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M01 | Approve revised ten-hour text-RAG plan | Complete | `RAG_PIPELINE_PLAN.md` |
 | M02 | Pin dataset repository/revision and observed schemas | Complete | `eval/v1/dataset_manifest.json`; both configurations materialized with downloaded-file and normalized-corpus hashes |
 | M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
-| M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
+| M04 | Build and verify 30 text QA cases | Complete | `eval/v1/candidate_ledger.json`, `eval/v1/reviewed_mappings.json`, sealed 24/6 fixtures, and authoritative verifier pass |
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
 | M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
 | M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
@@ -41,7 +41,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
+| P0 | Review the verified 30-case suite and provisional contract at G1 | Explicit G1 approval before baseline |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
 | P1 | Implement BM25 pipeline and request trace schema | Focused tests |
 | P1 | Freeze budgets and quality thresholds at G1 | Explicit approval and contract hash |

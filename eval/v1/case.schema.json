@@ -11,6 +11,9 @@
     "answer_type",
     "gold_evidence_ids",
     "support_quote",
+    "review_method",
+    "reviewer",
+    "review_rationale",
     "expected_abstention",
     "verification_status",
     "holdout"
@@ -28,6 +31,9 @@
       "items": {"type": "integer", "minimum": 0}
       },
     "support_quote": {"type": "string", "minLength": 1},
+    "review_method": {"const": "codex_assisted_manual_review"},
+    "reviewer": {"type": "string", "minLength": 1},
+    "review_rationale": {"type": "string", "minLength": 1},
     "expected_abstention": {"type": "boolean"},
     "verification_status": {"const": "manually_verified"},
     "holdout": {"type": "boolean"}
