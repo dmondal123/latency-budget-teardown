@@ -4,7 +4,7 @@ import types
 import unittest
 from pathlib import Path
 
-from scripts.materialize_dataset import (
+from scripts.ingestion.materialize import (
     CONFIGURATIONS,
     DATASET_REVISION,
     LoadedRows,

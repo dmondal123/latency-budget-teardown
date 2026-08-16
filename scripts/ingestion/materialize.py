@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 """Materialize the pinned text-RAG dataset with reproducible identity records.
 
-The Hugging Face cache is deliberately kept outside the repository.  The
+The Hugging Face cache is deliberately kept outside the repository. The
 manifest records absolute cache paths and hashes so a later run can verify the
 same downloaded inputs without committing the cache itself.
 """
@@ -127,7 +126,7 @@ def load_huggingface(
             cache_dir=str(cache_dir),
             download_config=DownloadConfig(local_files_only=True) if local_files_only else None,
         )
-    except Exception as exc:  # datasets exposes several version-specific exception types
+    except Exception as exc:
         raise MaterializationError(f"failed to load {config}/{split} at revision {revision}: {exc}") from exc
     columns = tuple(str(column) for column in dataset.column_names)
     rows = tuple(dict(row) for row in dataset)
@@ -140,7 +139,7 @@ def materialize(
     loader: Callable[[str, str, Path, str], LoadedRows] = load_huggingface,
     repo_root: Path | None = None,
 ) -> dict[str, Any]:
-    repo_root = (repo_root or Path(__file__).resolve().parents[1]).resolve()
+    repo_root = (repo_root or Path(__file__).resolve().parents[2]).resolve()
     cache_root = cache_root.expanduser().resolve()
     if _inside(cache_root, repo_root):
         raise MaterializationError(f"dataset cache must be outside repository: {cache_root}")
@@ -207,7 +206,7 @@ def write_manifest(manifest: dict[str, Any], path: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    default_repo = Path(__file__).resolve().parents[1]
+    default_repo = Path(__file__).resolve().parents[2]
     parser.add_argument("--cache-root", type=Path, default=Path(os.environ.get("T06_DATASET_CACHE", Path.home() / ".cache" / "week-1-fde" / "datasets")))
     parser.add_argument("--output-root", type=Path, default=default_repo / "artifacts")
     parser.add_argument("--eval-manifest", type=Path, default=default_repo / "eval/v1/dataset_manifest.json")
