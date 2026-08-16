@@ -46,3 +46,31 @@ def select_candidates(
             matches = [identifier for identifier, passage in corpus if answer and answer in passage.casefold()]
             candidates.append({"source_row_id": row["id"], "question": row["question"], "reference_answer": row["answer"], "answer_type": kind, "candidate_passage_ids": matches})
     return candidates
+
+
+def materialize_cases(
+    approved_rows: Iterable[Mapping[str, object]], *, seed: int, sealed_at: str
+) -> tuple[list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    """Create a reproducible split only from rows a human has approved."""
+    rows = [dict(row) for row in approved_rows]
+    if len(rows) != 30:
+        raise ValueError("exactly 30 approved mappings are required")
+    if len({row.get("source_row_id") for row in rows}) != 30:
+        raise ValueError("approved mappings must have unique source row IDs")
+    rng = random.Random(seed)
+    rng.shuffle(rows)
+    holdout_positions = set(range(0, 30, 5))
+    development: list[dict[str, object]] = []
+    holdouts: list[dict[str, object]] = []
+    for ordinal, row in enumerate(rows, 1):
+        case = {
+            "case_id": f"eval-v1-{ordinal:02d}", "source_row_id": row["source_row_id"],
+            "question": row["question"], "reference_answer": row["reference_answer"],
+            "answer_type": row["answer_type"], "gold_evidence_ids": row["gold_evidence_ids"],
+            "support_quote": row["support_quote"], "expected_abstention": False,
+            "verification_status": "manually_verified", "holdout": ordinal - 1 in holdout_positions,
+        }
+        (holdouts if case["holdout"] else development).append(case)
+    manifest = {"suite_id": "text-rag-latency-eval/v1", "status": "sealed", "selection_seed": seed,
+                "sealed_at": sealed_at, "case_ids": [case["case_id"] for case in holdouts]}
+    return development, holdouts, manifest
