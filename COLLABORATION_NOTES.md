@@ -248,3 +248,10 @@ Follow-up:
 - Evidence: focused tests cover cache-only Arrow discovery, content-addressed manifest construction, deterministic BM25 ranking, bounded `SOURCE_N` context admission, and both direct CLIs. The real cached corpus produced 3,200 passages, corpus hash `dbe884c2...0aa728d`, and index snapshot `b4942595...81c6c7`.
 - Learning: a downloader's `local_files_only` flag does not necessarily prevent metadata resolution during builder construction; use a local artifact reader when the measurement contract requires an offline boundary.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Text-RAG package ownership
+
+- Context: user requested a cleaner repository layout after the ingestion/retrieval foundation was completed.
+- Decision: move every new text-RAG command and module into `scripts.ingestion` or `scripts.retrieval`, mirror that split in tests, and deliberately remove top-level compatibility wrappers.
+- Reasoning: the split follows the durable-corpus versus query-time boundary and prevents the current generic `text_rag.py` module from becoming a mixed-responsibility home.
+- `/status` model and token use: unavailable in this API session.
