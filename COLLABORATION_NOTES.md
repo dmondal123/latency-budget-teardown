@@ -235,6 +235,13 @@ Follow-up:
 - Evidence: the removed assertions expected vLLM-Metal, a multimodal schema title, and non-empty retired fixtures, all contrary to the approved text-RAG plan.
 - `/status` model and token use: unavailable in this API session.
 
+## 2026-08-16 — Selective Wave 2 integration
+
+- Context: user requested integration of `codex/wave2-implementation` while preserving this branch's ingestion/retrieval package refactor.
+- Decision: retained the Wave 2 Ollama client, answer validation, and offline evaluation-preparation tooling; excluded its competing retriever, legacy PDF changes, verifier rewrite, and candidate/proposed/sealed fixture JSON.
+- Evidence: the excluded sealed fixture rows claimed manual verification but included unrelated support quotes and duplicated evidence IDs. The retained code was adapted to `scripts.ingestion.materialize` and passes the full suite.
+- `/status` model and token use: unavailable in this API session.
+
 ## 2026-08-16 — Qwen3 model-tag correction and swap gate
 
 - Context: `qwen3:4b` ignored `think=false`; the user identified the separate non-thinking `qwen3:4b-instruct` tag.
