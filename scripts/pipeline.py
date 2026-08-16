@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+import argparse
+import hashlib
+import json
+import os
+import platform
+import sys
+import uuid
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
 from .answer_validation import ValidationResult, validate_answer
-from .ollama_client import OllamaClient
-from .retrieval import BM25Index, assemble_context, retrieve
+from .ollama_client import OllamaClient, OllamaClientError
+from .retrieval import BM25Index, RetrievalError, assemble_context, build_index, retrieve
+from .retrieval.run import load_manifest
 from .telemetry import TelemetryTrace
 
 
@@ -92,3 +100,86 @@ def run_request(
             display(result.text)
     trace.cli_returned()
     return trace.persist_jsonl(trace_path)
+
+
+def _read_object(path: Path, *, description: str) -> dict[str, Any]:
+    with path.open(encoding="utf-8") as handle:
+        value = json.load(handle)
+    if not isinstance(value, dict):
+        raise PipelineError(f"{description} must be a JSON object")
+    return value
+
+
+def _file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _manual_fields(
+    *, manifest: Mapping[str, Any], preflight: Mapping[str, Any], contract_path: Path, run_id: str, trace_id: str,
+    stream_mode: bool, max_tokens: int
+) -> dict[str, Any]:
+    dataset = manifest.get("dataset")
+    identity = preflight.get("identity")
+    if not isinstance(dataset, Mapping) or not isinstance(identity, Mapping):
+        raise PipelineError("manifest dataset and preflight identity are required")
+    if preflight.get("think") is not False:
+        raise PipelineError("preflight must prove thinking is disabled")
+    repository, revision = dataset.get("repository"), dataset.get("revision")
+    model_digest, ollama_version = identity.get("model_digest"), identity.get("ollama_version")
+    if not all(isinstance(value, str) and value for value in (repository, revision, model_digest, ollama_version)):
+        raise PipelineError("manual query provenance is incomplete")
+    return {
+        "run_id": run_id, "trace_id": trace_id, "case_id": trace_id, "source_row_id": "manual-query",
+        "condition_id": f"manual_{'streamed' if stream_mode else 'buffered'}_{max_tokens}", "repetition": 1, "attempt": 1,
+        "answer_type": "manual", "holdout": False, "server_state": "manual", "cache_state": "off",
+        "dataset_repo": repository, "dataset_revision": revision, "corpus_hash": manifest.get("corpus_hash"),
+        "index_snapshot": manifest.get("index_snapshot"), "model_tag": preflight.get("model", "qwen3:4b-instruct"),
+        "model_digest": model_digest, "think_mode": False, "ollama_version": ollama_version,
+        "prompt_hash": hashlib.sha256(b"scripts.pipeline._prompt/v1").hexdigest(), "contract_hash": _file_hash(contract_path),
+        "python_version": platform.python_version(), "macos_build": platform.platform(), "chip": platform.machine(),
+        "ram_bytes": os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES"), "power_mode": "manual-query",
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Run one local, validated RAG query and print only the accepted model JSON."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--question", required=True)
+    parser.add_argument("--preflight", type=Path, default=Path("artifacts/ollama_preflight.v1.json"))
+    parser.add_argument("--contract", type=Path, default=Path("contracts/behavioral_contract.v1.json"))
+    parser.add_argument("--output-dir", type=Path, default=Path("artifacts/manual-queries"))
+    parser.add_argument("--stream", action="store_true")
+    parser.add_argument("--max-tokens", type=int, default=256)
+    parser.add_argument("--retrieve-k", type=int, default=20)
+    parser.add_argument("--admitted-top-k", type=int, default=5)
+    parser.add_argument("--character-budget", type=int, default=12_000)
+    args = parser.parse_args(argv)
+    run_id, trace_id = f"manual-{uuid.uuid4().hex}", f"trace-{uuid.uuid4().hex}"
+    try:
+        manifest = load_manifest(args.manifest)
+        preflight = _read_object(args.preflight, description="preflight")
+        index = build_index(manifest)
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        fields = _manual_fields(
+            manifest=manifest, preflight=preflight, contract_path=args.contract, run_id=run_id, trace_id=trace_id,
+            stream_mode=args.stream, max_tokens=args.max_tokens,
+        )
+        row = run_request(
+            question=args.question, index=index, client=OllamaClient(), raw_fields=fields,
+            trace_path=args.output_dir / f"{trace_id}.trace.jsonl", validation_path=args.output_dir / f"{trace_id}.validation.jsonl",
+            stream_mode=args.stream, max_tokens=args.max_tokens, retrieve_k=args.retrieve_k,
+            admitted_top_k=args.admitted_top_k, character_budget=args.character_budget,
+        )
+    except (OSError, json.JSONDecodeError, RetrievalError, OllamaClientError, PipelineError, ValueError) as exc:
+        print(f"query blocked: {exc}", file=sys.stderr)
+        return 2
+    if not row["scores"]["validation_valid"]:
+        print(f"query rejected by validation: {', '.join(row['fatal_gates'])}", file=sys.stderr)
+        return 3
+    print(row["raw_output"])
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -48,6 +48,15 @@ The following foundation commands are available from the repository root:
 .venv/bin/python -m scripts.retrieval.run --help
 ```
 
+Run one full, local, citation-validated query (its ad-hoc trace files are kept out of version control):
+
+```bash
+.venv/bin/python -m scripts.pipeline \
+  --manifest artifacts/text_evidence_manifest.v1.json \
+  --question "Did Lincoln sign the National Banking Act of 1863?" \
+  --stream
+```
+
 The environment check validates the captured Ollama `0.32.13` identity and the
 immutable `qwen3:4b-instruct` digest recorded in
 `environment/manifest.v1.json`.
