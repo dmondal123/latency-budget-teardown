@@ -12,6 +12,7 @@ node_modules/
 logs/spend.csv
 logs/context-ledger/
 .ctx/
+.worktrees/
 
 documents/
 core-codex-3.1.9-2026-08-13/
