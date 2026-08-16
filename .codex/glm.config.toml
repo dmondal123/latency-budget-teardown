@@ -1,0 +1,11 @@
+model = "nvidia-glm"
+model_provider = "nvidia-nim-local"
+
+[model_providers.nvidia-nim-local]
+name = "NVIDIA NIM GLM Proxy"
+base_url = "http://localhost:4000"
+env_key = "NVIDIA_API_KEY"
+wire_api = "responses"
+inherit = "all"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"

@@ -1,0 +1,14 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - git status *
+            - echo *
+            - git diff *
+            - ls *
+            - head *
+            - grep *
+            - .venv/bin/python *
+            - sed *
+            - git show *
+            - tail *

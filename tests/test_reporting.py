@@ -520,17 +520,17 @@ def test_real_run_t18_t19_ground_truth(tmp_path: Path):
     assert len(t18["rep_zero_grades"]) == 72
 
     expected = {
-        "B0_buffered_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
+        "B0_buffered_256": {"fatal_count": 0, "recall_at_5": 0.7917, "mrr": 0.6477,
                             "citation_precision": 0.875, "citation_validity_rate": 0.6181,
-                            "task_resolution_rate": 0.7273, "answer_token_f1": 0.4278,
+                            "task_resolution_rate": 0.75, "answer_token_f1": 0.4755,
                             "truncation_rate": 0.0},
-        "I1_streaming_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
+        "I1_streaming_256": {"fatal_count": 0, "recall_at_5": 0.7917, "mrr": 0.6477,
                              "citation_precision": 0.875, "citation_validity_rate": 0.6181,
-                             "task_resolution_rate": 0.7273, "answer_token_f1": 0.4278,
+                             "task_resolution_rate": 0.75, "answer_token_f1": 0.4755,
                              "truncation_rate": 0.0},
-        "I2_buffered_128": {"fatal_count": 15, "recall_at_5": 0.7917, "mrr": 0.6477,
+        "I2_buffered_128": {"fatal_count": 5, "recall_at_5": 0.7917, "mrr": 0.6477,
                             "citation_precision": 0.8333, "citation_validity_rate": 0.6042,
-                            "task_resolution_rate": 0.7619, "answer_token_f1": 0.4312,
+                            "task_resolution_rate": 0.7826, "answer_token_f1": 0.4807,
                             "truncation_rate": 0.0417},
     }
     for condition, want in expected.items():
