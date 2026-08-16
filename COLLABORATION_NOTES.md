@@ -271,6 +271,13 @@ Follow-up:
 - Learning: evaluators must validate the same durable evidence contract the materializer emits; status labels and schema validity alone do not prove replayability.
 - `/status` model and token use: unavailable in this API session.
 
+## 2026-08-16 — G1 measurement-contract approval
+
+- Human decision: approved the verified 30-case suite, pinned text-RAG contract, and provisional latency/quality thresholds for baseline work.
+- Evidence: explicit user message “g1 approved”; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` now record `g1_approved`.
+- Consequence: T16’s approval prerequisite is met, although C03/C04 and their implementation dependencies still block authoritative measurement.
+- `/status` model and token use: unavailable in this API session.
+
 ## 2026-08-16 — Offline text-corpus ingestion boundary
 
 - Context: implementing the approved text-RAG ingestion and BM25 retrieval foundation.

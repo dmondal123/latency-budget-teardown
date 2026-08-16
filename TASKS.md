@@ -45,6 +45,7 @@ Dataset evaluation and retrieval implementation run in parallel after `C01`.
 - [x] **T11 [PAR-B; 0:45–2:15; depends: C01]** Implement the Ollama NDJSON client, buffered/streamed display, validation, abstention, timeout/error handling, and focused tests.
 - [x] **T11a [SEQ; depends: T09a]** Selectively integrate the Wave 2 Ollama client, deterministic answer validation, and offline evaluation-preparation tooling without importing its competing retriever or unverified fixture data.
 - [x] **C02 [GATE; at 2:00; depends: T08, T09]** Confirmed 30 verified mappings, sealed 24/6 split, reproducible corpus/index hashes, and working BM25 retrieval.
+- [x] **G1 [human approval]** Approved the verified text-RAG case suite, frozen behavioral contract, and provisional latency/quality thresholds before baseline work.
 
 Checkpoint action: if `C02` fails, do not fabricate evidence or unseal holdouts. Drop optional diagnostics and escalate the missing mapping/index evidence immediately.
 

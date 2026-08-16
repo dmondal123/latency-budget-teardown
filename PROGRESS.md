@@ -6,13 +6,13 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Wave 1 preflight is complete; C01 passed |
-| Current phase | Wave 2 evidence and pipeline foundations |
+| Overall state | Wave 2 evidence and pipeline foundations are complete; C02 and G1 passed |
+| Current phase | Wave 3 instrumentation and integration |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
 | Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
 | Authoritative measurements | None |
-| Active blocker | G1 approval of the verified 30-case suite, text-RAG contract, and provisional budgets is pending |
-| Next gate | G1 approval of migrated cases, immutable runtime identity, and numeric budgets |
+| Active blocker | T12/T13/T14 implementation is required before C03; no approval blocker is active |
+| Next gate | C03 complete raw trace and arithmetic verification |
 
 ## Milestones
 
@@ -20,7 +20,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | --- | --- | --- | --- |
 | M01 | Approve revised ten-hour text-RAG plan | Complete | `RAG_PIPELINE_PLAN.md` |
 | M02 | Pin dataset repository/revision and observed schemas | Complete | `eval/v1/dataset_manifest.json`; both configurations materialized with downloaded-file and normalized-corpus hashes |
-| M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
+| M03 | Migrate behavioral contract and thresholds | Complete | G1-approved JSON contracts and frozen provisional thresholds |
 | M04 | Build and verify 30 text QA cases | Complete | `eval/v1/candidate_ledger.json`, `eval/v1/reviewed_mappings.json`, sealed 24/6 fixtures, and authoritative verifier pass |
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
 | M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
@@ -32,7 +32,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Gate | Reviewer must inspect | Acceptance condition | Status |
 | --- | --- | --- | --- |
-| G1 measurement contract | Dataset/evidence mappings, contract, thresholds, Ollama/model identity | Explicit approval before baseline | Pending |
+| G1 measurement contract | Dataset/evidence mappings, contract, thresholds, Ollama/model identity | Explicit approval before baseline | Approved 2026-08-16 |
 | G2 baseline integrity | Trace completeness, stage arithmetic, aligned waterfalls, marginal labels | Explicit approval before intervention decisions | Pending |
 | G3 intervention decisions | Single deltas, intervals, quality/truncation effects | Explicit accept/reject per condition | Pending |
 | G4 final delivery | Raw-to-report traceability, reproduction log, archive contents | Explicit final approval | Pending |
@@ -41,10 +41,10 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Review the verified 30-case suite and provisional contract at G1 | Explicit G1 approval before baseline |
+| P0 | Implement request-stage spans and raw trace persistence | T12 focused arithmetic tests |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
 | P1 | Implement BM25 pipeline and request trace schema | Focused tests |
-| P1 | Freeze budgets and quality thresholds at G1 | Explicit approval and contract hash |
+| P1 | Add evaluation, grading, and waterfall fixture tests | T13 focused tests |
 
 ## Risks
 

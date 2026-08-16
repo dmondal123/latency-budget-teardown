@@ -51,16 +51,17 @@ def validate_contract(contract: dict[str, Any], thresholds: dict[str, Any]) -> l
     """Reject stale contracts and require the frozen text-RAG promotion boundary."""
 
     errors: list[str] = []
-    if contract.get("status") != "draft_pending_g1_approval":
-        errors.append("contract status must remain draft_pending_g1_approval before G1")
+    allowed_statuses = {"draft_pending_g1_approval", "g1_approved"}
+    if contract.get("status") not in allowed_statuses:
+        errors.append("contract status must be draft_pending_g1_approval or g1_approved")
+    if thresholds.get("status") != contract.get("status"):
+        errors.append("threshold and contract statuses must match")
     if not contract.get("may") or not contract.get("must_not"):
         errors.append("contract must define non-empty may and must_not boundaries")
     if not contract.get("fatal_gates") or not contract.get("quality_dimensions"):
         errors.append("contract must define fatal gates and quality dimensions")
     if contract.get("approval_gate") != "G1":
         errors.append("contract approval gate must be G1")
-    if thresholds.get("status") != "draft_pending_g1_approval":
-        errors.append("threshold status must remain draft_pending_g1_approval before G1")
     if thresholds.get("owner") != contract.get("owner"):
         errors.append("threshold and contract owners must match")
     try:

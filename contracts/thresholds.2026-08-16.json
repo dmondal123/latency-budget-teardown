@@ -1,6 +1,7 @@
 {
   "threshold_set_id": "latency-budget-teardown/2026-08-16",
-  "status": "draft_pending_g1_approval",
+  "status": "g1_approved",
+  "approved_on": "2026-08-16",
   "owner": "dmondal",
   "frozen_on": "2026-08-16",
   "change_policy": "A threshold change requires separate human review and cannot share a comparison with an intervention change.",

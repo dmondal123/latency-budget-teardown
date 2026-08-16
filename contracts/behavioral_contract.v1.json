@@ -1,7 +1,8 @@
 {
   "contract_id": "text-rag-latency/v1",
   "version": 1,
-  "status": "draft_pending_g1_approval",
+  "status": "g1_approved",
+  "approved_on": "2026-08-16",
   "owner": "dmondal",
   "scope": "Local answers grounded in admitted rag-mini-wikipedia passages with deterministic citation validation.",
   "may": [

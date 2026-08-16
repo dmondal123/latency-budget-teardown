@@ -148,3 +148,12 @@ def test_validate_contract_rejects_retired_pdf_and_multimodal_terms():
     errors = validate_contract(contract, thresholds)
 
     assert any("retired" in error for error in errors)
+
+
+def test_validate_contract_accepts_g1_approved_frozen_contract():
+    contract = text_rag_contract()
+    thresholds = text_rag_thresholds()
+    contract["status"] = "g1_approved"
+    thresholds["status"] = "g1_approved"
+
+    assert validate_contract(contract, thresholds) == []
