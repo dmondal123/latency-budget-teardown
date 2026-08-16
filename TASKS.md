@@ -33,7 +33,7 @@ Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker.
 
 ## Wave 2 — Evidence and pipeline foundations (0:45–2:15)
 
-- [x] **T09a [SEQ; depends: T10]** Refactor the completed text-RAG ingestion and retrieval foundation into dedicated `scripts/ingestion` and `scripts/retrieval` packages, with mirrored focused tests and no legacy command wrappers.
+- [ ] **T09a [SEQ; depends: T10]** Refactor the completed text-RAG ingestion and retrieval foundation into dedicated `scripts/ingestion` and `scripts/retrieval` packages, with mirrored focused tests and no legacy command wrappers.
 
 Dataset evaluation and retrieval implementation run in parallel after `C01`.
 
