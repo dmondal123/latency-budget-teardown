@@ -5,7 +5,7 @@ import json
 
 import pyarrow as pa
 
-from scripts.prepare_eval import classify_answer, load_arrow_rows, materialize_cases, select_candidates, write_candidate_ledger
+from scripts.prepare_eval import choose_support_mappings, classify_answer, load_arrow_rows, materialize_cases, select_candidates, write_candidate_ledger
 
 
 def test_selection_is_seeded_and_never_uses_a_qa_id_as_passage_id():
@@ -61,3 +61,12 @@ def test_offline_arrow_loader_and_ledger_writer_do_not_need_a_dataset_service(tm
     ledger = tmp_path / "ledger.json"
     write_candidate_ledger(ledger, [{"source_row_id": 9, "candidate_passage_ids": [1]}])
     assert json.loads(ledger.read_text())["candidates"][0]["candidate_passage_ids"] == [1]
+
+
+def test_support_selector_returns_an_exact_quote_from_a_candidate_passage():
+    proposal = choose_support_mappings(
+        [{"source_row_id": 1, "question": "Where is Paris?", "reference_answer": "Paris", "candidate_passage_ids": [2]}],
+        [{"id": 2, "passage": "Paris is the capital of France. It is in Europe."}],
+    )[0]
+    assert proposal["gold_evidence_ids"] == [2]
+    assert proposal["support_quote"] == "Paris is the capital of France."

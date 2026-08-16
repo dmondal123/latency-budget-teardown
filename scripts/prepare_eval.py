@@ -26,6 +26,21 @@ def write_candidate_ledger(path: Path, candidates: Iterable[Mapping[str, object]
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def choose_support_mappings(candidates: Iterable[Mapping[str, object]], corpus_rows: Iterable[Mapping[str, object]]) -> list[dict[str, object]]:
+    """Propose one answer-bearing sentence per candidate; humans approve it later."""
+    passages = {row["id"]: normalize_text(str(row["passage"])) for row in corpus_rows}
+    proposals = []
+    for candidate in candidates:
+        answer = normalize_text(str(candidate["reference_answer"]))
+        choices = [(identifier, passages[identifier]) for identifier in candidate["candidate_passage_ids"] if identifier in passages and answer.casefold() in passages[identifier].casefold()]
+        if not choices:
+            continue
+        identifier, passage = min(choices, key=lambda item: (len(item[1]), item[0]))
+        sentence = next((part.strip() for part in re.split(r"(?<=[.!?])\s+", passage) if answer.casefold() in part.casefold()), passage)
+        proposals.append({**dict(candidate), "gold_evidence_ids": [identifier], "support_quote": sentence, "verification_status": "proposed_manual_review"})
+    return proposals
+
+
 def classify_answer(answer: str) -> str:
     value = normalize_text(answer)
     if value.casefold() in {"yes", "no", "true", "false"}:
