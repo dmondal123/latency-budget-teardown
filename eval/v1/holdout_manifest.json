@@ -1,5 +1,7 @@
 {
-  "suite_id": "multimodal-rag-latency-eval/v1",
-  "sealed_at": "2026-08-16",
-  "case_ids": ["eval-v1-09", "eval-v1-10", "eval-v1-19", "eval-v1-20", "eval-v1-29", "eval-v1-30"]
+  "suite_id": "text-rag-latency-eval/v1",
+  "status": "pending_case_materialization",
+  "selection_seed": 20260816,
+  "sealed_at": null,
+  "case_ids": []
 }
