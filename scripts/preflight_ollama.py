@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 import urllib.error
@@ -95,8 +96,9 @@ def model_digest(base_url: str, model: str, timeout: float) -> str:
     for item in tags.get("models", []):
         if item.get("name") == model and item.get("digest"):
             digest = str(item["digest"])
-            if digest.startswith("sha256:"):
-                return digest
+            bare_digest = digest.removeprefix("sha256:")
+            if re.fullmatch(r"[0-9a-fA-F]{64}", bare_digest):
+                return f"sha256:{bare_digest.lower()}"
     raise PreflightError("digest_missing", f"no immutable sha256 digest found for {model}")
 
 

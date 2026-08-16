@@ -123,6 +123,24 @@ Evidence: `scripts/lock_install.py`, `artifacts/lock.v1.json`, `scripts/prefligh
 
 Preventive rule: External preflight tasks may be implemented in parallel, but their completion checkboxes stay open until the captured identity and materialization evidence actually exists.
 
+### C008: Ollama digest-format correction
+
+Date: 2026-08-16
+Participants: Human, Codex
+Type: Agent correction
+Related commit: pending
+`/status` model and token use: unavailable in this API session.
+
+Context: The Ollama host returned version `0.32.13`, a successful `qwen3:4b` pull, and digest `359d7dd4...74fae7` from `/api/tags`.
+
+What was wrong: The preflight accepted only a digest prefixed with `sha256:`, while Ollama returned the valid digest as bare 64-character hexadecimal text. The original test fixture also used invalid `sha256:abc` data.
+
+Correction: Normalize valid bare or prefixed SHA-256 values to lowercase `sha256:<digest>` and use a real 64-hex fixture. The host artifact remains blocked until the corrected script is rerun because this environment cannot access the host’s Ollama service.
+
+Evidence: `scripts/preflight_ollama.py`, `tests/test_ollama_preflight.py`, user-provided `/api/tags` output, and focused test result `7 passed`.
+
+Preventive rule: Validate external API identity formats against observed provider output and use structurally valid fixtures, not abbreviated placeholders.
+
 ## Entry template
 
 ```markdown

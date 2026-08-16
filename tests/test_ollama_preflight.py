@@ -22,11 +22,21 @@ def test_endpoint_must_be_loopback_http():
 
 
 def test_digest_requires_sha256(monkeypatch):
-    monkeypatch.setattr("scripts.preflight_ollama.http_json", lambda *args: {"models": [{"name": "qwen3:4b", "digest": "sha256:abc"}]})
-    assert model_digest("http://127.0.0.1:11434", "qwen3:4b", 1) == "sha256:abc"
+    digest = "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7"
+    monkeypatch.setattr("scripts.preflight_ollama.http_json", lambda *args: {"models": [{"name": "qwen3:4b", "digest": f"sha256:{digest}"}]})
+    assert model_digest("http://127.0.0.1:11434", "qwen3:4b", 1) == f"sha256:{digest}"
     monkeypatch.setattr("scripts.preflight_ollama.http_json", lambda *args: {"models": [{"name": "qwen3:4b", "digest": None}]})
     with pytest.raises(PreflightError, match="digest"):
         model_digest("http://127.0.0.1:11434", "qwen3:4b", 1)
+
+
+def test_digest_normalizes_ollama_bare_sha256_value(monkeypatch):
+    bare_digest = "359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7"
+    monkeypatch.setattr(
+        "scripts.preflight_ollama.http_json",
+        lambda *args: {"models": [{"name": "qwen3:4b", "digest": bare_digest}]},
+    )
+    assert model_digest("http://127.0.0.1:11434", "qwen3:4b", 1) == f"sha256:{bare_digest}"
 
 
 def test_reasoning_leakage_is_observable_only():
