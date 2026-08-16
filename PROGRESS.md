@@ -6,12 +6,12 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Wave 1 preflight tooling implemented; C01 blocked by unavailable external artifacts |
-| Current phase | G1 dataset/eval/runtime migration and preflight |
+| Overall state | Wave 1 preflight is complete; C01 passed |
+| Current phase | Wave 2 evidence and pipeline foundations |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
 | Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
 | Authoritative measurements | None |
-| Active blocker | Ollama is unavailable and pinned dataset materialization is blocked because `datasets` is unavailable; exact runtime/dataset hashes are not captured |
+| Active blocker | G1 approval is pending; T07 must manually verify QA-to-passage mappings before sealed evaluation fixtures can be created |
 | Next gate | G1 approval of migrated cases, immutable runtime identity, and numeric budgets |
 
 ## Milestones
@@ -19,7 +19,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | ID | Milestone | Status | Evidence |
 | --- | --- | --- | --- |
 | M01 | Approve revised ten-hour text-RAG plan | Complete | `RAG_PIPELINE_PLAN.md` |
-| M02 | Pin dataset repository/revision and observed schemas | In progress | `eval/v1/dataset_manifest.json`; materialization blocked, hashes pending |
+| M02 | Pin dataset repository/revision and observed schemas | Complete | `eval/v1/dataset_manifest.json`; both configurations materialized with downloaded-file and normalized-corpus hashes |
 | M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
 | M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
@@ -41,7 +41,6 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification; tooling is ready, materialization blocked |
 | P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
 | P1 | Implement BM25 pipeline and request trace schema | Focused tests |

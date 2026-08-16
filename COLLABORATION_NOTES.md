@@ -234,3 +234,9 @@ Follow-up:
 - Evidence: regenerated `artifacts/ollama_preflight.v1.json` passed with `qwen3:4b-instruct`, digest `sha256:0edcdef...f168ba0`, buffered/streaming final-text parity, and nine 250 ms swap samples with a zero-byte maximum.
 - Decision: T05 is complete; C01 remains blocked only by T06 dataset materialization.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Dataset materialization cleared C01
+
+- Evidence: `datasets==5.0.1` in the project environment materialized the pinned corpus (3,200 passages) and QA split (918 rows); both downloaded-file and normalized-corpus hashes are recorded in `artifacts/dataset_materialization.v1.json`.
+- Decision: T06 and C01 are complete. The next dependency is T07's manual QA-to-passage verification, not further runtime setup.
+- `/status` model and token use: unavailable in this API session.

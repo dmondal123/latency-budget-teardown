@@ -26,8 +26,8 @@ These three lanes start together.
 
 - [x] **T04 [PAR-A; 0:00–0:30; depends: T03]** Lock installs under Python 3.12. Regenerate `requirements.txt` from `requirements.in`; prove the lock is installable. Evidence: `artifacts/lock.v1.json`.
 - [x] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pulled `qwen3:4b-instruct`; captured Ollama `0.32.13` and digest `sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0`; buffered/streaming smoke passed with thinking disabled and zero sustained swap. Evidence: `artifacts/ollama_preflight.v1.json`.
-- [ ] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialize both pinned dataset configurations and record downloaded-file and normalized-corpus hashes. Tooling and truthful blocked artifact added; `datasets` is unavailable in this environment.
-- [ ] **C01 [GATE; at 0:45; depends: T04, T05, T06]** Confirm installable lock, expected dataset schemas, immutable model/runtime identity, valid NDJSON streaming, and no sustained swap.
+- [x] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialized `text-corpus/passages` (3,200 rows; normalized SHA-256 `dbe884c2...0aa728d`) and `question-answer/test` (918 rows; normalized SHA-256 `ba2cdffb...5569a38`) at the pinned revision. Evidence: `artifacts/dataset_materialization.v1.json`.
+- [x] **C01 [GATE; at 0:45; depends: T04, T05, T06]** Confirmed installable lock, expected dataset schemas, immutable model/runtime identity, valid NDJSON streaming, and no sustained swap.
 
 Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker. Do not silently change the dataset, runtime, model tag, digest, or thinking mode.
 

@@ -2,35 +2,64 @@
   "cache_root": "/private/tmp/t06-dataset-cache",
   "configurations": [
     {
-      "columns": null,
+      "columns": [
+        "passage",
+        "id"
+      ],
       "config": "text-corpus",
-      "downloaded_files": [],
-      "error": "datasets tooling is unavailable; install requirements.txt (or run in the Python 3.12 environment)",
+      "downloaded_files": [
+        {
+          "path": "/private/tmp/t06-dataset-cache/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
+          "sha256": "39a22e4d0e15972a2f21f4e7dfbc682ddc79d266925443396cc1b1628c5eff84",
+          "size_bytes": 546
+        },
+        {
+          "path": "/private/tmp/t06-dataset-cache/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-passages.arrow",
+          "sha256": "45a9478428f97514fbb0671b58056f491232c61f341658e864da6e4a2d4436ad",
+          "size_bytes": 1290328
+        }
+      ],
+      "error": null,
       "expected_schema": {
         "id": "integer",
         "passage": "string"
       },
-      "normalized_corpus_sha256": null,
-      "row_count": null,
+      "normalized_corpus_sha256": "dbe884c22ac0f787287767d5447b18f4172c8ed3e7dd68237206c201d0aa728d",
+      "row_count": 3200,
       "source_revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
       "split": "passages",
-      "status": "blocked"
+      "status": "materialized"
     },
     {
-      "columns": null,
+      "columns": [
+        "question",
+        "answer",
+        "id"
+      ],
       "config": "question-answer",
-      "downloaded_files": [],
-      "error": "datasets tooling is unavailable; install requirements.txt (or run in the Python 3.12 environment)",
+      "downloaded_files": [
+        {
+          "path": "/private/tmp/t06-dataset-cache/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
+          "sha256": "a82e48c16956288068cb9115526fdcb70032e7fc635da5678177843f6bffa221",
+          "size_bytes": 585
+        },
+        {
+          "path": "/private/tmp/t06-dataset-cache/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-test.arrow",
+          "sha256": "143701101b3afa04a9cf7ca939232825ede49004b0800656750cef8a093dfcea",
+          "size_bytes": 81800
+        }
+      ],
+      "error": null,
       "expected_schema": {
         "answer": "string",
         "id": "integer",
         "question": "string"
       },
-      "normalized_corpus_sha256": null,
-      "row_count": null,
+      "normalized_corpus_sha256": "ba2cdffb7b70d37b43780cc8a48ee377809d9d7a74fabf06478d14b0e5569a38",
+      "row_count": 918,
       "source_revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
       "split": "test",
-      "status": "blocked"
+      "status": "materialized"
     }
   ],
   "dataset": {
@@ -39,9 +68,9 @@
     "revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6"
   },
   "normalized_corpus_hashes": {
-    "question-answer": null,
-    "text-corpus": null
+    "question-answer": "ba2cdffb7b70d37b43780cc8a48ee377809d9d7a74fabf06478d14b0e5569a38",
+    "text-corpus": "dbe884c22ac0f787287767d5447b18f4172c8ed3e7dd68237206c201d0aa728d"
   },
   "schema_version": "dataset-materialization.v1",
-  "status": "blocked"
+  "status": "materialized"
 }
