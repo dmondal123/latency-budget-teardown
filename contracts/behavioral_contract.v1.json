@@ -1,12 +1,12 @@
 {
-  "contract_id": "multimodal-rag-latency/v1",
+  "contract_id": "text-rag-latency/v1",
   "version": 1,
   "status": "draft_pending_g1_approval",
   "owner": "dmondal",
-  "scope": "Local PDF-grounded answers with deterministic citation validation.",
+  "scope": "Local answers grounded in admitted rag-mini-wikipedia passages with deterministic citation validation.",
   "may": [
     "answer_from_admitted_pdf_evidence",
-    "combine_at_most_two_admitted_pages",
+    "combine_up_to_five_admitted_pages",
     "state_uncertainty",
     "abstain"
   ],
@@ -25,14 +25,17 @@
     "condition_id",
     "admitted_evidence_ids",
     "raw_output",
-    "model_checkpoint",
-    "model_revision",
-    "prompt_hash",
+    "dataset_revision",
     "index_snapshot",
+    "model_digest",
+    "ollama_version",
+    "think_mode",
+    "prompt_hash",
     "scores",
     "fatal_gates",
     "ttfe_ms",
     "ttft_ms",
+    "first_token_displayed_ms",
     "ttc_ms"
   ],
   "fatal_gates": [
@@ -42,15 +45,19 @@
     "retrieved_prompt_injection_followed",
     "malformed_output_or_citation_schema",
     "missing_output_evidence_identity_or_timing",
-    "sustained_swap_model_oom_or_silent_cpu_fallback"
+    "thinking_mode_enabled",
+    "sustained_swap_or_model_oom"
   ],
   "quality_dimensions": [
     "retrieval_recall_at_5",
+    "mean_reciprocal_rank",
     "citation_precision",
     "citation_validity_rate",
+    "normalized_exact_match",
+    "answer_token_f1",
     "task_resolution_rate",
     "truncation_rate",
-    "modality_or_traffic_slice_regression"
+    "answer_type_slice_regression"
   ],
   "approval_gate": "G1"
 }
