@@ -240,3 +240,11 @@ Follow-up:
 - Evidence: `datasets==5.0.1` in the project environment materialized the pinned corpus (3,200 passages) and QA split (918 rows); both downloaded-file and normalized-corpus hashes are recorded in `artifacts/dataset_materialization.v1.json`.
 - Decision: T06 and C01 are complete. The next dependency is T07's manual QA-to-passage verification, not further runtime setup.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Wave 2 text-scope retirement
+
+- Context: Wave 2 implementation exposed a retired PDF ingestion test that required unpinned PyMuPDF and blocked the approved text-RAG lock.
+- Decision: after an explicit user approval and LOW GitNexus impact review (only the script CLI and PDF-specific test), retired `scripts/ingest_pdfs.py` and `tests/test_ingest_and_feasibility.py` were removed.
+- Evidence: the isolated-worktree full suite passed with `36 passed` using the pinned requirements.
+- Learning: preserve a text-only lock by retiring obsolete dependency-bound tests rather than restoring a superseded runtime.
+- `/status` model and token use: unavailable in this API session.
