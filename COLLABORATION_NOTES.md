@@ -259,3 +259,4 @@ Follow-up:
 
 - Decision: Ollama was used for the local text-RAG study because the available time did not support completing and validating the alternative runtime path.
 - Consequence: the study scope, preflight, and benchmark tooling remain limited to Ollama `qwen3:4b-instruct`.
+- `/status` model and token use: unavailable in this API session.
