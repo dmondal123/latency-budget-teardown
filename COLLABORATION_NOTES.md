@@ -218,6 +218,13 @@ Follow-up:
 
 - Context: final review of the automated M05 result aggregation.
 - Correction: a failed exploratory higher memory fraction is retained as evidence but does not fail M05 when a lower fraction passes and is selected. The final gate still requires the selected fraction plus cache and concurrency conditions to pass.
+
+## 2026-08-16 — text-RAG package layout finalized
+
+- Context: completed the T09a package-layout cleanup after ingestion and retrieval moved into dedicated packages.
+- Decision: keep `scripts.ingestion` and `scripts.retrieval` as the only supported text-RAG entrypoints, retain `scripts.legacy.retrieval` unchanged for legacy behavior, and remove all retired top-level wrapper paths from validation-facing docs and tests.
+- Evidence: `tests/retrieval/test_cli.py`, `docs/superpowers/plans/2026-08-16-text-rag-package-layout.md`, and the T09a validation commands.
+- `/status` model and token use: unavailable in this API session.
 - Evidence: focused acceptance test and the full `.venv/bin/python -m pytest -q` suite.
 - `/status` model and token use: unavailable in this API session.
 

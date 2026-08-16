@@ -13,7 +13,7 @@
 - Preserve the pinned `rag-datasets/rag-mini-wikipedia` revision and the offline Arrow-cache ingestion boundary.
 - Preserve text-evidence manifest schema `text-evidence-manifest.v1`, durable `passage:<id>` evidence IDs, SHA-256 hashes, and deterministic index snapshots.
 - Preserve the frozen BM25 parameters `k1=1.2`, `b=0.75`, retrieval default `retrieve_k=20`, context default `admitted_top_k=5`, and character budget `12_000`.
-- Do not create compatibility wrappers at `scripts/ingest_corpus.py`, `scripts/retrieve.py`, or `scripts/text_rag.py`.
+- Do not recreate the retired top-level ingestion or retrieval wrappers; use package entrypoints only.
 - Move the legacy PDF/multimodal `scripts/retrieval.py` module unchanged to `scripts/legacy/retrieval.py`, with its matching tests and imports, to free the `scripts.retrieval` package name. Leave every other legacy PDF/multimodal script and test unchanged.
 - Run module commands with `python -m scripts.ingestion.run` and `python -m scripts.retrieval.run`.
 
@@ -30,7 +30,7 @@
 - Create: `tests/ingestion/test_corpus.py`
 - Modify: `tests/test_text_rag.py` (remove only the ingestion-specific cases)
 - Delete: `scripts/materialize_dataset.py`
-- Delete: `scripts/ingest_corpus.py`
+- Delete: the retired top-level ingestion wrapper
 
 **Interfaces:**
 - Consumes: cached `rag-mini-wikipedia-passages.arrow` and `artifacts/dataset_materialization.v1.json`.
@@ -89,8 +89,8 @@ git commit -m "refactor(ingestion): group text corpus modules"
 - Move: `scripts/retrieval.py` → `scripts/legacy/retrieval.py`
 - Move: `tests/test_retrieval.py` → `tests/legacy/test_retrieval.py`
 - Modify: remaining `tests/test_text_rag.py` → `tests/retrieval/test_bm25.py`, `tests/retrieval/test_context.py`, and `tests/retrieval/test_cli.py`
-- Delete: `scripts/retrieve.py`
-- Delete: `scripts/text_rag.py`
+- Delete: the retired top-level retrieval wrapper
+- Delete: the retired top-level text-RAG wrapper
 
 **Interfaces:**
 - Consumes: `text-evidence-manifest.v1` manifests.
@@ -157,9 +157,8 @@ git commit -m "refactor(retrieval): group BM25 context modules"
 - [ ] **Step 1: Write a negative path test for removed commands**
 
 ```python
-assert not (repo_root / "scripts" / "ingest_corpus.py").exists()
-assert not (repo_root / "scripts" / "retrieve.py").exists()
-assert not (repo_root / "scripts" / "text_rag.py").exists()
+for path in retired_paths:
+    assert not path.exists()
 ```
 
 - [ ] **Step 2: Remove the retired text-RAG paths and update references**
