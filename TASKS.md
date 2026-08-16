@@ -13,6 +13,7 @@ Use at most three implementation lanes plus one integration owner. The integrati
 
 - [x] Reformat the OCR-scanned `TASKS.md` and `RAG_PIPELINE_PLAN.md`, removing accidental duplicate fragments while preserving meaning.
 - [x] Reformat the OCR-scanned `ARCHITECTURE.md`, `CONTEXT.md`, and `PROGRESS.md`, preserving meaning and Markdown structure.
+- [x] Migrate the environment manifest from the retired multimodal runtime to the approved text-RAG dataset and Ollama contract.
 - [x] **T01 [SEQ]** Approve the text-only Hugging Face/Ollama scope and ten-hour design.
 - [x] **T02 [SEQ; depends: T01]** Pin the Hugging Face dataset repository and immutable revision.
 - [x] **T03 [SEQ; depends: T02]** Rewrite the implementation plan and surrounding architecture/contracts.

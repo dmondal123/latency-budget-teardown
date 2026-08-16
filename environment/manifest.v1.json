@@ -11,25 +11,32 @@
     "python": "3.12.7",
     "power_mode": "AC"
   },
+  "dataset": {
+    "repository": "rag-datasets/rag-mini-wikipedia",
+    "revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
+    "manifest": "eval/v1/dataset_manifest.json"
+  },
   "model": {
-    "checkpoint": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
-    "revision": "2fd8dac",
-    "revision_source": "https://huggingface.co/mlx-community/Qwen3-VL-4B-Instruct-4bit/tree/2fd8dac",
-    "quantization": "4-bit",
-    "status": "candidate; smoke, cache-correctness, and memory gates pending"
+    "tag": "qwen3:4b",
+    "digest": null,
+    "digest_required_before_benchmark": true,
+    "think_mode": false,
+    "temperature": 0,
+    "status": "candidate; digest and smoke test pending"
   },
   "runtime": {
-    "server": "vllm-metal",
-    "server_revision": "vllm-metal==0.3.0.dev20260815085651; vllm==0.27.1+cpu",
-    "server_revision_required_before_benchmark": true,
-    "backend": "paged",
-    "multimodal_support": "experimental",
-    "mlx": "0.32.0",
-    "mlx_vlm": "0.6.4"
+    "server": "ollama",
+    "version": null,
+    "version_required_before_benchmark": true,
+    "api": "/api/generate",
+    "stream_protocol": "ndjson",
+    "local_only": true
   },
   "application_lock": "requirements.txt",
+  "application_lock_status": "pending_regeneration_for_text_rag",
   "reproducibility": {
     "index_snapshot_required": true,
+    "dataset_files_must_be_cached_outside_repo": true,
     "model_files_must_be_cached_outside_repo": true,
     "environment_capture_command": "python scripts/verify_environment.py --manifest environment/manifest.v1.json",
     "benchmark_blocked_until_runtime_revision_is_set": true
