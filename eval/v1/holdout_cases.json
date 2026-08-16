@@ -1,0 +1,86 @@
+[
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-25",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": true,
+    "question": "Do sea turtles lay eggs on dry sandy beaches?",
+    "reference_answer": "Yes",
+    "source_row_id": 1527,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-26",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": true,
+    "question": "Is Liechtenstein bordered by Switzerland?",
+    "reference_answer": "Yes",
+    "source_row_id": 1051,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-27",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      143
+    ],
+    "holdout": true,
+    "question": "When did he publish a collection?",
+    "reference_answer": "1733",
+    "source_row_id": 141,
+    "support_quote": "At Nuremberg in 1733 he published a collection of 316 observations of the aurora borealis made by himself and others over the period 1716-1732.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-28",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      742
+    ],
+    "holdout": true,
+    "question": "When was James Monroe appointed to Secretary of War?",
+    "reference_answer": "1814",
+    "source_row_id": 846,
+    "support_quote": "In 1814 he published M\u00e9moire sur les masses relatives des mol\u00e9cules des corps simples, ou densit\u00e9s pr\u00e9sum\u00e9es de leur gaz, et sur la constitution de quelques-uns de leur compos\u00e9s, pour servir de suite \u00e0 l'Essai sur le m\u00eame sujet, publi\u00e9 dans le Journal de Physique, juillet 1811 (), about gas densities.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-29",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1614
+    ],
+    "holdout": true,
+    "question": "What is the capital city?",
+    "reference_answer": "Helsinki",
+    "source_row_id": 524,
+    "support_quote": "The Helsinki Cathedral with the statue of Emperor Alexander II of Russia.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-30",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2315
+    ],
+    "holdout": true,
+    "question": "How has Canada helped UN peacekeeping efforts?",
+    "reference_answer": "During the Suez Crisis of 1956, Lester B. Pearson eased tensions by proposing the inception of the United Nations Peacekeeping Force. Canada has since served in 50 peacekeeping missions, including every UN peacekeeping effort until 1989",
+    "source_row_id": 301,
+    "support_quote": "Canada has played a leading role in UN peacekeeping efforts. During the Suez Crisis of 1956, Lester B. Pearson eased tensions by proposing the inception of the United Nations Peacekeeping Force. Canada has since served in 50 peacekeeping missions, including every UN peacekeeping effort until 1989",
+    "verification_status": "manually_verified"
+  }
+]

@@ -1,0 +1,338 @@
+[
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-01",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Is singapore -LRB- ; (: ; , -RRB- , officially the republic of singapore -LRB- ; (: ; , -RRB- , an island nation located at the southern tip of the malay peninsula?",
+    "reference_answer": "Yes",
+    "source_row_id": 1472,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-02",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Are Kangaroos Shy?",
+    "reference_answer": "Yes",
+    "source_row_id": 966,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-03",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Is it widely considered the most secular nation in Latin America ?",
+    "reference_answer": "Yes",
+    "source_row_id": 1666,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-04",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Is the Polar Bear the mascot of Bowdoin college ?",
+    "reference_answer": "yes",
+    "source_row_id": 1317,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-05",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Are Male otters dog-otters , females are bitches and babies are cubs or pups ?",
+    "reference_answer": "yes",
+    "source_row_id": 1220,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "boolean",
+    "case_id": "eval-v1-06",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1035
+    ],
+    "holdout": false,
+    "question": "Was Wilson a member of the Phi Kappa Psi fraternity?",
+    "reference_answer": "yes",
+    "source_row_id": 1686,
+    "support_quote": "Adolescent wolf with golden-yellow eyes.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-07",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2826
+    ],
+    "holdout": false,
+    "question": "When was the first factory opened?",
+    "reference_answer": "1836",
+    "source_row_id": 1057,
+    "support_quote": "Liechtenstein also had many advances in the nineteenth century, as in 1836, the first factory was opened, making ceramics.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-08",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2506
+    ],
+    "holdout": false,
+    "question": "In which years were John Monroe elected as President?",
+    "reference_answer": "1817-1825",
+    "source_row_id": 842,
+    "support_quote": "James Monroe (April 28, 1758 \u00e2\u0080\u0093 July 4, 1831) was the fifth President of the United States (1817-1825).",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-09",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2312
+    ],
+    "holdout": false,
+    "question": "When did Ghana achieve independence from the United Kingdom?",
+    "reference_answer": "1957",
+    "source_row_id": 611,
+    "support_quote": "Pearson with 1957 Nobel Peace Prize.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-10",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      726
+    ],
+    "holdout": false,
+    "question": "When did James Monroe graduate from William and Mary?",
+    "reference_answer": "1776",
+    "source_row_id": 850,
+    "support_quote": "Amedeo Avogadro was born in Turin August 9th 1776 to a noble ancient family of Piedmont, Italy.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-11",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      396
+    ],
+    "holdout": false,
+    "question": "How many Eagle Scouts were involved in Ford's funeral procession?",
+    "reference_answer": "400",
+    "source_row_id": 587,
+    "support_quote": "Lincoln's Sword: The Presidency and the Power of Words(2006) ISBN 1-4000-4039-6.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "numeric_or_date",
+    "case_id": "eval-v1-12",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1897
+    ],
+    "holdout": false,
+    "question": "When did the first official report of kangaroo blindness take place?",
+    "reference_answer": "1994",
+    "source_row_id": 953,
+    "support_quote": "Victory and Failure, 1864 (1994).",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-13",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2132
+    ],
+    "holdout": false,
+    "question": "What was Scots-Irish and Scottish?",
+    "reference_answer": "His ancestry",
+    "source_row_id": 1704,
+    "support_quote": "His ancestry was Scots-Irish and Scottish.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-14",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2708
+    ],
+    "holdout": false,
+    "question": "When is the first record of S08_settlement in Singapore?",
+    "reference_answer": "second century AD",
+    "source_row_id": 1437,
+    "support_quote": "The first records of settlement in Singapore are from the second century AD.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-15",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1509
+    ],
+    "holdout": false,
+    "question": "Is uruguay's landscape mountainous?",
+    "reference_answer": "No.",
+    "source_row_id": 1618,
+    "support_quote": "Germano.com.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-16",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2386
+    ],
+    "holdout": false,
+    "question": "What are the similarities between beetles and grasshoppers?",
+    "reference_answer": "mouthparts",
+    "source_row_id": 172,
+    "support_quote": "Beetles have mouthparts similar to those of grasshoppers.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-17",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      407
+    ],
+    "holdout": false,
+    "question": "In 1905 Coolidge met and married whom?",
+    "reference_answer": "Grace Anna Goodhue",
+    "source_row_id": 249,
+    "support_quote": "In 1905 Coolidge met and married Grace Anna Goodhue, a local schoolteacher and fellow Vermonter.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "short_phrase",
+    "case_id": "eval-v1-18",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2506
+    ],
+    "holdout": false,
+    "question": "When did James Monroe die?",
+    "reference_answer": "July 4, 1831",
+    "source_row_id": 848,
+    "support_quote": "James Monroe (April 28, 1758 \u00e2\u0080\u0093 July 4, 1831) was the fifth President of the United States (1817-1825).",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-19",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      2971
+    ],
+    "holdout": false,
+    "question": "Who was Roosevelt's presidential hero?",
+    "reference_answer": "Lincoln was Roosevelt's presidential hero.",
+    "source_row_id": 1500,
+    "support_quote": "Lincoln was Roosevelt's presidential hero.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-20",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1954
+    ],
+    "holdout": false,
+    "question": "Four years after opening his shop , Watt began what?",
+    "reference_answer": "Watt began to experiment with steam after his friend, Professor John Robison, called his attention to it.",
+    "source_row_id": 881,
+    "support_quote": "Four years after opening his shop, Watt began to experiment with steam after his friend, Professor John Robison, called his attention to it.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-21",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1922
+    ],
+    "holdout": false,
+    "question": "What do river otters eat?",
+    "reference_answer": "a variety of fish and shellfish, as well as small land mammals and birds",
+    "source_row_id": 1169,
+    "support_quote": "River otters eat a variety of fish and shellfish, as well as small land mammals and birds.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-22",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      518
+    ],
+    "holdout": false,
+    "question": "Why did Cleveland want to hide his cancer surgery from the public?",
+    "reference_answer": "To avoid further market panic",
+    "source_row_id": 715,
+    "support_quote": "Because of the financial depression of the country, Cleveland decided to have surgery performed on the tumor in secrecy to avoid further market panic.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-23",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1934
+    ],
+    "holdout": false,
+    "question": "Why otters are considered as totem animals?",
+    "reference_answer": "The time of year associated with this is also associated with the Aquarius sign of the Zodiac, through which the sun passes January 20-February 19. ",
+    "source_row_id": 1194,
+    "support_quote": "The time of year associated with this is also associated with the Aquarius sign of the Zodiac, through which the sun passes January 20-February 19.",
+    "verification_status": "manually_verified"
+  },
+  {
+    "answer_type": "free_form",
+    "case_id": "eval-v1-24",
+    "expected_abstention": false,
+    "gold_evidence_ids": [
+      1359
+    ],
+    "holdout": false,
+    "question": "What is the weather like at Lake Volta?",
+    "reference_answer": "Warm and comparatively dry",
+    "source_row_id": 621,
+    "support_quote": "The eastern coastal belt is warm and comparatively dry (see Dahomey Gap); the southwest corner, hot and humid; and the north, hot and dry.",
+    "verification_status": "manually_verified"
+  }
+]

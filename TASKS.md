@@ -35,8 +35,8 @@ Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker.
 
 Dataset evaluation and retrieval implementation run in parallel after `C01`.
 
-- [ ] **T07 [PAR-C; 0:45–1:45; depends: C01]** Select 30 QA rows with seed `20260816`; manually verify gold passage IDs and support quotes.
-- [ ] **T08 [PAR-C; 1:45–2:00; depends: T07]** Materialize 24 development and six sealed holdout cases; run the authoritative evaluation verifier.
+- [x] **T07 [PAR-C; 0:45–1:45; depends: C01]** Select 30 QA rows with seed `20260816`; manually verify gold passage IDs and support quotes.
+- [x] **T08 [PAR-C; 1:45–2:00; depends: T07]** Materialize 24 development and six sealed holdout cases; run the authoritative evaluation verifier.
 - [x] **T09 [PAR-A; 0:45–1:30; depends: C01]** Implement deterministic passage normalization, BM25 indexing, retrieval, hashes, and focused retrieval tests.
 - [x] **T10 [PAR-A; 1:30–2:15; depends: T09]** Implement bounded context assembly and stable `SOURCE N` citation binding with focused tests.
 - [x] **T11 [PAR-B; 0:45–2:15; depends: C01]** Implement the Ollama NDJSON client, buffered/streamed display, validation, abstention, timeout/error handling, and focused tests.

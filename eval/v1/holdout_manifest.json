@@ -1,7 +1,14 @@
 {
-  "suite_id": "text-rag-latency-eval/v1",
-  "status": "pending_case_materialization",
+  "case_ids": [
+    "eval-v1-25",
+    "eval-v1-26",
+    "eval-v1-27",
+    "eval-v1-28",
+    "eval-v1-29",
+    "eval-v1-30"
+  ],
+  "sealed_at": "2026-08-16T00:00:00Z",
   "selection_seed": 20260816,
-  "sealed_at": null,
-  "case_ids": []
+  "status": "sealed",
+  "suite_id": "text-rag-latency-eval/v1"
 }
