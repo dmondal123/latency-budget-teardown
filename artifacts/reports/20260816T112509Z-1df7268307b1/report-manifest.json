@@ -53,7 +53,7 @@
     },
     "repetitions": 5
   },
-  "generated_at": "2026-08-16T14:58:24.981869+00:00",
+  "generated_at": "2026-08-16T16:41:04.978588+00:00",
   "input_hashes": {
     "development_cases": "sha256:7ce02ece15e26633c79a4bec49867a0755c66918e35737315d045f52bdc3e3e7",
     "holdout_manifest": "sha256:262498f9dacb3377f62af5636fbc609448ebd09de384f1f9e59df94d1ba73435",
@@ -77,7 +77,7 @@
     "latency.B0_buffered_256.json": "sha256:6f60d1d2ecd47e2841c7ad257dcf4f8a4c92ae473e4e4f37ee0102c31639c0cd",
     "latency.I1_streaming_256.json": "sha256:e723e6d902d894b22a9d44f0be86778f51fdf8dceae266a8ad24bf30931020b1",
     "latency.I2_buffered_128.json": "sha256:151b3647ae1037c40ead6396a9bb46715c0a24bc98277677846bd67bc3e7386c",
-    "t18-quality-evidence.json": "sha256:44b4d8b1d0bb676cdb2614069ce5476a0f7915cbe3327ae9faba5f237208ed39",
+    "t18-quality-evidence.json": "sha256:34f9d04ae8595c0fec62ce5adae056cc8823d92624a109847dd363e68070403a",
     "t19-evidence.json": "sha256:aa60420e25712ef40c2474dc867074dfb26e0691491df93db0b7604d825d09a0",
     "t19-evidence.md": "sha256:0c8fd7f6f845890668839e266537c9cee15ce134eb728aabd6a26ceba79cd7e3",
     "waterfalls.png": "sha256:266044503f059b3657ef11e2308f5866c3fe82a2a47dc2d3b6a792438db8539e"

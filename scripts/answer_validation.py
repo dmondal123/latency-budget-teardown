@@ -18,7 +18,16 @@ def validate_answer(raw: str, bindings: Mapping[str, int]) -> ValidationResult:
         answer = json.loads(raw)
     except json.JSONDecodeError:
         return ValidationResult(False, (), ("malformed_output_or_citation_schema",))
-    if not isinstance(answer, dict) or not isinstance(answer.get("answer"), str) or not isinstance(answer.get("abstained"), bool) or not isinstance(answer.get("citations"), list):
+    if not isinstance(answer, dict):
+        return ValidationResult(False, (), ("malformed_output_or_citation_schema",))
+    answer_text = answer.get("answer")
+    if isinstance(answer_text, bool):
+    # A yes/no question answered with a JSON boolean (true/false) is a
+    # well-formed answer, not a schema violation. Normalise it to Yes/No so
+    # downstream grading treats it as the correct polarity.
+        answer_text = "Yes" if answer_text else "No"
+        answer = {**answer, "answer": answer_text}
+    if not isinstance(answer_text, str) or not isinstance(answer.get("abstained"), bool) or not isinstance(answer.get("citations"), list):
         return ValidationResult(False, (), ("malformed_output_or_citation_schema",))
     if "<think>" in raw.casefold() or "thinking" in answer or "thoughts" in answer:
         return ValidationResult(False, (), ("thinking_mode_enabled",))

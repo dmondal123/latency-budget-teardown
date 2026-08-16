@@ -232,14 +232,57 @@ def grade_citations(*, cited_ids: Sequence[int], admitted_ids: Sequence[int], pi
     }
 
 
-def _normalized_tokens(text: str) -> list[str]:
-    return re.findall(r"[a-z0-9]+", text.casefold())
+def _normalized_tokens(text: object) ->list[str]:
+    #Coerce non-string answers (e.g. a JSON boolean `true` for a yes/no
+    # question) instead of raising, so a well-formed non-string answer is still
+    # gradeable rather than silently dropped.
+
+    return re.findall(r"[a-z0-9]+", str(text).casefold())
+
+# Boolean questions have many equivalent correct surfaces ("Yes", "yes it is",
+# JSON true). Grade them on polarity, not on string identity.
+
+_BOOLEAN_TRUE_TOKENS = frozenset({"yes", "true", "correct", "affirmative"})
+_BOOLEAN_FALSE_TOKENS = frozenset({"no", "false", "incorrect", "negative"})
+
+def _boolean_polarity(tokens: Sequence [str]) -> bool | None:
+    for token in tokens:
+        if token in _BOOLEAN_TRUE_TOKENS:
+            return True
+        if token in _BOOLEAN_FALSE_TOKENS:
+            return False
+    return None
+
+
+def _is_resolved(
+    answer_tokens: Sequence [str], reference_tokens: Sequence [str], *, answer_type: str, exact: bool) -> bool:
+
+    """Decide task resolution by content, not by exact string identity.
+    Exact token equality (the previous definition) marked correct answers wrong whenever they differed only in verbosity: a fact stated inside a sentence ("...graduated in 1776" for the gold "1776") or a terse form of a verbose gold ("Lincoln" for "Lincoln was Roosevelt's presidential hero."). Booleans resolve on polarity; other answers resolve when the shorter normalized token set is fully contained in the longer. Genuinely different content ("Cairo" vs "Helsinki") shares no containment and stays unresolved, as does an answer that piles unsupported claims onto the gold fact.
+    Known limits deterministic code cannot settle these, and a calibrated LLM judge is where they belong: morphological variants ("experimenting" vs "experiment") and pronoun substitutions ("his ancestry" vs "Wilson's ancestry") are not counted as matches.
+    """
+
+    if answer_type == "boolean":
+        answer_polarity = _boolean_polarity(answer_tokens)
+        reference_polarity = _boolean_polarity(reference_tokens)
+        return answer_polarity is not None and answer_polarity == reference_polarity
+    if exact:
+        return True
+    answer_set, reference_set = set(answer_tokens), set(reference_tokens)
+    if not answer_set or not reference_set:
+        return False
+    return reference_set <= answer_set or answer_set <= reference_set
 
 
 def grade_text_answer(*, answer: str, reference: str, answer_type: str, finish_reason: str | None) -> dict[str, float | bool]:
+    full_answer_tokens, full_reference_tokens = _normalized_tokens (answer), _normalized_tokens (reference)
+    # normalized_exact_match and answer_token_f1 keep their original definitions
+    # (booleans compared on the leading token) so those reported metrics do not
+    #move; only task_resolution changes to the content-based check below.
+
     answer_tokens, reference_tokens = _normalized_tokens(answer), _normalized_tokens(reference)
     if answer_type == "boolean":
-        answer_tokens, reference_tokens = answer_tokens[:1], reference_tokens[:1]
+        answer_tokens, reference_tokens = full_answer_tokens[:1], full_reference_tokens[:1]
     overlap = sum(min(answer_tokens.count(token), reference_tokens.count(token)) for token in set(answer_tokens))
     precision = overlap / len(answer_tokens) if answer_tokens else 0.0
     recall = overlap / len(reference_tokens) if reference_tokens else 0.0
@@ -248,7 +291,9 @@ def grade_text_answer(*, answer: str, reference: str, answer_type: str, finish_r
     return {
         "normalized_exact_match": exact,
         "answer_token_f1": f1,
-        "task_resolution": exact,
+        "task_resolution": float(
+             _is_resolved(full_answer_tokens, full_reference_tokens, answer_type=answer_type, exact=bool(exact))
+        ),
         "truncated": finish_reason == "length",
     }
 

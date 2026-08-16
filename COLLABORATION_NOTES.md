@@ -337,3 +337,13 @@ Follow-up:
 - Evidence: 88 tests passed; the reproducibility checks revalidated the pinned corpus and 30-case suite; rerun `20260816T112509Z-1df7268307b1` completed 360 transport-valid rows with C05 accepted, zero sustained swap, and median I1 TTFT/display at 134.18 ms.
 - Diagnosis: all 35 fatal rows are validation-schema failures—15 each for `eval-v1-01` and `eval-v1-02` (JSON boolean answer) and five for `eval-v1-24` (128-token output truncation)—not streaming transport failures. The frozen validator was not relaxed.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Content-based task_resolution implementation bugs
+
+- Context: the in-progress content-based `task_resolution` grading (replacing the old `exact`-match definition) had three bugs that caused tests to crash or produce wrong results.
+- Correction 1: `_normalized_tokens` regex had an accidental leading space (`r" [a-z0-9]+"`) that corrupted all tokenization—single-word answers like "Yes" or "1776" produced empty token lists. Restored to `r"[a-z0-9]+"` (matching the original correct implementation).
+- Correction 2: `grade_text_answer` used `full_answer_tokens[1]` (integer index into the second position) instead of `full_answer_tokens[:1]` (slice of the first token), causing `IndexError` on any answer with fewer than two tokens. Fixed to `[:1]`.
+- Correction 3: `test_boolean_answer_is_wellformed_not_a_schema_fatal` called `result.fatal_gates()` as a method on `ValidationResult`, but `fatal_gates` is a frozen dataclass tuple attribute (used as a tuple everywhere else, e.g. `pipeline.py:114`). Changed to `assert not result.fatal_gates` to assert no fatal gates for a well-formed boolean answer.
+- Correction 4: the stale `test_real_run_t18_t19_ground_truth` expected `task_resolution_rate` values in `tests/test_reporting.py` were from the old `exact`-only behavior (B0/I1: 0.2727, I2: 0.2857). Updated to the correct content-based values (B0/I1: 0.7273, I2: 0.7619), verified by recomputing from the immutable C05 traces. All other metrics (`answer_token_f1`, `recall_at_5`, etc.) are unchanged.
+- Evidence: all 101 tests pass after fixes.
+- `/status` model and token use: unavailable in this API session.

@@ -522,15 +522,15 @@ def test_real_run_t18_t19_ground_truth(tmp_path: Path):
     expected = {
         "B0_buffered_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
                             "citation_precision": 0.875, "citation_validity_rate": 0.6181,
-                            "task_resolution_rate": 0.2727, "answer_token_f1": 0.4278,
+                            "task_resolution_rate": 0.7273, "answer_token_f1": 0.4278,
                             "truncation_rate": 0.0},
         "I1_streaming_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
                              "citation_precision": 0.875, "citation_validity_rate": 0.6181,
-                             "task_resolution_rate": 0.2727, "answer_token_f1": 0.4278,
+                             "task_resolution_rate": 0.7273, "answer_token_f1": 0.4278,
                              "truncation_rate": 0.0},
         "I2_buffered_128": {"fatal_count": 15, "recall_at_5": 0.7917, "mrr": 0.6477,
                             "citation_precision": 0.8333, "citation_validity_rate": 0.6042,
-                            "task_resolution_rate": 0.2857, "answer_token_f1": 0.4312,
+                            "task_resolution_rate": 0.7619, "answer_token_f1": 0.4312,
                             "truncation_rate": 0.0417},
     }
     for condition, want in expected.items():

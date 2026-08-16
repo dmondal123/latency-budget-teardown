@@ -10,6 +10,12 @@ def test_valid_answer_resolves_only_admitted_source_labels():
     assert result.valid is True
     assert result.citation_ids == (42,)
 
+def test_boolean_answer_is_wellformed_not_a_schema_fatal(): 
+    result = validate_answer('{"answer": true, "abstained": false, "citations": ["SOURCE_1"]}', {"SOURCE_1": 42})
+    assert result.valid is True
+    assert not result.fatal_gates
+    assert result.citation_ids== (42,)
+
 
 def test_unadmitted_citation_and_unfounded_answer_are_fatal():
     citation = validate_answer('{"answer":"Paris","abstained":false,"citations":["SOURCE_2"]}', {"SOURCE_1": 42})

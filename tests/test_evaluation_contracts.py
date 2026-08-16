@@ -225,6 +225,55 @@ def test_deterministic_graders_measure_named_dimensions_without_model_judging():
         "truncated": True,
     }
 
+def test_task_resolution_is_content_based_not_exact_string_match():
+
+    # A correct fact stated inside a sentence: exact-match legitimately fails, #but the answer resolves the question. exact-match/F1 are left untouched.
+
+    verbose = grade_text_answer(
+        answer="James Monroe graduated from the College of William and Mary in 1776.",
+        reference="1776",
+        answer_type="numeric_or_date",
+        finish_reason="stop",
+    )
+    assert verbose["normalized_exact_match"] == 0.0
+    assert verbose["task_resolution"] == 1.0
+
+    # A terse answer to a verbose gold also resolves.
+    terse = grade_text_answer(
+        answer="Lincoln",
+        reference="Lincoln was Roosevelt's presidential hero.",
+        answer_type="free_form",
+        finish_reason="stop",
+    )
+    assert terse["task_resolution"] == 1.0
+
+    # A verbose boolean resolves on polarity, not identity.
+    boolean = grade_text_answer(
+        answer="Yes, the leopard is solitary.",
+        reference="Yes",
+        answer_type="boolean",
+        finish_reason="stop",
+    )
+    assert boolean["task_resolution"] == 1.0
+
+    # Genuinely different content stays unresolved (no false credit).
+    wrong = grade_text_answer(
+        answer="Cairo",
+        reference = "Helsinki",
+        answer_type="short_phrase",
+        finish_reason="stop",
+    )
+    assert wrong["task_resolution"] == 0.0
+
+    # An answer that adds unsupported claims beyond the gold does not resolve.
+    over_generated = grade_text_answer(
+        answer="Canada served in 50 missions and also deployed to Afghanistan and after Hurricane Katrina.",
+        reference="Canada has served in 50 peacekeeping missions.",
+        answer_type="free_form",
+        finish_reason="stop",
+    )
+    assert over_generated["task_resolution"] == 0.0
+
 
 def test_frozen_promotion_gate_blocks_fatal_counts_and_answer_type_slice_regressions():
     assert FROZEN_THRESHOLDS == {
