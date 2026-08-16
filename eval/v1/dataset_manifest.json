@@ -1,5 +1,5 @@
 {
-  "cache_root": "/private/tmp/t06-dataset-cache",
+  "cache_root": "/Users/dmondal/.cache/week-1-fde/datasets",
   "configurations": [
     {
       "columns": [
@@ -9,12 +9,12 @@
       "config": "text-corpus",
       "downloaded_files": [
         {
-          "path": "/private/tmp/t06-dataset-cache/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
+          "path": "/Users/dmondal/.cache/week-1-fde/datasets/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
           "sha256": "39a22e4d0e15972a2f21f4e7dfbc682ddc79d266925443396cc1b1628c5eff84",
           "size_bytes": 546
         },
         {
-          "path": "/private/tmp/t06-dataset-cache/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-passages.arrow",
+          "path": "/Users/dmondal/.cache/week-1-fde/datasets/text-corpus/rag-datasets___rag-mini-wikipedia/text-corpus/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-passages.arrow",
           "sha256": "45a9478428f97514fbb0671b58056f491232c61f341658e864da6e4a2d4436ad",
           "size_bytes": 1290328
         }
@@ -39,12 +39,12 @@
       "config": "question-answer",
       "downloaded_files": [
         {
-          "path": "/private/tmp/t06-dataset-cache/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
+          "path": "/Users/dmondal/.cache/week-1-fde/datasets/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/dataset_info.json",
           "sha256": "a82e48c16956288068cb9115526fdcb70032e7fc635da5678177843f6bffa221",
           "size_bytes": 585
         },
         {
-          "path": "/private/tmp/t06-dataset-cache/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-test.arrow",
+          "path": "/Users/dmondal/.cache/week-1-fde/datasets/question-answer/rag-datasets___rag-mini-wikipedia/question-answer/0.0.0/1f9f3b53fbc5995b85aab8e993504ad42c5f16f6/rag-mini-wikipedia-test.arrow",
           "sha256": "143701101b3afa04a9cf7ca939232825ede49004b0800656750cef8a093dfcea",
           "size_bytes": 81800
         }

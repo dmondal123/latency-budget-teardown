@@ -12,16 +12,16 @@ The study will produce p50 and p95 latency waterfalls, distinguish perceived fro
 
 ## Current state
 
-Wave 1 preflight and the Wave 2 evaluation/retrieval foundations are complete. The project has:
+Wave 1 preflight, Wave 2 foundations, and the Wave 3 C03 integration gate are complete. The project has:
 
-- a pinned `rag-datasets/rag-mini-wikipedia` dataset revision and materialization evidence;
+- a pinned `rag-datasets/rag-mini-wikipedia` dataset revision materialized in the external `~/.cache/week-1-fde/datasets` cache;
 - a deterministic BM25 retrieval and bounded-context foundation with focused tests;
 - 30 manually verified text-QA cases, split into 24 development and six sealed holdout cases;
 - a validated local Ollama `qwen3:4b-instruct` runtime with thinking disabled, immutable digest, and version recorded;
 - G1-approved behavioral and threshold contracts; and
-- only Ollama runtime tooling and evidence, after the retired alternative runtime path was removed.
+- only Ollama runtime tooling and evidence, after retired runtime and PDF/legacy tooling were removed.
 
-No authoritative benchmark measurements, charts, or intervention decisions exist yet. The current blocker is implementation of T12, T13, and T14 before the C03 integration gate.
+No authoritative benchmark measurements, charts, or intervention decisions exist yet. T12, T13, T14, and C03 are complete; the next blocker is the C04 condition-runner/report gate.
 
 ## Frozen scope
 
@@ -39,6 +39,13 @@ Dependencies are pinned in `requirements.txt`, generated from `requirements.in`.
 - `artifacts/lock.v1.json`
 - `artifacts/dataset_materialization.v1.json`
 - `artifacts/ollama_preflight.v1.json`
+
+Re-materialize the pinned dataset outside the repository before verifying the suite:
+
+```bash
+.venv/bin/python -m scripts.ingestion.materialize \
+  --cache-root "$HOME/.cache/week-1-fde/datasets"
+```
 
 The following foundation commands are available from the repository root:
 

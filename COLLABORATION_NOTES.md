@@ -238,6 +238,14 @@ Follow-up:
 - Human decision: approved the verified 30-case suite, pinned text-RAG contract, and provisional latency/quality thresholds for baseline work.
 - Evidence: explicit user message “g1 approved”; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` now record `g1_approved`.
 - Consequence: T16’s approval prerequisite is met, although C03/C04 and their implementation dependencies still block authoritative measurement.
+
+## 2026-08-16 — Tail-diagnostic completeness correction
+
+- Context: C04's synthetic report fixture correctly demonstrated additive waterfalls and marginal labels, but exposed null context-length and gold-rank diagnostics.
+- Correction: persisted `question_length` and actual `context_characters` on each successful pipeline trace; report generation now derives `gold_rank` from immutable retrieved ranks plus the frozen case gold IDs and derives truncation from `finish_reason`.
+- Evidence: focused telemetry, pipeline, runner, and evaluation contracts passed (`28 passed`).
+- Learning: a report fixture may prove arithmetic while still omitting metadata needed to explain real tail behavior; verify every planned diagnostic against the production trace schema before measurement.
+- `/status` model and token use: unavailable in this API session.
 - `/status` model and token use: unavailable in this API session.
 
 ## 2026-08-16 — Offline text-corpus ingestion boundary
@@ -259,4 +267,12 @@ Follow-up:
 
 - Decision: Ollama was used for the local text-RAG study because the available time did not support completing and validating the alternative runtime path.
 - Consequence: the study scope, preflight, and benchmark tooling remain limited to Ollama `qwen3:4b-instruct`.
+- `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Persistent corpus and legacy cleanup
+
+- Context: the user required a reproducible corpus location, removal of the obsolete runtime-revision benchmark block, and retirement of remaining PDF/legacy executable paths.
+- Changed: rematerialized the pinned dataset at `~/.cache/week-1-fde/datasets`, refreshed both hash manifests, reran the isolated application-lock proof, changed the lock status to `verified_for_text_rag`, removed the obsolete benchmark-block flag, and deleted PDF/legacy scripts with their tests.
+- Evidence: `scripts/verify_eval.py`, `scripts/verify_environment.py`, and the full test suite passed; the first lock attempt failed only because sandbox DNS could not resolve PyPI, while the same isolated proof passed with approved network access.
+- Learning: an external cache path must be persistent, not merely outside the repository; validation status is updated only after the corresponding reproducibility proof succeeds.
 - `/status` model and token use: unavailable in this API session.

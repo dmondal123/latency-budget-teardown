@@ -28,7 +28,7 @@ These three lanes start together.
 
 - [x] **T04 [PAR-A; 0:00–0:30; depends: T03]** Lock installs under Python 3.12. Regenerate `requirements.txt` from `requirements.in`; prove the lock is installable. Evidence: `artifacts/lock.v1.json`.
 - [x] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pulled `qwen3:4b-instruct`; captured Ollama `0.32.13` and digest `sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0`; buffered/streaming smoke passed with thinking disabled and zero sustained swap. Evidence: `artifacts/ollama_preflight.v1.json`.
-- [x] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialized `text-corpus/passages` (3,200 rows; normalized SHA-256 `dbe884c2...0aa728d`) and `question-answer/test` (918 rows; normalized SHA-256 `ba2cdffb...5569a38`) at the pinned revision. Evidence: `artifacts/dataset_materialization.v1.json`.
+- [x] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialized `text-corpus/passages` (3,200 rows; normalized SHA-256 `dbe884c2...0aa728d`) and `question-answer/test` (918 rows; normalized SHA-256 `ba2cdffb...5569a38`) at the pinned revision in the external `~/.cache/week-1-fde/datasets` cache. Evidence: `artifacts/dataset_materialization.v1.json`.
 - [x] **C01 [GATE; at 0:45; depends: T04, T05, T06]** Confirmed installable lock, expected dataset schemas, immutable model/runtime identity, valid NDJSON streaming, and no sustained swap.
 
 Checkpoint action: if `C01` fails, stop the ten-hour run and record the blocker. Do not silently change the dataset, runtime, model tag, digest, or thinking mode.
@@ -61,7 +61,8 @@ After each component's interface is stable, instrumentation and independent cont
 - [x] **T14b [SEQ; user-required extension]** Expose the validated retrieval → Ollama → trace path as a local manual-query CLI with ignored ad-hoc artifacts.
 - [x] **C03 [GATE; at 4:30; depends: T14]** Confirm a complete raw trace, additive TTC arithmetic, citation resolution, thinking disabled, and deterministic final-text parity.
 - [x] **T15 [SEQ; 4:30–5:30; depends: C03]** Implement the condition runner, single-delta assertions, report generation, and fixed-JSONL regression tests.
-- [ ] **C04 [GATE; at 5:30; depends: T15]** Confirm the runner can interleave all conditions and regenerate correct fixture waterfalls and marginal tables.
+- [x] **T15.1 [SEQ; user-required follow-up; depends: T15]** Persist question and assembled-context lengths; derive tail gold rank and truncation from immutable trace/case evidence.
+- [x] **C04 [GATE; at 5:30; depends: T15, T15.1]** Confirm the runner can interleave all conditions and regenerate correct fixture waterfalls and marginal tables.
 
 Checkpoint action: authoritative measurement cannot begin without both `C03` and `C04`. If either fails, spend the remaining window producing a verified partial implementation and blocker report rather than untrustworthy benchmark numbers.
 

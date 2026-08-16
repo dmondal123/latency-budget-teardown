@@ -33,12 +33,11 @@
     "local_only": true
   },
   "application_lock": "requirements.txt",
-  "application_lock_status": "pending_regeneration_for_text_rag",
+  "application_lock_status": "verified_for_text_rag",
   "reproducibility": {
     "index_snapshot_required": true,
     "dataset_files_must_be_cached_outside_repo": true,
     "model_files_must_be_cached_outside_repo": true,
-    "environment_capture_command": "python scripts/verify_environment.py --manifest environment/manifest.v1.json",
-    "benchmark_blocked_until_runtime_revision_is_set": true
+    "environment_capture_command": "python scripts/verify_environment.py --manifest environment/manifest.v1.json"
   }
 }
