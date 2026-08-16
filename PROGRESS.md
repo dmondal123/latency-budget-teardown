@@ -22,7 +22,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M02 | Pin dataset repository/revision and observed schemas | In progress | `eval/v1/dataset_manifest.json`; materialization blocked, hashes pending |
 | M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
 | M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
-| M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Blocked | `scripts/preflight_ollama.py`, `artifacts/ollama_preflight.v1.json`; smoke passes, but sustained swap was observed |
+| M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
 | M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
 | M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
 | M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
@@ -41,7 +41,6 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Remove sustained swap, then pin Ollama version and `qwen3:4b-instruct` digest; verify `think=false` streaming | Environment manifest and smoke trace |
 | P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification; tooling is ready, materialization blocked |
 | P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |

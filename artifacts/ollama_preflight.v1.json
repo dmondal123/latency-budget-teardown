@@ -1,13 +1,8 @@
 {
   "command": "python scripts/preflight_ollama.py",
-  "elapsed_ms": 1590.717708,
+  "elapsed_ms": 4364.722625,
   "endpoint": "http://127.0.0.1:11434",
-  "failures": [
-    {
-      "error_type": "sustained_swap",
-      "message": "swap usage was nonzero in consecutive samples"
-    }
-  ],
+  "failures": [],
   "identity": {
     "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
     "ollama_version": "0.32.13"
@@ -19,25 +14,25 @@
     "status": "success"
   },
   "resource_checks": {
-    "max_swap_used_bytes": 1202129469,
-    "sample_count": 3,
+    "max_swap_used_bytes": 0,
+    "sample_count": 9,
     "sample_interval_ms": 250,
-    "sustained_swap": true
+    "sustained_swap": false
   },
   "schema_version": "ollama-preflight.v1",
   "seed": 20260816,
   "smoke": {
     "buffered": {
-      "elapsed_ms": 185.397667,
+      "elapsed_ms": 1809.169208,
       "metadata": {
         "done": true,
         "done_reason": "stop",
         "eval_count": 2,
-        "eval_duration": 13328000,
-        "load_duration": 136129375,
+        "eval_duration": 16138000,
+        "load_duration": 1707908417,
         "prompt_eval_count": 15,
-        "prompt_eval_duration": 30668000,
-        "total_duration": 183833875
+        "prompt_eval_duration": 74399000,
+        "total_duration": 1805953542
       },
       "status": "pass",
       "text": "READY"
@@ -45,16 +40,16 @@
     "final_text_parity": true,
     "streaming": {
       "chunk_count": 2,
-      "elapsed_ms": 128.379958,
+      "elapsed_ms": 169.680834,
       "metadata": {
         "done": true,
         "done_reason": "stop",
         "eval_count": 2,
-        "eval_duration": 14004000,
-        "load_duration": 95420125,
+        "eval_duration": 13163000,
+        "load_duration": 125464083,
         "prompt_eval_count": 15,
-        "prompt_eval_duration": 13693000,
-        "total_duration": 127414834
+        "prompt_eval_duration": 25669000,
+        "total_duration": 168067625
       },
       "status": "pass",
       "terminal": {
@@ -76,22 +71,22 @@
           198,
           45578
         ],
-        "created_at": "2026-08-16T07:42:46.954423Z",
+        "created_at": "2026-08-16T07:48:09.557166Z",
         "done": true,
         "done_reason": "stop",
         "eval_count": 2,
-        "eval_duration": 14004000,
-        "load_duration": 95420125,
+        "eval_duration": 13163000,
+        "load_duration": 125464083,
         "model": "qwen3:4b-instruct",
         "prompt_eval_count": 15,
-        "prompt_eval_duration": 13693000,
+        "prompt_eval_duration": 25669000,
         "response": "",
-        "total_duration": 127414834
+        "total_duration": 168067625
       },
       "text": "READY"
     }
   },
-  "status": "fail",
+  "status": "pass",
   "temperature": 0,
   "think": false
 }

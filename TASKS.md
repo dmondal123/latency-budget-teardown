@@ -25,7 +25,7 @@ Use at most three implementation lanes plus one integration owner. The integrati
 These three lanes start together.
 
 - [x] **T04 [PAR-A; 0:00–0:30; depends: T03]** Lock installs under Python 3.12. Regenerate `requirements.txt` from `requirements.in`; prove the lock is installable. Evidence: `artifacts/lock.v1.json`.
-- [ ] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pull `qwen3:4b-instruct`, capture the Ollama version/model digest, and pass buffered/streaming smoke tests with thinking disabled and no sustained swap. Digest normalization is corrected for Ollama’s bare 64-hex API value; rerun the preflight on the Ollama host.
+- [x] **T05 [PAR-B; 0:00–0:45; depends: T03]** Pulled `qwen3:4b-instruct`; captured Ollama `0.32.13` and digest `sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0`; buffered/streaming smoke passed with thinking disabled and zero sustained swap. Evidence: `artifacts/ollama_preflight.v1.json`.
 - [ ] **T06 [PAR-C; 0:00–0:45; depends: T02]** Materialize both pinned dataset configurations and record downloaded-file and normalized-corpus hashes. Tooling and truthful blocked artifact added; `datasets` is unavailable in this environment.
 - [ ] **C01 [GATE; at 0:45; depends: T04, T05, T06]** Confirm installable lock, expected dataset schemas, immutable model/runtime identity, valid NDJSON streaming, and no sustained swap.
 

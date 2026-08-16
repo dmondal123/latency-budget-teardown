@@ -228,3 +228,9 @@ Follow-up:
 - Evidence: focused preflight tests passed (`10 passed`); the host preflight returned `READY` for buffered and streaming responses with digest `sha256:0edcdef...f168ba0`, but recorded sustained swap peaking at 1,202,129,469 bytes and therefore failed truthfully.
 - Learning: a passing model response is insufficient for a latency benchmark gate when memory pressure persists; resource qualification must be part of the preflight predicate.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Ollama preflight cleared after memory reset
+
+- Evidence: regenerated `artifacts/ollama_preflight.v1.json` passed with `qwen3:4b-instruct`, digest `sha256:0edcdef...f168ba0`, buffered/streaming final-text parity, and nine 250 ms swap samples with a zero-byte maximum.
+- Decision: T05 is complete; C01 remains blocked only by T06 dataset materialization.
+- `/status` model and token use: unavailable in this API session.
