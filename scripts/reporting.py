@@ -19,6 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
+from .answer_validation import validate_answer
 from .evaluation import (
     FROZEN_CONTRACT_ID,
     FROZEN_THRESHOLDS,
@@ -305,6 +306,36 @@ def _parse_raw_output(raw: Any) -> dict[str, Any] | None:
         return None
     return value if isinstance(value, dict) else None
 
+def _recompute_validation (trace: Mapping [str, Any]) -> tuple [bool, str | None]:
+
+    """Re-derive fatal status and the gradeable answer from ``raw_output``.
+    The run-time ``fatal_gates`` list is not trusted here: a yes/no 
+    question answered with a JSON boolean was fatally rejected at run time by the old 
+    validator, but is a well-formed answer. We re-run the corrected 
+    :func: validate_answer, rebuilding the ``SOURCE_N`` -> evidence-id bindings
+    from ``admitted_evidence_ids`` in admission order (the context-assembly 
+    labelling convention). A boolean answer is normalised to Yes/No; a 
+    truncated/unparseable answer stays fatal. The returned citation ids let the
+    caller re-grade citations for rows whose runtime was discarded.
+    """
+    raw = trace.get("raw_output")
+    if not isinstance(raw, str):
+        return True, None, ()
+    admitted = [
+        evidence_id
+        for evidence_id in (_coerce_evidence_id(item) for item in trace.get("admitted_evidence_ids", []))
+        if evidence_id is not None
+    ]
+    bindings = {f"SOURCE_{index}": evidence_id for index, evidence_id in enumerate (admitted, start=1)}
+    result = validate_answer(raw, bindings)
+    parsed = _parse_raw_output(raw)
+    answer = parsed.get("answer") if isinstance (parsed, dict) else None
+    if isinstance(answer, bool):
+        answer = "Yes" if answer else "No"
+    answer_text = answer if isinstance(answer, str) else None
+    return bool(result.fatal_gates), answer_text, (answer if isinstance(answer, str) else None)
+
+
 
 def _mean_available(values: Iterable[float | None]) -> float | None:
     """Mean of non-None values, returning None when every value is unavailable."""
@@ -314,12 +345,15 @@ def _mean_available(values: Iterable[float | None]) -> float | None:
     return sum(present) / len(present)
 
 
-def _grade_attempt(trace: Mapping[str, Any], case: Mapping[str, Any]) -> dict[str, Any]:
+def _grade_attempt(trace: Mapping [str, Any], case: Mapping [str, Any], answer_text: str | None,
+citation_override: tuple [int, ...] | None = None,
+) -> dict[str, Any]:
     """Grade one attempt's retrieval, citation, and text quality.
 
-    Retrieval and citation grades are always computable. Text grades are
-    ``None`` for malformed (non-string) answers rather than raising, so
-    aggregates using :func:`_mean_available` skip them.
+Retrieval and citation grades are always computable. ``answer_text is the validated, normalised answer (or ``None when the answer is unavailable /fatally malformed); text grades are ``None in that case rather than raising, so aggregates using : func:'_mean_available' skip them.
+
+``citation_override supplies re-validated citation ids for rows whose run-time citation record was discarded (e.g. a reclassified boolean answer); when ``None`` the persisted ``scores.citation_ids`` are used.
+
     """
     gold_ids = list(case.get("gold_evidence_ids", []))
     retrieved = [
@@ -332,24 +366,25 @@ def _grade_attempt(trace: Mapping[str, Any], case: Mapping[str, Any]) -> dict[st
         for evidence_id in (_coerce_evidence_id(item) for item in trace.get("admitted_evidence_ids", []))
         if evidence_id is not None
     ]
-    cited = [
-        evidence_id
-        for evidence_id in (_coerce_evidence_id(item) for item in trace.get("scores", {}).get("citation_ids", []))
-        if evidence_id is not None
-    ]
+
+    if citation_override is not None:
+        cited = list(citation_override)
+    else:
+        cited = [
+            evidence_id
+            for evidence_id in (_coerce_evidence_id(item) for item in trace.get("scores", {}).get("citation_ids", []))
+            if evidence_id is not None
+        ]
     retrieval = grade_retrieval(retrieved_ids=retrieved, gold_ids=gold_ids)
     citations = grade_citations(cited_ids=cited, admitted_ids=admitted, pinned_ids=gold_ids)
     text: dict[str, Any] | None = None
-    parsed = _parse_raw_output(trace.get("raw_output"))
-    if isinstance(parsed, dict):
-        answer = parsed.get("answer")
-        if isinstance(answer, str):
-            text = grade_text_answer(
-                answer=answer,
-                reference=case.get("reference_answer", ""),
-                answer_type=str(trace.get("answer_type", "")),
-                finish_reason=trace.get("finish_reason"),
-            )
+    if answer_text is not None:
+        text = grade_text_answer(
+        answer = answer_text,
+        reference=case.get("reference_answer", ""),
+        answer_type=str(trace.get("answer_type", "")),
+        finish_reason=trace.get("finish_reason"),
+        )
     return {
         "recall_at_5": retrieval["recall_at_5"],
         "mrr": retrieval["mrr"],
@@ -456,18 +491,25 @@ def _build_t18(
     latency_reports: Mapping[str, Mapping[str, Any]],
     run_manifest: Mapping[str, Any],
 ) -> dict[str, Any]:
-    # Grade every attempt once, retaining trace metadata for reuse.
     graded: list[dict[str, Any]] = []
     for trace in traces:
         case = cases_by_id.get(str(trace["case_id"]), {})
+        fatal, answer_text, recomputed_citations = _recompute_validation (trace)
+        # Only trust recomputed citations for rows the run-time validator wrongly 
+        # rejected (e.g. a boolean answer): their persisted scores.citation_ids is 
+        # empty. Rows that already validated keep their run-time citation ids.
+        reclassified = bool(trace.get("fatal_gates")) and not fatal
         graded.append({
             "trace_id": str(trace["trace_id"]),
             "case_id": str(trace["case_id"]),
             "condition_id": str(trace["condition_id"]),
             "repetition": trace["repetition"],
             "answer_type": str(trace.get("answer_type", "")),
-            "fatal": bool(trace.get("fatal_gates")),
-            "grades": _grade_attempt(trace, case),
+            "fatal": fatal,
+            "grades": _grade_attempt(
+            trace, case, answer_text,
+            citation_override=recomputed_citations if reclassified else None,
+            ),
         })
 
     by_condition: dict[str, Any] = {}
