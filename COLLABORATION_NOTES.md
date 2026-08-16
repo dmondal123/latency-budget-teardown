@@ -298,3 +298,10 @@ Follow-up:
 - Correction: require a live loopback version/digest query, give the benchmark runner sole ownership of raw JSONL writes, keep telemetry/programming errors visible by narrowing the exception boundary, freeze the exact condition argument order, and record the lock mechanism without claiming host-wide process observation.
 - Evidence: plan review against `RAG_PIPELINE_PLAN.md`, `scripts/pipeline.py`, `scripts/telemetry.py`, and the approved benchmark-driver specification.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — T16 authoritative run result
+
+- Context: the user explicitly approved the one-time serial 360-request T16 matrix against an already-running local Ollama service.
+- Evidence: `artifacts/authoritative-runs/20260816T110727Z-4b3a9c40865b/run-manifest.json` records 360 attempts, 120 per condition, zero transport failures, 1,244 zero-swap samples, and C05 acceptance.
+- Learning: the tool-session wait detached while the local benchmark process continued; process and artifact inspection, rather than the tool-session completion alone, established the final run state. The immutable traces also contain 10/10/15 validation-fatal rows (B0/I1/I2), so latency point estimates cannot justify a promotion decision before quality diagnosis.
+- `/status` model and token use: unavailable in this API session.

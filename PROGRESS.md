@@ -6,13 +6,13 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Wave 3 is complete through C04; C02, G1, C03, and C04 passed |
-| Current phase | Wave 4 authoritative-measurement preparation |
+| Overall state | Wave 4 is complete through C05; quality analysis and intervention decisions remain |
+| Current phase | Wave 5 analysis, diagnosis, and decision preparation |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | T15 condition runner/report fixture gate, tail-diagnostic completeness, and representative fixed-JSONL tail evidence verified |
-| Authoritative measurements | None |
-| Active blocker | None; T16 must remain serial and preserve every measured attempt |
-| Next gate | C05 complete authoritative-matrix integrity |
+| Latest milestone | T16 matrix completed and C05 accepted: 360 attempts, no transport failures, zero sustained swap |
+| Authoritative measurements | `artifacts/authoritative-runs/20260816T110727Z-4b3a9c40865b/` |
+| Active blocker | C06 requires analysis of the 10/10/15 validation-fatal rows before intervention decisions |
+| Next gate | C06 accepted/rejected interventions with quality evidence |
 
 ## Milestones
 
@@ -24,7 +24,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M04 | Build and verify 30 text QA cases | Complete | `eval/v1/candidate_ledger.json`, `eval/v1/reviewed_mappings.json`, sealed 24/6 fixtures, and authoritative verifier pass |
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
 | M06 | Implement instrumented text-RAG pipeline | Complete | T12–T15.2 stage spans, telemetry, raw traces, condition/report fixtures, representative tail diagnostics, and local manual-query CLI |
-| M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
+| M07 | Run baseline and two isolated interventions | Complete | T16 raw traces, validations, warmups, and C05-accepted manifest |
 | M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
 | M09 | Run accepted holdout and reproduce/package | Not started | Expected clean log and ZIP audit |
 
