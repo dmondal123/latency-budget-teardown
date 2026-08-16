@@ -1,83 +1,84 @@
 # Latency Budget Teardown
 
-This repository is the planning and tooling scaffold for a reproducible multimodal RAG latency study on Apple Silicon.
+This repository contains the documentation and tooling foundation for a reproducible local **text-RAG latency study** on Apple Silicon.
 
-The target pipeline is:
+The approved pipeline is:
 
 ```text
-request → retrieval → context/media assembly → vLLM-Metal model → validation → display
+question → BM25 retrieval → bounded text context → Ollama/qwen3:4b-instruct → validation → display
 ```
 
-The study will measure p50 and p95 stage waterfalls, separate perceived from total latency, freeze a per-stage budget, and evaluate latency interventions without assuming away quality regressions.
+The study will produce p50 and p95 latency waterfalls, distinguish perceived from total latency, freeze a per-stage budget, and measure two latency interventions without assuming away quality regressions.
 
 ## Current state
 
-The measurement and implementation plan is approved. Pipeline code, evaluation fixtures, benchmark data, and generated charts have not been created yet. Do not treat plan values as measured results.
+Wave 1 preflight and the Wave 2 evaluation/retrieval foundations are complete. The project has:
 
-## Core documents
+- a pinned `rag-datasets/rag-mini-wikipedia` dataset revision and materialization evidence;
+- a deterministic BM25 retrieval and bounded-context foundation with focused tests;
+- 30 manually verified text-QA cases, split into 24 development and six sealed holdout cases;
+- a locally smoke-tested `qwen3:4b-instruct` Ollama runtime with thinking disabled and its immutable digest recorded; and
+- draft behavioral and threshold contracts awaiting G1 approval.
 
-| Document | Purpose |
-|---|---|
-| `PROBLEM_STATEMENT.md` | Authoritative assignment requirements |
-| `RAG_PIPELINE_PLAN.md` | Approved pipeline, evaluation, latency, and vLLM-Metal plan |
-| `PROGRESS.md` | Milestones, gates, risks, and next actions |
-| `EXPERIMENT_LOG.md` | Pre-registered experiments and measured evidence |
-| `COLLABORATION_NOTES.md` | Human and AI decisions, corrections, and learnings |
-| `TASKS.md` | Workspace task sequence |
-| `AGENTS.md` | Repository working and validation rules |
+No authoritative benchmark measurements, charts, or intervention decisions exist yet. The current blocker is explicit **G1 approval** of the evaluation suite, contract, and provisional budgets before baseline measurement.
 
-## Planned baseline
+## Frozen scope
 
-The baseline uses a deterministic BM25 retrieval path, bounded PDF page evidence, Qwen3-VL served through a pinned `vllm-metal` environment, deterministic citation validation, and raw per-request JSONL telemetry.
+- **Dataset:** `rag-datasets/rag-mini-wikipedia` at revision `1f9f3b53fbc5995b85aab8e993504ad42c5f16f6`
+- **Retriever:** deterministic BM25 with bounded top-five context assembly
+- **Model service:** local Ollama `qwen3:4b-instruct`, temperature `0`, `think=false`
+- **Primary interventions:** streaming display and reducing the output-token cap from 256 to 128
 
-Headline evidence will include:
+PDF ingestion, multimodal models, vLLM-Metal, dense retrieval, reranking, and concurrency optimization are out of scope for this study.
 
-- p50 and p95 TTFE, TTFT, and TTC.
-- Percentile-aligned request waterfalls plus non-additive marginal stage percentiles.
-- Bootstrap confidence intervals and top-decile tail analysis.
-- Retrieval, citation, resolution, abstention, schema, and truncation quality metrics.
-- Token and dollar spend per completed task.
-- Isolated image-resolution and output-token interventions, with streaming and caching reported separately.
+## Reproducibility status
 
-## Reproduction contract
+Dependencies are pinned in `requirements.txt`, generated from `requirements.in`. The validated preflight artifacts are:
 
-The final implementation must provide one command:
+- `artifacts/lock.v1.json`
+- `artifacts/dataset_materialization.v1.json`
+- `artifacts/ollama_preflight.v1.json`
+
+The following foundation commands are available from the repository root:
+
+```bash
+.venv/bin/python scripts/verify_environment.py
+.venv/bin/python scripts/verify_eval.py
+.venv/bin/python -m scripts.retrieval.run --help
+```
+
+The final reproducibility command will be:
 
 ```bash
 bash scripts/reproduce.sh
 ```
 
-That command does not exist yet. When implemented, it must verify the environment, start its own pinned model server, run registered conditions, generate every reported metric and chart from raw data, and stop only the process it started.
+It is intentionally not implemented until the pipeline instrumentation, benchmark runner, and report generation work are complete. When available, it will regenerate all reported metrics and charts from saved raw traces.
 
-The current implementation also provides two offline foundation commands:
+## Planned evidence
 
-```bash
-.venv/bin/python scripts/probe_feasibility.py
-.venv/bin/python scripts/ingest_pdfs.py --corpus documents --output artifacts/evidence_manifest.v1.json
-```
+The final study will report:
 
-The first writes explicit host/configuration probe results and does not claim a model smoke test. The second reads PDFs in stable filename/page order and writes content-addressed page evidence records.
+- p50/p95 TTFE, TTFT, first-token-displayed time, and TTC;
+- percentile-aligned waterfalls, non-additive marginal stage tables, bootstrap intervals, and tail analysis;
+- retrieval, citation, resolution, exact-match/token-F1, truncation, and error metrics;
+- input/output tokens and cost per completed task; and
+- isolated baseline-versus-intervention deltas against the frozen quality and latency gates.
 
-With Metal visible (`Device(gpu, 0)`), run the bounded runtime smoke test:
+## Core documents
 
-```bash
-/Users/dmondal/.venv-vllm-metal/bin/python scripts/run_runtime_smoke.py --output artifacts/runtime_smoke.v1.json
-```
-
-It starts and stops only its own server, checks readiness, sends text and image requests, and preserves failure logs in the JSON artifact.
-
-### M05 target-device feasibility evidence
-
-On the Metal-accessible M4 Pro, run the full bounded feasibility suite with the pinned runtime:
-
-```bash
-/Users/dmondal/.venv-vllm-metal/bin/python scripts/run_m05_feasibility.py --output-dir artifacts/m05.v1
-```
-
-The runner starts and stops only servers it launches. It writes one JSON record per memory-fraction, cache, and concurrency condition plus `summary.json`; failures are retained and cause a nonzero exit. It tests memory fractions `0.60`, `0.70`, and `0.80`, records process RSS, `vm_stat`, and swap snapshots, requires GPU/Metal-worker evidence, compares cache-enabled and cache-disabled output, verifies black/red image identity, and runs warm concurrency 2 and 4 probes.
-
-The default 4 GiB safety margin means a condition fails when observed server RSS exceeds 20 GiB on the 24 GiB target. This is a protective qualification threshold, not a memory reservation. Run the sweep while the laptop is otherwise quiet; it stops failed conditions but may make other applications sluggish if memory pressure rises.
+| Document | Purpose |
+| --- | --- |
+| `PROBLEM_STATEMENT.md` | Authoritative assignment requirements |
+| `RAG_PIPELINE_PLAN.md` | Approved text-RAG pipeline, evaluation, latency, and model plan |
+| `PROGRESS.md` | Milestones, approval gates, risks, and next actions |
+| `TASKS.md` | Current execution sequence and checklist |
+| `contracts/behavioral_contract.v1.json` | Draft executable behavioral contract for G1 review |
+| `contracts/thresholds.2026-08-16.json` | Draft quality and latency thresholds for G1 review |
+| `EXPERIMENT_LOG.md` | Pre-registered experiments and measured evidence once benchmarking starts |
+| `COLLABORATION_NOTES.md` | Significant human/AI decisions, corrections, and learnings |
+| `AGENTS.md` | Repository operating and validation rules |
 
 ## Data and repository hygiene
 
-Source PDFs, downloaded model weights, virtual environments, caches, build outputs, credentials, and `.env` files are excluded from version control. Generated benchmark artifacts will be added only when required by the submission and when their provenance and size are verified.
+Do not commit model weights, downloaded datasets, virtual environments, dependency caches, build outputs, credentials, `.env` files, or other secrets. Generated measurement artifacts are committed only when required for the submission and when their provenance and size have been verified.

@@ -14,6 +14,7 @@ Use at most three implementation lanes plus one integration owner. The integrati
 - [x] Reformat the OCR-scanned `TASKS.md` and `RAG_PIPELINE_PLAN.md`, removing accidental duplicate fragments while preserving meaning.
 - [x] Reformat the OCR-scanned `ARCHITECTURE.md`, `CONTEXT.md`, and `PROGRESS.md`, preserving meaning and Markdown structure.
 - [x] Migrate the environment manifest from the retired multimodal runtime to the approved text-RAG dataset and Ollama contract.
+- [x] Align the README with the approved text-RAG/Ollama scope, current G1 status, and available foundation commands.
 - [x] Retire the superseded multimodal evaluation fixtures and reset the text-RAG development/holdout fixtures pending verified mappings.
 - [x] Migrate the draft behavioral contract to text-RAG evidence, Ollama identity, and text-answer quality fields.
 - [x] **T01 [SEQ]** Approve the text-only Hugging Face/Ollama scope and ten-hour design.
