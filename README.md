@@ -17,10 +17,11 @@ Wave 1 preflight and the Wave 2 evaluation/retrieval foundations are complete. T
 - a pinned `rag-datasets/rag-mini-wikipedia` dataset revision and materialization evidence;
 - a deterministic BM25 retrieval and bounded-context foundation with focused tests;
 - 30 manually verified text-QA cases, split into 24 development and six sealed holdout cases;
-- a locally smoke-tested `qwen3:4b-instruct` Ollama runtime with thinking disabled and its immutable digest recorded; and
-- draft behavioral and threshold contracts awaiting G1 approval.
+- a validated local Ollama `qwen3:4b-instruct` runtime with thinking disabled, immutable digest, and version recorded;
+- G1-approved behavioral and threshold contracts; and
+- only Ollama runtime tooling and evidence, after the retired alternative runtime path was removed.
 
-No authoritative benchmark measurements, charts, or intervention decisions exist yet. The current blocker is explicit **G1 approval** of the evaluation suite, contract, and provisional budgets before baseline measurement.
+No authoritative benchmark measurements, charts, or intervention decisions exist yet. The current blocker is implementation of T12, T13, and T14 before the C03 integration gate.
 
 ## Frozen scope
 
@@ -46,6 +47,10 @@ The following foundation commands are available from the repository root:
 .venv/bin/python scripts/verify_eval.py
 .venv/bin/python -m scripts.retrieval.run --help
 ```
+
+The environment check validates the captured Ollama `0.32.13` identity and the
+immutable `qwen3:4b-instruct` digest recorded in
+`environment/manifest.v1.json`.
 
 The final reproducibility command will be:
 

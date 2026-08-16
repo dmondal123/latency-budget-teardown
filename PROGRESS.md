@@ -9,7 +9,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | Overall state | Wave 2 evidence and pipeline foundations are complete; C02 and G1 passed |
 | Current phase | Wave 3 instrumentation and integration |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | PDF and multimodal scope replaced by text Hugging Face/Ollama scope |
+| Latest milestone | Retired alternative runtime tooling and evidence; Ollama-only environment verification passes |
 | Authoritative measurements | None |
 | Active blocker | T12/T13/T14 implementation is required before C03; no approval blocker is active |
 | Next gate | C03 complete raw trace and arithmetic verification |
@@ -69,7 +69,17 @@ Evidence: Human approval and `RAG_PIPELINE_PLAN.md`.
 
 Important correction: Dataset inspection confirmed gold answers but found no documented QA-ID-to-passage-ID relationship. The revised plan requires manual gold evidence verification rather than treating IDs as interchangeable.
 
-Next action: Capture the immutable model/runtime identity and build the migrated 30-case suite for G1.
+Follow-through: The immutable model/runtime identity, 30-case suite, and G1 approval are complete. The next work is Wave 3 instrumentation and integration.
+
+### 2026-08-16: Runtime cleanup completed
+
+Status: Complete
+
+What changed: Removed the retired alternative runtime scripts and generated evidence. The project now has one local runtime path: Ollama `qwen3:4b-instruct`.
+
+Evidence: `artifacts/ollama_preflight.v1.json`, `environment/manifest.v1.json`, and `.venv/bin/python scripts/verify_environment.py`.
+
+Decision: Ollama was selected because the available time did not support completing and validating the alternative runtime path.
 
 ### 2026-08-16: Original measurement scaffolding
 
