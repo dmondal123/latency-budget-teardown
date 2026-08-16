@@ -5,7 +5,7 @@ import json
 import pytest
 
 from scripts.ingestion.corpus import ingest_passages
-from scripts.ollama_client import OllamaClient
+from scripts.ollama_client import OllamaClient, OllamaClientError
 from scripts.pipeline import run_request
 from scripts.retrieval import build_index
 
@@ -80,3 +80,19 @@ def test_buffered_and_streamed_fixtures_have_deterministic_final_text_parity(tmp
             raw_fields=raw_fields(index, condition_id=str(stream_mode)), trace_path=tmp_path / f"{stream_mode}.jsonl",
             validation_path=tmp_path / f"{stream_mode}.validation.jsonl", stream_mode=stream_mode, clock=Clock()))
     assert rows[0]["raw_output"] == rows[1]["raw_output"]
+
+
+def test_pipeline_persists_one_terminal_error_trace_when_ollama_fails(tmp_path, index):
+    def failing_transport(_payload, _stream):
+        raise OllamaClientError("service_unavailable")
+
+    row = run_request(
+        question="What is the capital of France?", index=index, client=OllamaClient(transport=failing_transport),
+        raw_fields=raw_fields(index, condition_id="B0_fixture"), trace_path=tmp_path / "trace.jsonl",
+        validation_path=tmp_path / "validation.jsonl", stream_mode=False,
+    )
+
+    assert row["error_type"] == "ollama_client_error"
+    assert len((tmp_path / "trace.jsonl").read_text().splitlines()) == 1
+    assert row["ttc_ms"] is None
+    assert row["ttc_ms_reason"] == "unavailable_due_to_terminal_error"

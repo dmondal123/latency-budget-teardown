@@ -36,6 +36,20 @@ def _bindings(ranked: tuple[Any, ...], admitted_ids: tuple[str, ...]) -> dict[st
     return {f"SOURCE_{position}": passage_ids[evidence_id] for position, evidence_id in enumerate(admitted_ids, 1)}
 
 
+def _error_type(exc: Exception) -> str:
+    if isinstance(exc, OllamaClientError):
+        return "ollama_client_error"
+    if isinstance(exc, RetrievalError):
+        return "retrieval_error"
+    if isinstance(exc, PipelineError):
+        return "pipeline_error"
+    raise TypeError(f"unsupported terminal error: {type(exc).__name__}")
+
+
+def _persist_or_return(trace: TelemetryTrace, trace_path: str | Path, *, persist_trace: bool) -> dict[str, Any]:
+    return trace.persist_jsonl(trace_path) if persist_trace else trace.to_row()
+
+
 def run_request(
     *,
     question: str,
@@ -51,6 +65,7 @@ def run_request(
     character_budget: int = 12_000,
     clock: Callable[[], int] | None = None,
     display: Callable[[str], None] | None = None,
+    persist_trace: bool = True,
 ) -> dict[str, Any]:
     """Execute one request, preserving retrieval evidence and all client timings."""
     if not isinstance(question, str) or not question.strip():
@@ -62,46 +77,51 @@ def run_request(
     trace = TelemetryTrace(trace_fields, stream_mode=stream_mode) if clock is None else TelemetryTrace(
         trace_fields, stream_mode=stream_mode, clock=clock
     )
-    trace.retrieval_started()
-    ranked = retrieve(index, question, retrieve_k=retrieve_k)
-    trace.ranked_passage_ids_fixed()
-    context = assemble_context(ranked, admitted_top_k=admitted_top_k, character_budget=character_budget)
-    if context.abstained:
-        raise PipelineError("request has no admissible evidence")
-    bindings = _bindings(ranked, context.admitted_evidence_ids)
-    trace.record_context_characters(len(context.text))
-    trace.record_retrieval_result(
-        retrieved_evidence_ids=[item.evidence_id for item in ranked],
-        admitted_evidence_ids=list(context.admitted_evidence_ids),
-        retrieved_ranks={item.evidence_id: item.rank for item in ranked},
-    )
-    trace.request_dispatched()
+    try:
+        trace.retrieval_started()
+        ranked = retrieve(index, question, retrieve_k=retrieve_k)
+        trace.ranked_passage_ids_fixed()
+        context = assemble_context(ranked, admitted_top_k=admitted_top_k, character_budget=character_budget)
+        if context.abstained:
+            raise PipelineError("request has no admissible evidence")
+        bindings = _bindings(ranked, context.admitted_evidence_ids)
+        trace.record_context_characters(len(context.text))
+        trace.record_retrieval_result(
+            retrieved_evidence_ids=[item.evidence_id for item in ranked],
+            admitted_evidence_ids=list(context.admitted_evidence_ids),
+            retrieved_ranks={item.evidence_id: item.rank for item in ranked},
+        )
+        trace.request_dispatched()
 
-    first_token_seen = False
+        first_token_seen = False
 
-    def on_chunk(chunk: str) -> None:
-        nonlocal first_token_seen
+        def on_chunk(chunk: str) -> None:
+            nonlocal first_token_seen
+            if not first_token_seen:
+                trace.first_answer_token(chunk)
+                first_token_seen = True
+                if stream_mode:
+                    trace.first_token_displayed()
+            if stream_mode and display is not None:
+                display(chunk)
+
+        result = client.generate(_prompt(question, context.text), stream=stream_mode, max_tokens=max_tokens, on_response_chunk=on_chunk)
         if not first_token_seen:
-            trace.first_answer_token(chunk)
-            first_token_seen = True
-            if stream_mode:
-                trace.first_token_displayed()
-        if stream_mode and display is not None:
-            display(chunk)
-
-    result = client.generate(_prompt(question, context.text), stream=stream_mode, max_tokens=max_tokens, on_response_chunk=on_chunk)
-    if not first_token_seen:
-        raise PipelineError("Ollama returned no non-empty answer token")
-    trace.terminal_response(raw_output=result.text, output_tokens=result.output_tokens, finish_reason=result.finish_reason)
-    validation: ValidationResult = validate_answer(result.text, bindings)
-    scores = {"validation_valid": validation.valid, "citation_ids": list(validation.citation_ids)}
-    trace.validation_persisted(validation_path, scores=scores, fatal_gates=list(validation.fatal_gates))
-    if not stream_mode:
-        trace.first_token_displayed()
-        if display is not None:
-            display(result.text)
-    trace.cli_returned()
-    return trace.persist_jsonl(trace_path)
+            raise PipelineError("Ollama returned no non-empty answer token")
+        trace.terminal_response(raw_output=result.text, output_tokens=result.output_tokens, finish_reason=result.finish_reason)
+        validation: ValidationResult = validate_answer(result.text, bindings)
+        scores = {"validation_valid": validation.valid, "citation_ids": list(validation.citation_ids)}
+        trace.validation_persisted(validation_path, scores=scores, fatal_gates=list(validation.fatal_gates))
+        if not stream_mode:
+            trace.first_token_displayed()
+            if display is not None:
+                display(result.text)
+        trace.cli_returned()
+        return _persist_or_return(trace, trace_path, persist_trace=persist_trace)
+    except (OllamaClientError, RetrievalError, PipelineError) as exc:
+        trace.terminal_error(_error_type(exc))
+        trace.cli_returned()
+        return _persist_or_return(trace, trace_path, persist_trace=persist_trace)
 
 
 def _read_object(path: Path, *, description: str) -> dict[str, Any]:

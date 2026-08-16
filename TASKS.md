@@ -17,6 +17,7 @@ Use at most three implementation lanes plus one integration owner. The integrati
 - [x] Approve the T16 authoritative benchmark-driver design, including serial execution, preflight-only use of an already-running Ollama service, whole-run sustained-swap gating, and an explicit thermal-observation limitation.
 - [x] Review and approve the T16 benchmark-driver specification; record the implementation and live-run checkpoint plan in `docs/superpowers/plans/2026-08-16-authoritative-benchmark-driver.md`.
 - [x] Review the T16 benchmark-driver plan and correct live identity verification, sole raw-trace ownership, narrow exception handling, exact condition parsing, and lock-evidence requirements before execution.
+- [x] Preserve an observable terminal-error trace for operational retrieval/Ollama/pipeline failures, with optional caller-owned raw-trace persistence for the authoritative runner.
 - [x] Migrate the environment manifest from the retired multimodal runtime to the approved text-RAG dataset and Ollama contract.
 - [x] Align the README with the approved text-RAG/Ollama scope, current G1 status, and available foundation commands.
 - [x] Retire the superseded multimodal evaluation fixtures and reset the text-RAG development/holdout fixtures pending verified mappings.
