@@ -291,3 +291,10 @@ Follow-up:
 - Decision: the user approved a dedicated serial benchmark CLI that uses an already-running preflight-qualified local Ollama service; it will enforce whole-run sustained-swap validity and truthfully record thermal observation as unavailable rather than claiming a thermal pass.
 - Evidence: approved design in `docs/superpowers/specs/2026-08-16-authoritative-benchmark-driver-design.md`; G1-approved contracts; `scripts/preflight_ollama.py` swap sampler.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — T16 plan review correction
+
+- Context: the approved benchmark-driver plan was audited before implementation.
+- Correction: require a live loopback version/digest query, give the benchmark runner sole ownership of raw JSONL writes, keep telemetry/programming errors visible by narrowing the exception boundary, freeze the exact condition argument order, and record the lock mechanism without claiming host-wide process observation.
+- Evidence: plan review against `RAG_PIPELINE_PLAN.md`, `scripts/pipeline.py`, `scripts/telemetry.py`, and the approved benchmark-driver specification.
+- `/status` model and token use: unavailable in this API session.

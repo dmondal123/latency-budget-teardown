@@ -4,7 +4,7 @@
 
 **Goal:** Build a reproducible serial CLI that executes T16's 360 development attempts against the already-running qualified Ollama service, persists every attempt, and emits C05 integrity evidence.
 
-**Architecture:** `scripts.benchmark` owns immutable-input validation, warmups, exclusive process locking, serial scheduling, whole-run swap observation, artifact directories, and the run manifest. It delegates individual attempts to the existing retrieval → Ollama → validation path. `scripts.pipeline.run_request` is made terminal-error-safe so an expected request failure becomes one persisted trace rather than a missing matrix row.
+**Architecture:** `scripts.benchmark` owns immutable-input validation, live Ollama identity comparison, warmups, exclusive process locking, serial scheduling, raw-trace writes, whole-run swap observation, artifact directories, and the run manifest. It delegates individual attempts to the existing retrieval → Ollama → validation path. `scripts.pipeline.run_request` is made terminal-error-safe so an expected request failure becomes one observable row rather than a missing matrix row.
 
 **Tech Stack:** Python 3.12, standard library (`argparse`, `fcntl`, `json`, `signal`, `uuid`), existing Ollama client, telemetry, BM25 retrieval, and pytest.
 
@@ -25,7 +25,7 @@
 
 | File | Responsibility |
 | --- | --- |
-| `scripts/pipeline.py` | Convert expected in-flight request exceptions into one terminal-error trace without changing successful manual-query behavior. |
+| `scripts/pipeline.py` | Convert expected in-flight request exceptions into one terminal-error row and let the caller select trace persistence without changing successful manual-query behavior. |
 | `scripts/benchmark.py` | New authoritative-run CLI, frozen input checks, serial execution, lock, artifact/manifest lifecycle, and exit status. |
 | `tests/test_pipeline.py` | Regression coverage for a failed request that still produces one trace row. |
 | `tests/test_benchmark.py` | Unit and CLI-level contracts for the driver using fake clients/executors and samplers only. |
@@ -42,7 +42,7 @@
 **Interfaces:**
 
 - Consumes: existing `run_request(...) -> dict[str, Any]` inputs.
-- Produces: the same successful trace row as today, or a persisted row with `error_type`, unavailable-value reasons, and no invented completion spans.
+- Produces: the same successful trace row as today, or an error row with `error_type`, unavailable-value reasons, and no invented completion spans. The new `persist_trace: bool = True` argument preserves the manual CLI's append behavior and lets the benchmark own raw-trace appends.
 - Depends on: `TelemetryTrace.terminal_error()`, `TelemetryTrace.cli_returned()`, and `TelemetryTrace.persist_jsonl()`.
 
 - [ ] **Step 1: Write failing request-error regression tests.**
@@ -54,7 +54,7 @@ def test_pipeline_persists_one_terminal_error_trace_when_ollama_fails(tmp_path, 
         question="What is the capital of France?", index=index, client=client,
         raw_fields=raw_fields(index, condition_id="B0_fixture"),
         trace_path=tmp_path / "trace.jsonl", validation_path=tmp_path / "validation.jsonl",
-        stream_mode=False,
+    stream_mode=False, persist_trace=True,
     )
     assert row["error_type"] == "ollama_client_error"
     assert len((tmp_path / "trace.jsonl").read_text().splitlines()) == 1
@@ -74,13 +74,13 @@ Expected: inspect direct callers (`main` and focused tests); stop and request di
 
 - [ ] **Step 4: Implement the smallest error-to-trace boundary.**
 
-Wrap only the operations after `TelemetryTrace` construction in `try/except` for `OllamaClientError`, `RetrievalError`, `PipelineError`, `ValueError`, and `OSError`. Map classes to stable snake-case strings, call `trace.terminal_error(error_type)`, `trace.cli_returned()`, and `trace.persist_jsonl(trace_path)`, then return that row. Do not catch `KeyboardInterrupt`, `SystemExit`, or unexpected programming errors. Leave the successful return path unchanged.
+Wrap only the operations after `TelemetryTrace` construction in `try/except` for `OllamaClientError`, `RetrievalError`, `PipelineError`, and narrowly scoped `OSError` from request/file operations. Map classes to stable snake-case strings, call `trace.terminal_error(error_type)` and `trace.cli_returned()`, then either append the row when `persist_trace` is true or return `trace.to_row()` when false. Do not catch `ValueError`/`TelemetryError`, `KeyboardInterrupt`, `SystemExit`, or unexpected programming errors. Leave the successful manual-query return path unchanged.
 
 ```python
-except (OllamaClientError, RetrievalError, PipelineError, ValueError, OSError) as exc:
+except (OllamaClientError, RetrievalError, PipelineError, OSError) as exc:
     trace.terminal_error(_error_type(exc))
     trace.cli_returned()
-    return trace.persist_jsonl(trace_path)
+    return trace.persist_jsonl(trace_path) if persist_trace else trace.to_row()
 ```
 
 - [ ] **Step 5: Verify focused pipeline and telemetry contracts.**
@@ -134,11 +134,11 @@ Expected: FAIL during collection because `scripts.benchmark` does not exist.
 
 Require exactly 24 case objects, unique `case_id` values, `holdout is False`, the expected 6/6/6/6 answer-type allocation, and all question/reference/evidence fields used downstream. Select one sorted, seed-shuffled case per answer type, then select two additional seed-shuffled unused cases; shuffle the six selected warmups with the same local RNG. Warmups always use `B0_buffered_256` and are recorded separately.
 
-Validate `preflight["status"] == "pass"`, `local_only is True`, `think is False`, `resource_checks.sustained_swap is False`, the loopback endpoint, and exact model digest/runtime version equality with the saved environment/preflight identity.
+Validate `preflight["status"] == "pass"`, `local_only is True`, `think is False`, `resource_checks.sustained_swap is False`, the loopback endpoint, and exact model digest/runtime version equality with the saved environment/preflight identity. Query the already-running loopback service immediately before warmups with `scripts.preflight_ollama.version(endpoint, timeout)` and `model_digest(endpoint, model, timeout)`; reject a runtime or digest mismatch without sending a generation request.
 
 - [ ] **Step 4: Implement single-process and manifest primitives.**
 
-Use `fcntl.flock(lock_file.fileno(), LOCK_EX | LOCK_NB)` against `artifacts/authoritative-runs/.benchmark.lock`; raise `BenchmarkError("another authoritative benchmark is running")` on `BlockingIOError`. Create a unique output directory as `artifacts/authoritative-runs/<UTC timestamp>-<uuid4 hex>` and reject an existing path. Write JSON with sorted keys to a temporary sibling then `Path.replace()` it.
+Use `fcntl.flock(lock_file.fileno(), LOCK_EX | LOCK_NB)` against `artifacts/authoritative-runs/.benchmark.lock`; raise `BenchmarkError("another authoritative benchmark is running")` on `BlockingIOError`. Create a unique output directory as `artifacts/authoritative-runs/<UTC timestamp>-<uuid4 hex>` and reject an existing path. Write JSON with sorted keys to a temporary sibling then `Path.replace()` it. Record the lock path, PID, acquisition timestamp, and release timestamp in the manifest; this records the driver's exclusion mechanism and does not claim to observe arbitrary external processes.
 
 The initial manifest status is `running`; its fixed resource section is:
 
@@ -177,7 +177,7 @@ git commit -m "feat(benchmark): validate frozen run inputs"
 
 - Produces `run_benchmark(config: BenchmarkConfig, *, execute_attempt: Callable[..., Mapping[str, Any]] = ...) -> dict[str, Any]` and CLI `main(argv: list[str] | None = None) -> int`.
 - Consumes: Task 2 primitives, `scripts.evaluation.run_conditions`, `REGISTERED_CONDITIONS`, `scripts.pipeline.run_request`, and `SwapSampler`.
-- Produces: `raw-traces.jsonl`, `validations.jsonl`, `warmups.jsonl`, and a terminal `run-manifest.json`.
+- Produces: `raw-traces.jsonl`, `validations.jsonl`, `warmups.jsonl`, and a terminal `run-manifest.json`. `run_benchmark` is the sole raw-JSONL appender; every injected executor returns one in-memory row.
 
 - [ ] **Step 1: Write failing schedule, persistence, and C05 tests.**
 
@@ -207,9 +207,9 @@ Expected: FAIL because `run_benchmark` and `BenchmarkConfig` are missing.
 
 - [ ] **Step 3: Implement the serial executor.**
 
-Build the index once, construct immutable raw fields per scheduled case using a new non-manual provenance helper, and use `run_conditions(case_ids=..., condition_ids=(...), repetitions=5, seed=20260816, execute=...)`. The executor must call `run_request` once using the condition’s `stream_mode`, `max_tokens`, retrieval values, shared client, and measured trace/validation paths. It must add scheduled `ordinal` and `thermal_block` to the returned row before synchronous JSONL persistence only if those fields are already supported by the trace contract; otherwise include the schedule mapping in the manifest without rewriting raw rows.
+Parse `--conditions` as a comma-separated list and require the exact ordered sequence `B0_buffered_256,I1_streaming_256,I2_buffered_128`; reject duplicates, omissions, additions, and reorderings. Build the index once, construct immutable raw fields per scheduled case using a new non-manual provenance helper, and use `run_conditions(case_ids=..., condition_ids=(...), repetitions=5, seed=20260816, execute=...)`. The executor must call `run_request(..., persist_trace=False)` once using the condition’s `stream_mode`, `max_tokens`, retrieval values, shared client, and validation path, then synchronously append that returned row to `raw-traces.jsonl`. Injected fake executors return rows only; `run_benchmark` appends them through the same helper. Include the complete schedule mapping in the manifest rather than mutating an already-created trace row.
 
-Run six baseline warmups before the measured schedule; write their rows only to `warmups.jsonl`. Start `SwapSampler` before warmups and stop it in `finally`. Do not set a final sustained-swap result on already-persisted rows; write it only to the terminal manifest.
+Run six baseline warmups before the measured schedule; invoke the same executor with `persist_trace=False` and append their rows only to `warmups.jsonl`. Start `SwapSampler` before warmups and stop it in `finally`. Do not set a final sustained-swap result on already-persisted rows; write it only to the terminal manifest.
 
 - [ ] **Step 4: Implement terminal manifest and exit predicates.**
 
