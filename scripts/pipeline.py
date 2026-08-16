@@ -58,8 +58,9 @@ def run_request(
     if max_tokens <= 0:
         raise PipelineError("max_tokens must be positive")
 
-    trace = TelemetryTrace(raw_fields, stream_mode=stream_mode) if clock is None else TelemetryTrace(
-        raw_fields, stream_mode=stream_mode, clock=clock
+    trace_fields = {**raw_fields, "question_length": len(question)}
+    trace = TelemetryTrace(trace_fields, stream_mode=stream_mode) if clock is None else TelemetryTrace(
+        trace_fields, stream_mode=stream_mode, clock=clock
     )
     trace.retrieval_started()
     ranked = retrieve(index, question, retrieve_k=retrieve_k)
@@ -68,6 +69,7 @@ def run_request(
     if context.abstained:
         raise PipelineError("request has no admissible evidence")
     bindings = _bindings(ranked, context.admitted_evidence_ids)
+    trace.record_context_characters(len(context.text))
     trace.record_retrieval_result(
         retrieved_evidence_ids=[item.evidence_id for item in ranked],
         admitted_evidence_ids=list(context.admitted_evidence_ids),

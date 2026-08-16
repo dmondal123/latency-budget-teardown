@@ -62,6 +62,8 @@ def test_pipeline_persists_complete_validated_retrieval_trace(tmp_path, index, s
     assert row["admitted_evidence_ids"] == ["passage:42"]
     assert row["fatal_gates"] == []
     assert row["scores"] == {"validation_valid": True, "citation_ids": [42]}
+    assert row["question_length"] == len("What is the capital of France?")
+    assert row["context_characters"] > 0
     assert row["ttc_ms"] == sum(row[f"{stage}_ms"] for stage in ("admission", "retrieval", "context_assembly", "model_dispatch_to_first_token", "model_decode", "validation"))
     assert (row["first_token_displayed_ms"] < row["ttc_ms"]) is stream_mode
     assert displayed == ([answer[:14], answer[14:]] if stream_mode else [answer])

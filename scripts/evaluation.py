@@ -360,10 +360,30 @@ def build_report_metadata(
     }
 
 
-def tail_analysis(traces: Sequence[Mapping[str, Any]], *, stages: Sequence[str], percentile_method: str) -> dict[str, object]:
-    threshold = float(_nearest_rank(traces, "ttc_ms", 90)["ttc_ms"])
-    tail = [dict(trace) for trace in traces if float(trace["ttc_ms"]) >= threshold]
-    median_trace = dict(_nearest_rank(traces, "ttc_ms", 50))
+def _tail_trace(trace: Mapping[str, Any], cases_by_id: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    """Add report-only tail diagnostics from persisted trace and frozen case data."""
+    enriched = dict(trace)
+    case = cases_by_id.get(str(trace.get("case_id")), {})
+    enriched["question_length"] = trace.get("question_length", len(str(case.get("question", ""))))
+    enriched["context_length"] = trace.get("context_characters")
+    ranks = trace.get("retrieved_ranks", {})
+    gold_ids = case.get("gold_evidence_ids", [])
+    if "gold_rank" not in enriched and isinstance(ranks, Mapping) and isinstance(gold_ids, Sequence):
+        matched_ranks = [ranks.get(str(evidence_id)) for evidence_id in gold_ids]
+        enriched["gold_rank"] = min((int(rank) for rank in matched_ranks if isinstance(rank, int)), default=0)
+    enriched["truncated"] = trace.get("truncated", trace.get("finish_reason") == "length")
+    return enriched
+
+
+def tail_analysis(
+    traces: Sequence[Mapping[str, Any]], *, stages: Sequence[str], percentile_method: str,
+    cases_by_id: Mapping[str, Mapping[str, Any]] | None = None,
+) -> dict[str, object]:
+    cases = cases_by_id or {}
+    enriched_traces = [_tail_trace(trace, cases) for trace in traces]
+    threshold = float(_nearest_rank(enriched_traces, "ttc_ms", 90)["ttc_ms"])
+    tail = [trace for trace in enriched_traces if float(trace["ttc_ms"]) >= threshold]
+    median_trace = dict(_nearest_rank(enriched_traces, "ttc_ms", 50))
     def shares(row: Mapping[str, Any]) -> dict[str, float]:
         return {stage: float(row[stage]) / float(row["ttc_ms"]) for stage in stages}
     fields = {"answer_types": "answer_type", "question_lengths": "question_length", "context_lengths": "context_length", "output_lengths": "output_tokens", "gold_ranks": "gold_rank", "error_types": "error_type", "truncated": "truncated"}
@@ -390,7 +410,7 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
 
 def write_condition_report(
     *, traces: Sequence[Mapping[str, Any]], condition_id: str, output_path: Path, bootstrap_seed: int,
-    bootstrap_resamples: int, command: str,
+    bootstrap_resamples: int, command: str, cases_by_id: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, object]:
     selected = [trace for trace in traces if trace.get("condition_id") == condition_id]
     if not selected:
@@ -400,7 +420,7 @@ def write_condition_report(
         "metadata": build_report_metadata(traces=selected, condition_id=condition_id, attempted_count=len(selected), valid_count=len(valid), bootstrap_seed=bootstrap_seed, percentile_method="nearest empirical TTC-ranked trace", command=command),
         "waterfalls": aligned_waterfalls(valid, stages=CRITICAL_STAGES),
         "marginal_stages": marginal_stage_percentiles(valid, stages=CRITICAL_STAGES, seed=bootstrap_seed, resamples=bootstrap_resamples),
-        "tail": tail_analysis(valid, stages=CRITICAL_STAGES, percentile_method="nearest_rank"),
+        "tail": tail_analysis(valid, stages=CRITICAL_STAGES, percentile_method="nearest_rank", cases_by_id=cases_by_id),
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -414,11 +434,16 @@ def main(argv: list[str] | None = None) -> int:
     report_parser.add_argument("--input", required=True, type=Path)
     report_parser.add_argument("--output", required=True, type=Path)
     report_parser.add_argument("--condition", required=True, choices=sorted(REGISTERED_CONDITIONS))
+    report_parser.add_argument("--cases", type=Path, default=Path("eval/v1/development_cases.json"))
     report_parser.add_argument("--seed", type=int, default=20260816)
     report_parser.add_argument("--resamples", type=int, default=10_000)
     args = parser.parse_args(argv)
     if args.command == "report":
-        write_condition_report(traces=load_jsonl(args.input), condition_id=args.condition, output_path=args.output, bootstrap_seed=args.seed, bootstrap_resamples=args.resamples, command=f"python -m scripts.evaluation report --input {args.input} --output {args.output} --condition {args.condition} --seed {args.seed} --resamples {args.resamples}")
+        case_rows = json.loads(args.cases.read_text(encoding="utf-8"))
+        if not isinstance(case_rows, list) or not all(isinstance(case, dict) for case in case_rows):
+            raise ValueError("cases file must be a JSON array of objects")
+        cases_by_id = {str(case["case_id"]): case for case in case_rows}
+        write_condition_report(traces=load_jsonl(args.input), condition_id=args.condition, output_path=args.output, bootstrap_seed=args.seed, bootstrap_resamples=args.resamples, cases_by_id=cases_by_id, command=f"python -m scripts.evaluation report --input {args.input} --output {args.output} --condition {args.condition} --cases {args.cases} --seed {args.seed} --resamples {args.resamples}")
     return 0
 
 

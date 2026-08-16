@@ -408,3 +408,26 @@ def test_tail_analysis_compares_p90_or_slower_traces_to_median_cohort_with_diagn
     assert 5 in diagnostics["gold_ranks"]
     assert "timeout" in diagnostics["error_types"]
     assert True in diagnostics["truncated"]
+
+
+def test_tail_analysis_derives_context_gold_rank_and_truncation_from_persisted_trace_and_frozen_case():
+    trace = waterfall_trace("a", 100.0, 30.0)
+    trace.update({
+        "question_length": 17,
+        "context_characters": 240,
+        "retrieved_ranks": {"7": 2, "9": 1},
+        "finish_reason": "length",
+    })
+    trace.pop("gold_rank")
+    trace.pop("truncated")
+
+    report = tail_analysis(
+        [trace], stages=CRITICAL_STAGES, percentile_method="nearest_rank",
+        cases_by_id={"a": {"gold_evidence_ids": [7]}},
+    )
+
+    diagnostics = report["tail_diagnostics"]
+    assert diagnostics["question_lengths"] == [17]
+    assert diagnostics["context_lengths"] == [240]
+    assert diagnostics["gold_ranks"] == [2]
+    assert diagnostics["truncated"] == [True]

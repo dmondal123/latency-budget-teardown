@@ -116,6 +116,14 @@ class TelemetryTrace:
             "retrieved_ranks": dict(retrieved_ranks),
         })
 
+    def record_context_characters(self, characters: int) -> None:
+        """Persist the actual admitted-context size while assembly is active."""
+        if self._active_stage != "context_assembly":
+            raise TelemetryError("context size must be recorded after ranking and before dispatch")
+        if not isinstance(characters, int) or characters < 0:
+            raise TelemetryError("context size must be a non-negative integer")
+        self._row["context_characters"] = characters
+
     def first_answer_token(self, token: str) -> None:
         if not isinstance(token, str) or not token:
             raise TelemetryError("first answer token must be non-empty")
