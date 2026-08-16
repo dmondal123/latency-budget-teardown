@@ -1,6 +1,6 @@
 {
   "schema_version": "environment.v1",
-  "manifest_status": "candidate_pending_feasibility_gate",
+  "manifest_status": "approved_for_benchmark",
   "recorded_on": "2026-08-16",
   "owner": "dmondal",
   "target": {
@@ -18,15 +18,15 @@
   },
   "model": {
     "tag": "qwen3:4b-instruct",
-    "digest": null,
+    "digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
     "digest_required_before_benchmark": true,
     "think_mode": false,
     "temperature": 0,
-    "status": "candidate; digest and smoke test pending"
+    "status": "preflight passed"
   },
   "runtime": {
     "server": "ollama",
-    "version": null,
+    "version": "0.32.13",
     "version_required_before_benchmark": true,
     "api": "/api/generate",
     "stream_protocol": "ndjson",

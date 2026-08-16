@@ -27,13 +27,13 @@ def validate(manifest: dict, requirements: Path) -> list[str]:
     if target.get("python") != "3.12.7":
         errors.append("target Python must remain pinned to 3.12.7")
     model = manifest.get("model", {})
-    if not model.get("checkpoint") or not model.get("revision"):
-        errors.append("model checkpoint and immutable revision are required")
+    if not model.get("tag") or not model.get("digest"):
+        errors.append("model tag and immutable digest are required")
     runtime = manifest.get("runtime", {})
-    if runtime.get("server") != "vllm-metal":
-        errors.append("runtime server must be vllm-metal")
-    if manifest.get("manifest_status") == "approved_for_benchmark" and not runtime.get("server_revision"):
-        errors.append("approved benchmark manifests require an immutable server revision")
+    if runtime.get("server") != "ollama":
+        errors.append("runtime server must be ollama")
+    if manifest.get("manifest_status") == "approved_for_benchmark" and not runtime.get("version"):
+        errors.append("approved benchmark manifests require an immutable runtime version")
     if not requirements.is_file():
         errors.append("requirements.txt is missing")
     return errors
@@ -52,10 +52,10 @@ def main() -> int:
         "validated environment manifest:"
         f" Python {manifest['target']['python']},"
         f" {manifest['target']['architecture']},"
-        f" model {manifest['model']['checkpoint']}@{manifest['model']['revision']}"
+        f" model {manifest['model']['tag']}@{manifest['model']['digest']}"
     )
-    if manifest["runtime"]["server_revision"] is None:
-        print("status: runtime revision pending feasibility gate")
+    if manifest["runtime"]["version"] is None:
+        print("status: runtime version pending feasibility gate")
     print(f"host observed: {platform.system()} {platform.machine()} Python {platform.python_version()}")
     return 0
 

@@ -9,7 +9,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | Overall state | Wave 2 evidence and pipeline foundations are complete; C02 and G1 passed |
 | Current phase | Wave 3 instrumentation and integration |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
+| Latest milestone | PDF and multimodal scope replaced by text Hugging Face/Ollama scope |
 | Authoritative measurements | None |
 | Active blocker | T12/T13/T14 implementation is required before C03; no approval blocker is active |
 | Next gate | C03 complete raw trace and arithmetic verification |
@@ -63,7 +63,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 Status: Complete
 
-What changed: Replaced PDF/multimodal ingestion and experimental vLLM-Metal with the pinned `rag-mini-wikipedia` text dataset, Ollama `qwen3:4b-instruct`, and two primary interventions: streaming and output-token reduction.
+What changed: Replaced PDF and multimodal ingestion with the pinned `rag-mini-wikipedia` text dataset, Ollama `qwen3:4b-instruct`, and two primary interventions: streaming and output-token reduction.
 
 Evidence: Human approval and `RAG_PIPELINE_PLAN.md`.
 
@@ -75,4 +75,4 @@ Next action: Capture the immutable model/runtime identity and build the migrated
 
 Status: Superseded
 
-The original multimodal plan and tracking scaffold established useful timing, waterfall, bootstrap, quality-gate, and reproducibility methods. Those methods are retained; the PDF/vLLM-specific implementation direction is retired.
+The original multimodal plan and tracking scaffold established useful timing, waterfall, bootstrap, quality-gate, and reproducibility methods. Those methods are retained; the PDF-specific implementation direction is retired.

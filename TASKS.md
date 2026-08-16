@@ -11,7 +11,7 @@ Use at most three implementation lanes plus one integration owner. The integrati
 
 ## Completed planning
 
-- [x] Retire VLLM-specific feasibility tooling and evidence; document the time-constrained Ollama choice in the collaboration log.
+- [x] Retire legacy runtime feasibility tooling and evidence; document the time-constrained Ollama choice in the collaboration log.
 - [x] Reformat the OCR-scanned `TASKS.md` and `RAG_PIPELINE_PLAN.md`, removing accidental duplicate fragments while preserving meaning.
 - [x] Reformat the OCR-scanned `ARCHITECTURE.md`, `CONTEXT.md`, and `PROGRESS.md`, preserving meaning and Markdown structure.
 - [x] Migrate the environment manifest from the retired multimodal runtime to the approved text-RAG dataset and Ollama contract.

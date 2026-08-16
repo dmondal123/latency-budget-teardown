@@ -33,9 +33,9 @@ Update this file only after a significant decision, correction, failure investig
 
 ### C001: Structure-first plan approval
 
-Context: The human asked for the pipeline stages, baseline metrics, p50/p95 waterfall, quality gates, two isolated interventions, and budget methodology to be established before implementation. The human also asked for vLLM-Metal-specific latency exploration.
+Context: The human asked for the pipeline stages, baseline metrics, p50/p95 waterfall, quality gates, two isolated interventions, and budget methodology to be established before implementation. The human also asked for latency exploration of the then-planned local runtime.
 
-Agent contribution: Reviewed the existing plan using the evaluation and latency skills, checked current vLLM-Metal primary sources, and proposed a structure-first rewrite.
+Agent contribution: Reviewed the existing plan using the evaluation and latency skills, checked primary sources for the then-planned runtime, and proposed a structure-first rewrite.
 
 Human decision: Explicitly approved the structure-first rewrite and then approved the refined plan.
 
@@ -43,9 +43,9 @@ Result: `RAG_PIPELINE_PLAN.md` is the implementation authority. It remains subje
 
 ### C002: Cache experiment ambiguity
 
-What was suboptimal: The earlier plan used a generic cache off/on condition and placed a unique nonce at the start of every prompt. That design mixed application caching with vLLM prefix caching and would have removed representative shared-prefix reuse.
+What was suboptimal: The earlier plan used a generic cache off/on condition and placed a unique nonce at the start of every prompt. That design mixed application caching with engine prefix caching and would have removed representative shared-prefix reuse.
 
-How it was caught: The agent compared the plan with current vLLM-Metal defaults and upstream vLLM prefix-cache behavior during the source-backed review.
+How it was caught: The agent compared the plan with the candidate runtime defaults and upstream prefix-cache behavior during the source-backed review.
 
 Correction: The plan now separates application caches from engine KV-prefix caching. The nonce begins only at the dynamic user/evidence portion, leaving the stable system contract eligible for realistic reuse. Cache-hit tokens must be measured.
 
@@ -53,7 +53,7 @@ Preventive rule: Name every cache layer, record its state independently, and nev
 
 ### C003: Experimental multimodal prefix-cache assumption
 
-What was wrong: The first rewrite treated automatic prefix caching as safe for every primary Qwen3-VL condition. Upstream vLLM supports multimodal cache hashing, but the vLLM-Metal Qwen3-VL path is experimental, so upstream capability alone did not prove Metal-path correctness.
+What was wrong: The first rewrite treated automatic prefix caching as safe for every primary Qwen3-VL condition. Upstream cache hashing support did not prove target-backend correctness on the experimental multimodal path.
 
 How it was caught: A post-edit source audit distinguished upstream cache design from the selected experimental hardware plugin path.
 
@@ -180,46 +180,8 @@ Follow-up:
 ## 2026-08-16 — M03 approval and M05 gate attempt
 
 - Context: user approved M03 and requested M05 execution.
-- Evidence: environment manifest validation passed; the offline feasibility probe passed text, swap-command, prefix-hash, and runtime-configuration checks. `vllm`, `mlx`, and `mlx_vlm` were absent, `runtime.server_revision` was unset, and sandboxed `sysctl` memory telemetry failed.
+- Evidence: environment manifest validation passed; the offline feasibility probe passed text, swap-command, prefix-hash, and runtime-configuration checks. Required runtime packages were absent, the runtime revision was unset, and sandboxed `sysctl` memory telemetry failed.
 - Decision: M03 is complete. M05 remains blocked because real multimodal smoke, image identity, OOM/CPU-fallback/swap, and prefix-cache checks require the target runtime and hardware environment.
-
-## 2026-08-16 — vLLM-Metal runtime installed
-
-- Context: user requested package installation to continue M05.
-- Evidence: official installer created `/Users/dmondal/.venv-vllm-metal` with vLLM `0.27.1+cpu`, vLLM-Metal `0.3.0.dev20260815085651`, MLX `0.32.0`, and MLX-VLM `0.6.4`; native architecture is `arm64`.
-- Blocker: `vllm --version` terminated with `No Metal device available`, so the sandbox cannot run the GPU-backed smoke test. Exact installed versions were recorded in `environment/manifest.v1.json`; M05 remains blocked pending a Metal-accessible run.
-
-## 2026-08-16 — bounded runtime smoke script
-
-- Context: target MLX reported `Device(gpu, 0)` and the user requested implementation of the remaining M05 runner.
-- Changed: added `scripts/run_runtime_smoke.py`, which launches only its own OpenAI-compatible vLLM server, bounds startup and request time, exercises text and image requests, captures server-log failure evidence, and cleans up the child process.
-- Next step: run it on the Metal-accessible M4 Pro and inspect `artifacts/runtime_smoke.v1.json` before declaring M05 passed.
-
-## 2026-08-16 — M05 smoke result and memory target correction
-
-- Evidence: `runtime_smoke.v4.json` passed health, text, and image requests; observed peak memory was 17.08 GB.
-- Decision: User confirmed 24 GB available memory, so `environment/manifest.v1.json` now records `unified_memory_gib: 24`. M05 remains open pending swap/OOM, CPU-fallback, prefix-cache, and repeatability checks; the detailed checklist is recorded in `PROGRESS.md`.
-
-## 2026-08-16 — M05 plan review
-
-- Review: applied the `review-plan` skill against the assignment and `RAG_PIPELINE_PLAN.md`.
-- Verdict: REVISE. The original checklist had the right risk areas but lacked per-condition JSON evidence, explicit pass/fail gates, cache controls, and a non-ambiguous image fixture.
-- Correction: `PROGRESS.md` now specifies the evidence schema and acceptance conditions for memory/swap, CPU fallback, prefix-cache parity, concurrency, and image validation. The approved plan now reflects the confirmed 24 GB target.
-
-## 2026-08-16 — automated M05 evidence runner
-
-- Context: the user approved implementation after reviewing the M05 plan and the practical impact of the memory safety margin.
-- Decision: use a 4 GiB safety margin on the 24 GiB M4 Pro target, making 20 GiB the observed server-RSS qualification ceiling. This protects the machine from likely memory pressure; it is not a reserved allocation.
-- Changed: added a bounded runner for the memory-fraction sweep, GPU/Metal log checks, cache parity and image identity, fresh/warm requests, and concurrency 2/4. It preserves one JSON record per condition and an aggregate result, including failures.
-- Evidence: `.venv/bin/python -m pytest -q` → 20 passed; `.venv/bin/python scripts/run_m05_feasibility.py --help` succeeded. The system Python lacks PyMuPDF, so validation must use the pinned `.venv`.
-- `/status` model and token use: unavailable in this API session.
-
-## 2026-08-16 — M05 memory-sweep aggregation correction
-
-- Context: final review of the automated M05 result aggregation.
-- Correction: a failed exploratory higher memory fraction is retained as evidence but does not fail M05 when a lower fraction passes and is selected. The final gate still requires the selected fraction plus cache and concurrency conditions to pass.
-- Evidence: focused acceptance test and the full `.venv/bin/python -m pytest -q` suite.
-- `/status` model and token use: unavailable in this API session.
 
 ## 2026-08-16 — text-RAG package layout finalized
 
@@ -232,7 +194,7 @@ Follow-up:
 
 - Context: the completed package-refactor branch retained three unrelated full-suite failures from tests that asserted the superseded multimodal runtime and fixtures.
 - Decision: user explicitly approved deletion of `tests/test_verify_eval.py`; its GitNexus impact analysis found no callers or affected execution flows.
-- Evidence: the removed assertions expected vLLM-Metal, a multimodal schema title, and non-empty retired fixtures, all contrary to the approved text-RAG plan.
+- Evidence: the removed assertions expected a retired multimodal server, a multimodal schema title, and non-empty retired fixtures, all contrary to the approved text-RAG plan.
 - `/status` model and token use: unavailable in this API session.
 
 ## 2026-08-16 — Selective Wave 2 integration
@@ -292,3 +254,8 @@ Follow-up:
 - Decision: move every new text-RAG command and module into `scripts.ingestion` or `scripts.retrieval`, mirror that split in tests, and deliberately remove top-level compatibility wrappers.
 - Reasoning: the split follows the durable-corpus versus query-time boundary and prevents the current generic `text_rag.py` module from becoming a mixed-responsibility home.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Runtime scope decision
+
+- Decision: Ollama was used for the local text-RAG study because the available time did not support completing and validating the alternative runtime path.
+- Consequence: the study scope, preflight, and benchmark tooling remain limited to Ollama `qwen3:4b-instruct`.

@@ -29,7 +29,7 @@ No authoritative benchmark measurements, charts, or intervention decisions exist
 - **Model service:** local Ollama `qwen3:4b-instruct`, temperature `0`, `think=false`
 - **Primary interventions:** streaming display and reducing the output-token cap from 256 to 128
 
-PDF ingestion, multimodal models, vLLM-Metal, dense retrieval, reranking, and concurrency optimization are out of scope for this study.
+PDF ingestion, multimodal models, dense retrieval, reranking, and concurrency optimization are out of scope for this study.
 
 ## Reproducibility status
 

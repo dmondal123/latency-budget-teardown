@@ -35,7 +35,7 @@ Work is complete only when:
 - One exact command regenerates every reported number and chart.
 - Tests, generated metrics/charts, pinned dependencies, spend, collaboration log, final write-up of at most two pages, and a valid submission ZIP are present.
 
-Out of scope: PDFs, image ingestion, multimodal models, dense retrieval, reranking, vLLM-Metal, concurrency optimization, speculative decoding, and production serving.
+Out of scope: PDFs, image ingestion, multimodal models, dense retrieval, reranking, concurrency optimization, speculative decoding, and production serving.
 
 ## 2. Frozen identities and fail-fast preflight
 
