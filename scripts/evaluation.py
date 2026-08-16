@@ -368,9 +368,16 @@ def _tail_trace(trace: Mapping[str, Any], cases_by_id: Mapping[str, Mapping[str,
     enriched["context_length"] = trace.get("context_characters")
     ranks = trace.get("retrieved_ranks", {})
     gold_ids = case.get("gold_evidence_ids", [])
-    if "gold_rank" not in enriched and isinstance(ranks, Mapping) and isinstance(gold_ids, Sequence):
-        matched_ranks = [ranks.get(str(evidence_id)) for evidence_id in gold_ids]
-        enriched["gold_rank"] = min((int(rank) for rank in matched_ranks if isinstance(rank, int)), default=0)
+    if "gold_rank" not in enriched:
+        if not case or not isinstance(gold_ids, Sequence) or not gold_ids:
+            enriched["gold_rank"] = None
+            enriched["gold_rank_reason"] = "unavailable_without_frozen_case"
+        elif not isinstance(ranks, Mapping):
+            enriched["gold_rank"] = None
+            enriched["gold_rank_reason"] = "unavailable_without_retrieved_ranks"
+        else:
+            matched_ranks = [ranks.get(str(evidence_id)) for evidence_id in gold_ids]
+            enriched["gold_rank"] = min((int(rank) for rank in matched_ranks if isinstance(rank, int)), default=0)
     enriched["truncated"] = trace.get("truncated", trace.get("finish_reason") == "length")
     return enriched
 

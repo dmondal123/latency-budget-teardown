@@ -246,6 +246,14 @@ Follow-up:
 - Evidence: focused telemetry, pipeline, runner, and evaluation contracts passed (`28 passed`).
 - Learning: a report fixture may prove arithmetic while still omitting metadata needed to explain real tail behavior; verify every planned diagnostic against the production trace schema before measurement.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Representative C04 tail-fixture correction
+
+- Context: the initial fixed JSONL report fixture predated the new trace metadata and used synthetic case IDs outside the frozen case map, causing its tail display to show unknown context and a misleading gold rank of zero.
+- Correction: the fixed fixture now includes question/context lengths and matching synthetic frozen-case evidence; reports represent unavailable frozen evidence as `gold_rank: null` with a machine-readable reason, reserving zero for verified zero-gold retrieval.
+- Evidence: fixed runner/evaluation contracts and full suite passed (`84 passed`).
+- Preventive rule: distinguish unknown data from measured zeroes, and keep fixed-report fixtures aligned with the current raw-trace schema.
+- `/status` model and token use: unavailable in this API session.
 - `/status` model and token use: unavailable in this API session.
 
 ## 2026-08-16 — Offline text-corpus ingestion boundary

@@ -12,6 +12,7 @@ from scripts.evaluation import (
     assert_single_delta,
     interleaved_schedule,
     load_jsonl,
+    tail_analysis,
     validate_trace,
     write_condition_report,
 )
@@ -48,6 +49,8 @@ def _trace(case_id: str, *, condition_id: str, repetition: int, ttc_ms: float) -
         "ttc_ms": ttc_ms,
         "input_tokens": 8,
         "output_tokens": 2,
+        "question_length": len(f"Question {case_id}?"),
+        "context_characters": 100,
         "tokens_per_second": 20.0,
         "finish_reason": "stop",
         "error_type": None,
@@ -118,6 +121,7 @@ def test_fixed_jsonl_regenerates_machine_readable_waterfalls_and_marginal_table(
         bootstrap_seed=20260816,
         bootstrap_resamples=100,
         command="python -m scripts.evaluation report --input fixed.jsonl",
+        cases_by_id={case_id: {"gold_evidence_ids": [1]} for case_id in ("case-a", "case-b", "case-c")},
     )
 
     persisted = json.loads(report_path.read_text(encoding="utf-8"))
@@ -127,6 +131,9 @@ def test_fixed_jsonl_regenerates_machine_readable_waterfalls_and_marginal_table(
     assert report["marginal_stages"]["label"] == "marginal; columns are not additive"
     assert report["metadata"]["attempted_count"] == 3
     assert report["metadata"]["valid_count"] == 3
+    assert report["tail"]["tail_diagnostics"]["context_lengths"] == [100]
+    assert report["tail"]["tail_diagnostics"]["gold_ranks"] == [1]
+    assert report["tail"]["tail_diagnostics"]["question_lengths"] == [len("Question case-c?")]
 
 
 def test_successful_trace_with_missing_raw_evidence_or_timing_is_not_reportable():
@@ -138,3 +145,20 @@ def test_successful_trace_with_missing_raw_evidence_or_timing_is_not_reportable(
     categories = {issue["category"] for issue in validate_trace(trace)}
 
     assert "missing_required_value" in categories
+
+
+def test_tail_marks_gold_rank_unknown_when_the_frozen_case_is_unavailable():
+    trace = _trace("case-a", condition_id="B0_buffered_256", repetition=0, ttc_ms=80.0)
+    report = tail_analysis(
+        [trace],
+        stages=(
+            "admission_ms", "retrieval_ms", "context_assembly_ms",
+            "model_dispatch_to_first_token_ms", "model_decode_ms", "validation_ms",
+        ),
+        percentile_method="nearest_rank",
+        cases_by_id={},
+    )
+
+    tail_trace = report["tail_traces"][0]
+    assert tail_trace["gold_rank"] is None
+    assert tail_trace["gold_rank_reason"] == "unavailable_without_frozen_case"

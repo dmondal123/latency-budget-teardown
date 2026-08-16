@@ -9,7 +9,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | Overall state | Wave 3 is complete through C04; C02, G1, C03, and C04 passed |
 | Current phase | Wave 4 authoritative-measurement preparation |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | T15 condition runner/report fixture gate and T15.1 tail-diagnostic completeness verified |
+| Latest milestone | T15 condition runner/report fixture gate, tail-diagnostic completeness, and representative fixed-JSONL tail evidence verified |
 | Authoritative measurements | None |
 | Active blocker | None; T16 must remain serial and preserve every measured attempt |
 | Next gate | C05 complete authoritative-matrix integrity |
@@ -23,7 +23,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M03 | Migrate behavioral contract and thresholds | Complete | G1-approved JSON contracts and frozen provisional thresholds |
 | M04 | Build and verify 30 text QA cases | Complete | `eval/v1/candidate_ledger.json`, `eval/v1/reviewed_mappings.json`, sealed 24/6 fixtures, and authoritative verifier pass |
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
-| M06 | Implement instrumented text-RAG pipeline | Complete | T12–T15.1 stage spans, telemetry, raw traces, condition/report fixtures, tail-diagnostic completeness, and local manual-query CLI |
+| M06 | Implement instrumented text-RAG pipeline | Complete | T12–T15.2 stage spans, telemetry, raw traces, condition/report fixtures, representative tail diagnostics, and local manual-query CLI |
 | M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
 | M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
 | M09 | Run accepted holdout and reproduce/package | Not started | Expected clean log and ZIP audit |

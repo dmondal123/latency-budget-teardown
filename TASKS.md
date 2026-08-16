@@ -62,6 +62,7 @@ After each component's interface is stable, instrumentation and independent cont
 - [x] **C03 [GATE; at 4:30; depends: T14]** Confirm a complete raw trace, additive TTC arithmetic, citation resolution, thinking disabled, and deterministic final-text parity.
 - [x] **T15 [SEQ; 4:30–5:30; depends: C03]** Implement the condition runner, single-delta assertions, report generation, and fixed-JSONL regression tests.
 - [x] **T15.1 [SEQ; user-required follow-up; depends: T15]** Persist question and assembled-context lengths; derive tail gold rank and truncation from immutable trace/case evidence.
+- [x] **T15.2 [SEQ; user-required follow-up; depends: T15.1]** Make fixed-JSONL tail fixtures representative and distinguish unavailable frozen-case evidence from verified zero-gold retrieval.
 - [x] **C04 [GATE; at 5:30; depends: T15, T15.1]** Confirm the runner can interleave all conditions and regenerate correct fixture waterfalls and marginal tables.
 
 Checkpoint action: authoritative measurement cannot begin without both `C03` and `C04`. If either fails, spend the remaining window producing a verified partial implementation and blocker report rather than untrustworthy benchmark numbers.
