@@ -1,0 +1,220 @@
+{
+  "acceptance": {
+    "reasons": [],
+    "status": "pass"
+  },
+  "cache_enabled": false,
+  "cache_validation": {
+    "reasons": [],
+    "status": "pass"
+  },
+  "command": [
+    "/Users/dmondal/.venv-vllm-metal/bin/python",
+    "-m",
+    "vllm.entrypoints.openai.api_server",
+    "--model",
+    "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+    "--revision",
+    "2fd8dac",
+    "--port",
+    "8000",
+    "--max-model-len",
+    "4096",
+    "--max-num-seqs",
+    "1",
+    "--limit-mm-per-prompt",
+    "{\"image\":2}"
+  ],
+  "concurrency": 1,
+  "device": "Device(gpu, 0)",
+  "environment": {
+    "MLX_MAX_OPS_PER_BUFFER": "2000",
+    "VLLM_METAL_DECODE_PIPELINE": "1",
+    "VLLM_METAL_MEMORY_FRACTION": "0.8",
+    "VLLM_METAL_MULTIMODAL_MODE": "multimodal-native",
+    "VLLM_METAL_USE_PAGED_ATTENTION": "1",
+    "VLLM_MLX_DEVICE": "gpu"
+  },
+  "memory_samples": [
+    {
+      "captured_at_unix_s": 1786827558.187649,
+      "label": "before_start",
+      "rss_bytes": null,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                  1124573.\nPages active:                                  72920.\nPages inactive:                               117855.\nPages speculative:                               465.\nPages throttled:                                   0.\nPages wired down:                             123654.\nPages purgeable:                                  12.\n\"Translation faults\":                       60744381.\nPages copy-on-write:                         3462015.\nPages zero filled:                          57317172.\nPages reactivated:                           1979584.\nPages purged:                                 445407.\nFile-backed pages:                             74646.\nAnonymous pages:                              116594.\nPages stored in compressor:                   404318.\nPages occupied by compressor:                  90793.\nDecompressions:                              2621698.\nCompressions:                                4622537.\nPageins:                                     2698170.\nPageouts:                                      13095.\nSwapins:                                       26523.\nSwapouts:                                     123040."
+    },
+    {
+      "captured_at_unix_s": 1786827629.352816,
+      "label": "after_load",
+      "rss_bytes": 1643347968,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    85667.\nPages active:                                 495788.\nPages inactive:                               496578.\nPages speculative:                               599.\nPages throttled:                                   0.\nPages wired down:                             123858.\nPages purgeable:                                7549.\n\"Translation faults\":                       62056707.\nPages copy-on-write:                         3474002.\nPages zero filled:                          59202024.\nPages reactivated:                           2054617.\nPages purged:                                 453767.\nFile-backed pages:                             71745.\nAnonymous pages:                              921220.\nPages stored in compressor:                   724871.\nPages occupied by compressor:                 328004.\nDecompressions:                              2757563.\nCompressions:                                5085531.\nPageins:                                     2881162.\nPageouts:                                      13223.\nSwapins:                                       26535.\nSwapouts:                                     123040."
+    },
+    {
+      "captured_at_unix_s": 1786827630.025593,
+      "label": "after_request",
+      "rss_bytes": 1646313472,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                     8060.\nPages active:                                 176178.\nPages inactive:                               174516.\nPages speculative:                               916.\nPages throttled:                                   0.\nPages wired down:                            1059854.\nPages purgeable:                                7591.\n\"Translation faults\":                       62060023.\nPages copy-on-write:                         3474417.\nPages zero filled:                          59218979.\nPages reactivated:                           2054617.\nPages purged:                                 453767.\nFile-backed pages:                             71901.\nAnonymous pages:                              279709.\nPages stored in compressor:                   435331.\nPages occupied by compressor:                 110921.\nDecompressions:                              3047109.\nCompressions:                                5085531.\nPageins:                                     2881223.\nPageouts:                                      13223.\nSwapins:                                       26535.\nSwapouts:                                     123040."
+    },
+    {
+      "captured_at_unix_s": 1786827630.296179,
+      "label": "after_request",
+      "rss_bytes": 1648312320,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    21725.\nPages active:                                 167383.\nPages inactive:                               165851.\nPages speculative:                               645.\nPages throttled:                                   0.\nPages wired down:                            1063705.\nPages purgeable:                                  34.\n\"Translation faults\":                       62063386.\nPages copy-on-write:                         3474807.\nPages zero filled:                          59249623.\nPages reactivated:                           2056650.\nPages purged:                                 461250.\nFile-backed pages:                             71660.\nAnonymous pages:                              262219.\nPages stored in compressor:                   435586.\nPages occupied by compressor:                 111078.\nDecompressions:                              3047425.\nCompressions:                                5086096.\nPageins:                                     2881258.\nPageouts:                                      13229.\nSwapins:                                       26535.\nSwapouts:                                     123040."
+    },
+    {
+      "captured_at_unix_s": 1786827630.546169,
+      "label": "after_request",
+      "rss_bytes": 1648312320,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                    23965.\nPages active:                                 167378.\nPages inactive:                               165968.\nPages speculative:                               646.\nPages throttled:                                   0.\nPages wired down:                            1061334.\nPages purgeable:                                  34.\n\"Translation faults\":                       62065224.\nPages copy-on-write:                         3475222.\nPages zero filled:                          59285037.\nPages reactivated:                           2056650.\nPages purged:                                 461250.\nFile-backed pages:                             71661.\nAnonymous pages:                              262331.\nPages stored in compressor:                   435573.\nPages occupied by compressor:                 111070.\nDecompressions:                              3047444.\nCompressions:                                5086096.\nPageins:                                     2881262.\nPageouts:                                      13229.\nSwapins:                                       26535.\nSwapouts:                                     123040."
+    },
+    {
+      "captured_at_unix_s": 1786827630.945733,
+      "label": "after_shutdown",
+      "rss_bytes": null,
+      "swap_used_bytes": 1588005437,
+      "vm_stat": "Mach Virtual Memory Statistics: (page size of 16384 bytes)\nPages free:                                  1117353.\nPages active:                                  81937.\nPages inactive:                               114570.\nPages speculative:                              1399.\nPages throttled:                                   0.\nPages wired down:                             123510.\nPages purgeable:                                  73.\n\"Translation faults\":                       62094204.\nPages copy-on-write:                         3475500.\nPages zero filled:                          59285348.\nPages reactivated:                           2056650.\nPages purged:                                 461250.\nFile-backed pages:                             74441.\nAnonymous pages:                              123465.\nPages stored in compressor:                   398870.\nPages occupied by compressor:                  90830.\nDecompressions:                              3061476.\nCompressions:                                5086096.\nPageins:                                     2884000.\nPageouts:                                      13229.\nSwapins:                                       26535.\nSwapouts:                                     123040."
+    }
+  ],
+  "name": "cache_disabled",
+  "requests": [
+    {
+      "elapsed_ms": 86.789,
+      "ok": true,
+      "output": "READY",
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "annotations": null,
+              "audio": null,
+              "content": "READY",
+              "function_call": null,
+              "reasoning": null,
+              "refusal": null,
+              "role": "assistant"
+            },
+            "routed_experts": null,
+            "stop_reason": null,
+            "token_ids": null
+          }
+        ],
+        "created": 1786827629,
+        "ec_transfer_params": null,
+        "id": "chatcmpl-b40944333cf90410",
+        "kv_transfer_params": null,
+        "metrics": null,
+        "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+        "object": "chat.completion",
+        "prompt_logprobs": null,
+        "prompt_text": null,
+        "prompt_token_ids": null,
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.27.1-7d95f8f0",
+        "usage": {
+          "completion_tokens": 2,
+          "prompt_tokens": 13,
+          "prompt_tokens_details": null,
+          "total_tokens": 15
+        }
+      }
+    },
+    {
+      "elapsed_ms": 262.559,
+      "ok": true,
+      "output": "black",
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "annotations": null,
+              "audio": null,
+              "content": "black",
+              "function_call": null,
+              "reasoning": null,
+              "refusal": null,
+              "role": "assistant"
+            },
+            "routed_experts": null,
+            "stop_reason": null,
+            "token_ids": null
+          }
+        ],
+        "created": 1786827630,
+        "ec_transfer_params": null,
+        "id": "chatcmpl-821df67540bb4fbf",
+        "kv_transfer_params": null,
+        "metrics": null,
+        "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+        "object": "chat.completion",
+        "prompt_logprobs": null,
+        "prompt_text": null,
+        "prompt_token_ids": null,
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.27.1-7d95f8f0",
+        "usage": {
+          "completion_tokens": 2,
+          "prompt_tokens": 85,
+          "prompt_tokens_details": null,
+          "total_tokens": 87
+        }
+      }
+    },
+    {
+      "elapsed_ms": 242.338,
+      "ok": true,
+      "output": "red",
+      "response": {
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "annotations": null,
+              "audio": null,
+              "content": "red",
+              "function_call": null,
+              "reasoning": null,
+              "refusal": null,
+              "role": "assistant"
+            },
+            "routed_experts": null,
+            "stop_reason": null,
+            "token_ids": null
+          }
+        ],
+        "created": 1786827630,
+        "ec_transfer_params": null,
+        "id": "chatcmpl-aa9d29d7de418ede",
+        "kv_transfer_params": null,
+        "metrics": null,
+        "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+        "object": "chat.completion",
+        "prompt_logprobs": null,
+        "prompt_text": null,
+        "prompt_token_ids": null,
+        "service_tier": null,
+        "system_fingerprint": "vllm-0.27.1-7d95f8f0",
+        "usage": {
+          "completion_tokens": 2,
+          "prompt_tokens": 85,
+          "prompt_tokens_details": null,
+          "total_tokens": 87
+        }
+      }
+    }
+  ],
+  "schema_version": "m05-condition.v1",
+  "server_log_tail": "eCore pid=94311) INFO 08-16 02:29:56 [__init__.py:266] Paged-attention Metal kernel warm-up complete\n(EngineCore pid=94311) INFO 08-16 02:29:56 [core.py:348] init engine (profile, create kv cache, warmup model) took 3.91 s (compilation: 0.07 s)\n(EngineCore pid=94311) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend=\"torchvision\"` instead of `use_fast=True`, or `backend=\"pil\"` instead of `use_fast=False`.\n(EngineCore pid=94311) WARNING 08-16 02:30:09 [vllm.py:609] Model Runner V2 requires Triton; using the V1 model runner instead.\n(EngineCore pid=94311) INFO 08-16 02:30:09 [kernel.py:306] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'])\n(EngineCore pid=94311) INFO 08-16 02:30:09 [platform.py:665] Metal: chunked prefill enabled (paged attention), max_num_batched_tokens=2048\n(EngineCore pid=94311) INFO 08-16 02:30:09 [platform.py:779] Metal memory: 20.6GB total, 7.5GB available\n(APIServer pid=93963) INFO 08-16 02:30:09 [api_server.py:678] Supported tasks: ['generate']\n(APIServer pid=93963) INFO 08-16 02:30:16 [hf.py:540] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.\n(APIServer pid=93963) INFO 08-16 02:30:26 [base.py:235] Multi-modal warmup completed in 10.416s\n(APIServer pid=93963) INFO 08-16 02:30:27 [base.py:235] Readonly multi-modal warmup completed in 0.504s\n(APIServer pid=93963) WARNING 08-16 02:30:27 [model.py:1637] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.7, 'top_k': 20, 'top_p': 0.8}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.\n(APIServer pid=93963) INFO 08-16 02:30:28 [api_server.py:682] Starting vLLM server on http://0.0.0.0:8000\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:37] Available routes are:\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /openapi.json, Methods: GET, HEAD\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /docs, Methods: GET, HEAD\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /docs/oauth2-redirect, Methods: GET, HEAD\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /redoc, Methods: GET, HEAD\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /load, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /version, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /health, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /metrics, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /tokenize, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /detokenize, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/models, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /ping, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /ping, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /invocations, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/chat/completions, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/chat/completions/batch, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/responses, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/responses/{response_id}, Methods: GET\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/responses/{response_id}/cancel, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/completions, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/messages, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/messages/count_tokens, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /generative_scoring, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /scale_elastic_ep, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /is_scaling_elastic_ep, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/chat/completions/render, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/completions/render, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/chat/completions/derender, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /v1/completions/derender, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:46] Route: /inference/v1/generate, Methods: POST\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:99] API server: waiting for HTTP server to start\n(APIServer pid=93963) INFO:     Started server process [93963]\n(APIServer pid=93963) INFO:     Waiting for application startup.\n(APIServer pid=93963) INFO:     Application startup complete.\n(APIServer pid=93963) INFO 08-16 02:30:28 [launcher.py:105] API server: HTTP server started\n(APIServer pid=93963) INFO:     127.0.0.1:54472 - \"GET /health HTTP/1.1\" 200 OK\n(APIServer pid=93963) INFO:     127.0.0.1:54473 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n(APIServer pid=93963) INFO:     127.0.0.1:54474 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n(APIServer pid=93963) INFO:     127.0.0.1:54475 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n(APIServer pid=93963) INFO:     127.0.0.1:54476 - \"POST /v1/chat/completions HTTP/1.1\" 200 OK\n(APIServer pid=93963) INFO 08-16 02:30:30 [launcher.py:112] [shutdown] API server: shutdown triggered\n(APIServer pid=93963) INFO 08-16 02:30:30 [launcher.py:128] [shutdown] API server: stopping engine client mode=abort timeout=0s\n(APIServer pid=93963) INFO 08-16 02:30:30 [core_client.py:686] [shutdown] MPClient: start timeout=0s\n(APIServer pid=93963) INFO 08-16 02:30:30 [core_client.py:688] [shutdown] MPClient: stopping engine manager\n(APIServer pid=93963) INFO 08-16 02:30:30 [utils.py:612] [shutdown] Process manager: send sigterm to process EngineCore\n(APIServer pid=93963) WARNING 08-16 02:30:30 [utils.py:632] [shutdown] Process manager: force killing remaining processes count=1\n(EngineCore pid=94311) INFO 08-16 02:30:30 [core.py:1332] [shutdown] EngineCore: trigger received signal=SIGTERM\n(APIServer pid=93963) WARNING 08-16 02:30:30 [utils.py:637] [shutdown] Process manager: force killing remaining process EngineCore pid 94311\n(EngineCore pid=94311) INFO 08-16 02:30:30 [core.py:1468] [shutdown] EngineCore: start mode=abort timeout=0s\n(EngineCore pid=94311) INFO 08-16 02:30:30 [core.py:1499] [shutdown] EngineCore: request processing complete; starting resource teardown\n(EngineCore pid=94311) INFO 08-16 02:30:30 [core.py:1345] [shutdown] EngineCore: exiting busy loop\n(EngineCore pid=94311) INFO 08-16 02:30:30 [worker.py:406] Metal worker shutdown complete\n(APIServer pid=93963) INFO 08-16 02:30:30 [core_client.py:690] [shutdown] MPClient: engine manager stopped\n(APIServer pid=93963) INFO 08-16 02:30:30 [core_client.py:691] [shutdown] MPClient: cleaning up background resources\n(APIServer pid=93963) INFO 08-16 02:30:30 [core_client.py:693] [shutdown] MPClient: complete\n(APIServer pid=93963) INFO 08-16 02:30:30 [launcher.py:137] [shutdown] API server: engine client stopped\n(APIServer pid=93963) INFO 08-16 02:30:30 [launcher.py:140] [shutdown] API server: signalling HTTP server shutdown\n(APIServer pid=93963) INFO 08-16 02:30:30 [launcher.py:161] [shutdown] API server: shutting down FastAPI HTTP server\n(APIServer pid=93963) INFO:     Shutting down\n(APIServer pid=93963) INFO:     Waiting for application shutdown.\n(APIServer pid=93963) INFO:     Application shutdown complete.\n",
+  "warm": true
+}

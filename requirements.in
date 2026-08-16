@@ -1,6 +1,6 @@
 # Core local RAG pipeline, evaluation, reporting, and test dependencies.
 # The vLLM-Metal server is pinned separately after its feasibility gate.
-PyMuPDF
+datasets
 rank-bm25
 jsonschema
 pydantic

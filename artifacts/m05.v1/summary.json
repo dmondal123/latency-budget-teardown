@@ -1,0 +1,44 @@
+{
+  "capacity_gib": 24,
+  "conditions": [
+    {
+      "name": "memory_fraction_0.60",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "memory_fraction_0.70",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "memory_fraction_0.80",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "cache_disabled",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "cache_enabled",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "concurrency_2",
+      "reasons": [],
+      "status": "pass"
+    },
+    {
+      "name": "concurrency_4",
+      "reasons": [],
+      "status": "pass"
+    }
+  ],
+  "safety_margin_gib": 4,
+  "schema_version": "m05-summary.v1",
+  "selected_memory_fraction": 0.8,
+  "status": "pass"
+}

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/dmondal/.venv-vllm-metal/bin/python",
+    "-m",
+    "vllm.entrypoints.openai.api_server",
+    "--model",
+    "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+    "--revision",
+    "2fd8dac",
+    "--port",
+    "8000",
+    "--max-model-len",
+    "2048",
+    "--limit-mm-per-prompt",
+    "{\"image\":2}"
+  ],
+  "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+  "model": "mlx-community/Qwen3-VL-4B-Instruct-4bit",
+  "revision": "2fd8dac",
+  "schema_version": "runtime-smoke.v1",
+  "server_log_tail": "01:54:30 [launcher.py:46] Route: /v1/responses/{response_id}, Methods: GET\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/responses/{response_id}/cancel, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/completions, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/messages, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/messages/count_tokens, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /generative_scoring, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /scale_elastic_ep, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /is_scaling_elastic_ep, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/chat/completions/render, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/completions/render, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/chat/completions/derender, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /v1/completions/derender, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:30 [launcher.py:46] Route: /inference/v1/generate, Methods: POST\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:99] API server: waiting for HTTP server to start\n(APIServer pid=62900) INFO:     Started server process [62900]\n(APIServer pid=62900) INFO:     Waiting for application startup.\n(APIServer pid=62900) INFO:     Application startup complete.\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:105] API server: HTTP server started\n(APIServer pid=62900) INFO:     127.0.0.1:53563 - \"GET /health HTTP/1.1\" 200 OK\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:112] [shutdown] API server: shutdown triggered\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:128] [shutdown] API server: stopping engine client mode=abort timeout=0s\n(APIServer pid=62900) INFO 08-16 01:54:31 [core_client.py:686] [shutdown] MPClient: start timeout=0s\n(APIServer pid=62900) INFO 08-16 01:54:31 [core_client.py:688] [shutdown] MPClient: stopping engine manager\n(APIServer pid=62900) INFO 08-16 01:54:31 [utils.py:612] [shutdown] Process manager: send sigterm to process EngineCore\n(APIServer pid=62900) WARNING 08-16 01:54:31 [utils.py:632] [shutdown] Process manager: force killing remaining processes count=1\n(APIServer pid=62900) WARNING 08-16 01:54:31 [utils.py:637] [shutdown] Process manager: force killing remaining process EngineCore pid 63414\n(EngineCore pid=63414) INFO 08-16 01:54:31 [core.py:1332] [shutdown] EngineCore: trigger received signal=SIGTERM\n(EngineCore pid=63414) INFO 08-16 01:54:31 [core.py:1468] [shutdown] EngineCore: start mode=abort timeout=0s\n(EngineCore pid=63414) INFO 08-16 01:54:31 [core.py:1499] [shutdown] EngineCore: request processing complete; starting resource teardown\n(EngineCore pid=63414) INFO 08-16 01:54:31 [core.py:1345] [shutdown] EngineCore: exiting busy loop\n(EngineCore pid=63414) INFO 08-16 01:54:31 [worker.py:406] Metal worker shutdown complete\n(APIServer pid=62900) INFO 08-16 01:54:31 [core_client.py:690] [shutdown] MPClient: engine manager stopped\n(APIServer pid=62900) INFO 08-16 01:54:31 [core_client.py:691] [shutdown] MPClient: cleaning up background resources\n(APIServer pid=62900) INFO 08-16 01:54:31 [core_client.py:693] [shutdown] MPClient: complete\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:137] [shutdown] API server: engine client stopped\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:140] [shutdown] API server: signalling HTTP server shutdown\n(APIServer pid=62900) INFO 08-16 01:54:31 [launcher.py:161] [shutdown] API server: shutting down FastAPI HTTP server\n(APIServer pid=62900) INFO:     Shutting down\n(APIServer pid=62900) INFO:     Waiting for application shutdown.\n(APIServer pid=62900) INFO:     Application shutdown complete.\n",
+  "status": "fail"
+}

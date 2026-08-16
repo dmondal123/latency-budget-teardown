@@ -1,189 +1,80 @@
 # Project Progress
 
-This file is the current project status. Update it after each meaningful milestone, approval gate, experiment decision, or newly discovered blocker. Detailed benchmark evidence belongs in `EXPERIMENT_LOG.md`; significant human and agent decisions belong in `COLLABORATION_NOTES.md`.
+Use this file for current milestone, approval, risk, and blocker state. Detailed measurements belong in `EXPERIMENT_LOG.md`; significant human/AI decisions and corrections belong in `COLLABORATION_NOTES.md`.
 
 ## Current status
 
 | Field | Value |
-|---|---|
-| Overall state | Foundation tooling implemented; runtime feasibility gate in progress |
-| Current phase | D1 contract, fixtures, and vLLM-Metal feasibility |
-| Approved plan | `RAG_PIPELINE_PLAN.md`, approved 2026-08-16 |
-| Latest milestone | Metal-backed text/image smoke passed; remaining M05 checks under review |
-| Authoritative measurements | None yet |
-| Active blocker | None; remaining M05 checks require target-device measurements |
-| Next gate | Complete revised M05 evidence plan, then approve feasibility gate |
+| --- | --- |
+| Overall state | Text-RAG plan approved; implementation not started |
+| Current phase | G1 dataset/eval/runtime migration and preflight |
+| Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
+| Latest milestone | PDF/vLLM-Metal scope replaced by text Hugging Face/Ollama scope |
+| Authoritative measurements | None |
+| Active blocker | Exact Ollama version/model digest and 30 verified QA-to-passage mappings are not yet captured |
+| Next gate | G1 approval of migrated cases, immutable runtime identity, and numeric budgets |
 
 ## Milestones
 
-| ID | Milestone | Status | Evidence | Updated |
-|---|---|---|---|---|
-| M01 | Refine and approve the RAG latency plan | Complete | `RAG_PIPELINE_PLAN.md` | 2026-08-16 |
-| M02 | Create project tracking scaffolding | Complete | `PROGRESS.md`, `EXPERIMENT_LOG.md`, `COLLABORATION_NOTES.md` | 2026-08-16 |
-| M03 | Freeze behavioral contract and quality gates | Complete | User approved M03; `contracts/behavioral_contract.v1.json` and `contracts/thresholds.2026-08-16.json` | 2026-08-16 |
-| M04 | Verify eval cases and seal holdout | In progress | `eval/v1/`, `scripts/verify_eval.py`, and passing verifier; awaiting G1 approval | 2026-08-16 |
-| M05 | Pass vLLM-Metal feasibility gate | In progress | `runtime_smoke.v4.json` passes text/image/health; remaining memory, swap, CPU-fallback, cache, and repeatability checks are planned | 2026-08-16 |
-| M06 | Run instrumented baseline | Not started | Expected raw JSONL and baseline report | 2026-08-16 |
-| M07 | Run isolated interventions | Not started | Expected experiment records for I1 through I5 | 2026-08-16 |
-| M08 | Run accepted combined condition and holdout | Not started | Expected combined-run report | 2026-08-16 |
-| M09 | Reproduce final metrics and package submission | Not started | Expected clean reproduction log and ZIP audit | 2026-08-16 |
-
-Allowed status values are `Not started`, `In progress`, `Blocked`, `Complete`, and `Rejected`.
+| ID | Milestone | Status | Evidence |
+| --- | --- | --- | --- |
+| M01 | Approve revised ten-hour text-RAG plan | Complete | `RAG_PIPELINE_PLAN.md` |
+| M02 | Pin dataset repository/revision and observed schemas | Complete | `eval/v1/dataset_manifest.json` |
+| M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
+| M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
+| M05 | Pin and smoke-test Ollama `qwen3:4b` | Not started | Expected digest and buffered/streaming record |
+| M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
+| M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
+| M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
+| M09 | Run accepted holdout and reproduce/package | Not started | Expected clean log and ZIP audit |
 
 ## Approval gates
 
 | Gate | Reviewer must inspect | Acceptance condition | Status |
-|---|---|---|---|
-| G1 measurement contract | Behavioral contract, eval cases, model/runtime identity, numeric budgets | Explicit human approval before baseline execution | Pending |
-| G2 baseline integrity | Raw trace completeness, p50/p95 waterfall arithmetic, marginal-percentile labels, tail slices | Explicit human approval before interpreting interventions | Pending |
-| G3 intervention decisions | Isolated configuration deltas, confidence intervals, quality effects, failure evidence | Explicit accept or reject decision for each condition | Pending |
-| G4 final delivery | Requirement coverage, raw-to-report traceability, reproduction log, artifact contents | Explicit final approval | Pending |
+| --- | --- | --- | --- |
+| G1 measurement contract | Dataset/evidence mappings, contract, thresholds, Ollama/model identity | Explicit approval before baseline | Pending |
+| G2 baseline integrity | Trace completeness, stage arithmetic, aligned waterfalls, marginal labels | Explicit approval before intervention decisions | Pending |
+| G3 intervention decisions | Single deltas, intervals, quality/truncation effects | Explicit accept/reject per condition | Pending |
+| G4 final delivery | Raw-to-report traceability, reproduction log, archive contents | Explicit final approval | Pending |
 
-## Next actions
+## Immediate actions
 
 | Priority | Action | Completion evidence |
-|---|---|---|
-| P0 | Review and approve the versioned behavioral contract and dated thresholds | Explicit G1 approval and contract hash |
-| P0 | Review and approve the 30-case dataset and sealed holdouts | Explicit G1 approval and saved verifier output |
-| P0 | Pin Qwen3-VL and the vLLM-Metal environment | Environment manifest with exact revisions |
-| P0 | Complete revised M05 runtime feasibility checks | Versioned JSON evidence for smoke, memory/swap, CPU-fallback, prefix-cache, and concurrency |
-| P0 | Build the deterministic PDF evidence manifest from the corpus | `scripts/ingest_pdfs.py` output and ingestion tests |
-| P1 | Implement stage spans and the raw JSONL schema | Passing instrumentation tests |
-| P1 | Run B0 baseline with at least 150 valid requests | Baseline raw data and report |
+| --- | --- | --- |
+| P0 | Pin Ollama version and `qwen3:4b` digest; verify `think=false` streaming | Environment manifest and smoke trace |
+| P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification |
+| P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
+| P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
+| P1 | Implement BM25 pipeline and request trace schema | Focused tests |
+| P1 | Freeze budgets and quality thresholds at G1 | Explicit approval and contract hash |
 
-## Risks and decisions needing attention
+## Risks
 
-| Risk or decision | Current treatment | Trigger for update |
-|---|---|---|
-| Qwen3-VL support is experimental on vLLM-Metal | Hard feasibility gate before authoritative measurement | Smoke failure, incorrect image identity, CPU fallback, OOM, or sustained swap |
-| Target has 24 GB unified memory | Preflight memory-fraction sweep and worst-case two-image probe; v4 peaked at 17.08 GB | Memory pressure or swap changes the tail |
-| Thirty eval cases are below the preferred 48 to 60 | Record as a quality-coverage limitation; do not treat latency repetitions as independent quality cases | Coverage gap or unstable slice result |
-| Prefix caching may behave differently on the experimental multimodal path | Correctness-gated fixed policy; separate from application caches | Same-text/different-image or concurrent parity failure |
-| p95 may be unstable at 150 samples | Bootstrap by case and extend in 30-request blocks up to 300 | Relative p95 TTC confidence-interval width exceeds 20% |
-
-## Artifact index
-
-| Artifact | Purpose | State |
-|---|---|---|
-| `PROBLEM_STATEMENT.md` | Authoritative assignment requirements | Present |
-| `RAG_PIPELINE_PLAN.md` | Approved measurement and implementation plan | Present |
-| `PROGRESS.md` | Current milestone, gate, risk, and next-action status | Present |
-| `EXPERIMENT_LOG.md` | Append-only experiment protocol and evidence record | Present |
-| `COLLABORATION_NOTES.md` | Human and AI direction, decisions, and corrections | Present |
-
-## Progress update template
-
-Copy this block for each meaningful update.
-
-```markdown
-### YYYY-MM-DD: Short milestone name
-
-Status: In progress | Blocked | Complete | Rejected
-
-What changed:
-
-Evidence:
-
-Decision or blocker:
-
-Next action:
-```
+| Risk | Treatment | Trigger |
+| --- | --- | --- |
+| QA IDs may be mistaken for passage IDs | Never infer the mapping; verify answer-containing passages manually | Any selected row lacks unique support |
+| `qwen3:4b` tag is mutable | Capture immutable Ollama digest before measurement | Digest missing or changes |
+| Qwen thinking tokens distort latency | Require `think=false` and reject traces showing reasoning mode | Smoke/output metadata mismatch |
+| p95 is unstable with 120 rows/condition | Case bootstrap; extend in 24-row blocks only if time permits | Relative p95 CI width >20% |
+| Warm server or OS state drifts | Interleaved seeded blocks, fixed keep-alive/power mode, record swap | Thermal/swap changes |
+| Ten-hour deadline encourages weak evidence | Drop optional diagnostics before reducing validation or fabricating gold mappings | Schedule slips |
 
 ## History
 
-### 2026-08-16: Measurement plan approved
+### 2026-08-16: Text-RAG scope approved
 
 Status: Complete
 
-What changed: `RAG_PIPELINE_PLAN.md` was restructured around the stage contract, baseline protocol, p50/p95 waterfall method, quality gates, isolated interventions, latency budget, and a vLLM-Metal optimization lane.
+What changed: Replaced PDF/multimodal ingestion and experimental vLLM-Metal with the pinned `rag-mini-wikipedia` text dataset, Ollama `qwen3:4b`, and two primary interventions: streaming and output-token reduction.
 
-Evidence: Human approval in the collaboration session and the approved plan file.
+Evidence: Human approval and `RAG_PIPELINE_PLAN.md`.
 
-Decision: Use the structure-first plan as the implementation authority.
+Important correction: Dataset inspection confirmed gold answers but found no documented QA-ID-to-passage-ID relationship. The revised plan requires manual gold evidence verification rather than treating IDs as interchangeable.
 
-Next action: Freeze the behavioral contract, eval set, runtime identity, and numeric budgets.
+Next action: Capture the immutable model/runtime identity and build the migrated 30-case suite for G1.
 
-### 2026-08-16: Tracking scaffolding created
+### 2026-08-16: Original measurement scaffolding
 
-Status: Complete
+Status: Superseded
 
-What changed: Added the progress tracker, append-only experiment record, and collaboration decision/correction log.
-
-Evidence: `PROGRESS.md`, `EXPERIMENT_LOG.md`, and `COLLABORATION_NOTES.md` passed focused structure and content checks.
-
-Decision: Use these files continuously throughout implementation and before each commit.
-
-Next action: Begin the D1 contract, eval-fixture, and vLLM-Metal feasibility work.
-
-### 2026-08-16: Deterministic retrieval and context assembly implemented
-
-Status: In progress
-
-What changed: Implemented deterministic BM25 retrieval, no-op reranker seam, text/render deduplication, lexical MMR diversification with per-document caps, metadata expansion, bounded whole-page packing, durable `SOURCE_N` citation bindings, citation resolution, and zero-evidence fail-fast dispatch behavior.
-
-Evidence: `scripts/retrieval.py`, `tests/test_retrieval.py`; focused retrieval tests and full suite pass (`10` and `15` tests respectively).
-
-Decision: Keep optional render/image/visual-description fields supported but absent from the current ingestion manifest; token bounds use deterministic lexical tokenization until the model tokenizer is integrated.
-
-Next action: Implement SSE generation, deterministic validation, and abstention behavior.
-
-### 2026-08-16: Ingestion and feasibility tooling implemented
-
-Status: In progress
-
-What changed: Added deterministic PyMuPDF page ingestion with document/page hashes and stable evidence IDs, plus offline host/configuration feasibility probes. Added focused tests and documented the commands in `README.md`.
-
-Evidence: `scripts/ingest_pdfs.py`, `scripts/probe_feasibility.py`, `tests/test_ingest_and_feasibility.py`; full test suite passes with 5 tests.
-
-Decision or blocker: Marked the implementation work complete, but kept M05 in progress. The sandbox denied `sysctl` memory telemetry, and the real model smoke, image identity, OOM, CPU-fallback, and sustained-swap checks remain outstanding.
-
-Next action: Run the probes and pinned vLLM-Metal smoke checks in the target environment, then record the feasibility result before baseline execution.
-
-### 2026-08-16: M03 approval and M05 feasibility attempt
-
-Status: Blocked
-
-What changed: M03 was explicitly approved. The pinned environment manifest and offline feasibility probe were run for M05.
-
-Evidence: `scripts/verify_environment.py` passed. `scripts/probe_feasibility.py` passed text, swap-command, prefix-hash, and runtime-configuration checks, but reported missing memory telemetry. `vllm`, `mlx`, and `mlx_vlm` are not installed; `runtime.server_revision` remains unset.
-
-Decision or blocker: Keep M05 blocked. The runtime is now installed and pinned, but `vllm --version` fails with `No Metal device available`, which is expected for this sandbox. Real multimodal smoke, image identity, OOM, CPU-fallback, sustained-swap, and multimodal prefix-cache checks require a Metal-accessible target.
-
-Next action: Run M05 on the user’s Metal-accessible M4 Pro environment using the installed runtime, then record the smoke and memory evidence.
-
-### 2026-08-16: Runtime smoke passed
-
-Status: In progress
-
-What changed: `artifacts/runtime_smoke.v4.json` passed server health, text generation, and image generation on the Metal-backed runtime. Peak observed memory was 17.08 GB on a machine with 24 GB available.
-
-Evidence: Qwen3-VL returned `READY` for text and `black` for the image probe; the vLLM Metal worker shut down cleanly.
-
-Decision or blocker: Treat the basic runtime smoke as passed, but do not close M05 yet. The 1×1 image produced a non-fatal channel-dimension warning, and the safety/cache checks remain open.
-
-Remaining M05 plan:
-
-1. Capture baseline memory and swap before startup, during model load, during text/image requests, and after shutdown using `vm_stat` and `sysctl`.
-2. Sweep `VLLM_METAL_MEMORY_FRACTION` conservatively (for example `0.70`, `0.80`, `0.90`) with one fresh server per setting; record startup, success/failure, peak memory, and swap. Stop on OOM or sustained swap.
-3. Verify no CPU fallback by recording `mx.default_device()`, runtime environment variables, and server logs; fail if the selected device is CPU or Metal worker initialization is absent.
-4. Test prefix-cache parity with the same text prefix and changed image, changed text and same image, and cache-disabled control. Compare outputs and record cache-hit telemetry if exposed.
-5. Repeat text and image requests in a fresh server and a warm server, then run concurrency 2 and 4 smoke requests. Record failures, latency, memory, and swap separately.
-
-Next action: Run the revised checklist on the Metal-accessible machine and attach the resulting JSON evidence before approving M05.
-
-### 2026-08-16: M05 plan review
-
-Status: In progress
-
-Review verdict: REVISE. The checklist covers the intended risk areas, but the original version did not define persistent evidence or pass/fail criteria for every check.
-
-Required corrections:
-
-1. Store one JSON record per condition with runtime versions, model revision, device, memory samples, swap samples, exit code, request results, and exact command. Keep failed conditions; do not retry them into success.
-2. Define memory acceptance as: startup and requests succeed, no OOM, no sustained swap, and peak resident/unified memory remains below the machine’s 24 GiB capacity with an explicit safety margin recorded before baseline.
-3. Define CPU-fallback acceptance as: `mx.default_device()` is GPU before launch, `VLLM_MLX_DEVICE=gpu`, Metal worker initialization appears in logs, and the server does not report CPU execution. A single device check is insufficient.
-4. Define prefix-cache acceptance as output parity for repeated identical inputs, changed-text inputs, and same-text/different-image inputs, with cache enabled versus disabled controls. Record cache-hit telemetry when available; otherwise mark telemetry unknown rather than infer a hit.
-5. Define concurrency acceptance as separate concurrency-2 and concurrency-4 runs with no correctness failures, no OOM, no sustained swap, and per-request success/latency records. Do not combine these with the single-user smoke result.
-6. Use a non-ambiguous image fixture larger than 1×1 for the final image check, because the current 1×1 PNG generated a harmless channel-dimension warning.
-
-Decision: Basic runtime smoke is evidence-backed and passed in `artifacts/runtime_smoke.v4.json`; M05 remains open until the corrected evidence bundle satisfies all five checks.
+The original multimodal plan and tracking scaffold established useful timing, waterfall, bootstrap, quality-gate, and reproducibility methods. Those methods are retained; the PDF/vLLM-specific implementation direction is retired.
