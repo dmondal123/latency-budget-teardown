@@ -85,9 +85,10 @@ Checkpoint action: if fewer than 360 valid attempts finish, preserve every row a
 
 Analysis and documentation can run concurrently from the immutable raw traces. Only the holdout benchmark remains serial.
 
-- [ ] **T17 [PAR-A; 7:30–8:10; depends: C05]** Regenerate aligned p50/p95 waterfalls, marginal-stage tables, case-bootstrap intervals, top-decile analysis, and charts from the corrected immutable C05 traces.
+- [x] **T17 [PAR-A; 7:30–8:10; depends: C05]** Regenerate aligned p50/p95 waterfalls, marginal-stage tables, case-bootstrap intervals, top-decile analysis, and charts from the corrected immutable C05 traces.
 - [x] **T18 [PAR-B; 7:30–8:10; depends: C05]** Regenerate Recall@k/MRR, citations, exact match, token F1, resolution, truncation, and answer-type slices from the corrected saved C05 traces.
-- [x] **T19 [PAR-C; 7:30–8:10; depends: C05]** Regenerate budget variance, spend, environment, collaboration, and intervention evidence from the corrected saved manifests/traces. T19 evidence JSON + Markdown emitted; charts remain in T17.
+- [x] **T19 [PAR-C; 7:30–8:10; depends: C05]** Regenerate budget variance, spend, environment, collaboration, and intervention evidence from the corrected saved manifests/traces.
+- [ ] **C06 [GATE; 8:10–8:30; depends: T17, T18, T19, human G2/G3 approval]** Accept or reject each intervention using frozen intervals and quality gates; define `C_accepted` without inspecting holdout outputs. (Offline reporting emits gate inputs only; C06 is NOT decided by `scripts.reporting` per the reporting design.)
 - [ ] **C06 [GATE; 8:10–8:30; depends: T17, T18, T19, human G2/G3 approval]** Accept or reject each intervention using frozen intervals and quality gates; define `C_accepted` without inspecting holdout outputs.
 - [ ] **T20 [SERIAL-MEASURE; 8:30–8:50; depends: C06]** Run `C_accepted` against six sealed holdouts × five repetitions exactly once.
 - [ ] **T21 [SEQ; 8:50–9:15; depends: T20]** Generate final quality, budget, cost, environment, and intervention-decision reports including holdout results.

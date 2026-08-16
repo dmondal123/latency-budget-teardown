@@ -244,6 +244,7 @@ def _build_manifest(
     seed: int,
     bootstrap_resamples: int,
     traces: list[dict[str, Any]],
+    chart_metadata: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     input_hashes, input_paths = _input_hashes(run_dir, cases_path, holdout_manifest_path, thresholds_path)
     counts = Counter(str(trace["condition_id"]) for trace in traces)
@@ -265,6 +266,7 @@ def _build_manifest(
             "development_cases": len({str(trace["case_id"]) for trace in traces}),
             "repetitions": len({trace["repetition"] for trace in traces}),
         },
+        "chart_metadata": chart_metadata,
         "output_hashes": _output_hashes(output_dir),
     }
     return manifest
@@ -760,6 +762,120 @@ def _render_t19_markdown(t19: Mapping[str, Any]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Charts (T17)
+# ---------------------------------------------------------------------------
+
+def _png_info(path: Path) -> dict[str, Any]:
+    """Decode a PNG's signature, IHDR dimensions, and byte length without PIL."""
+    data = path.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ReportError(f"not a valid PNG file: {path}")
+    # IHDR: width (bytes 16-20) and height (bytes 20-24), big-endian uint32.
+    import struct as _struct
+    width, height = _struct.unpack(">II", data[16:24])
+    return {
+        "signature": "89504e470d0a1a0a",
+        "width": width,
+        "height": height,
+        "bytes": len(data),
+    }
+
+
+def _render_charts(
+    output_dir: Path, latency_reports: Mapping[str, Mapping[str, Any]]
+) -> dict[str, Any]:
+    """Render two deterministic PNGs from the generated latency JSON only.
+
+    Returns metadata whose ``waterfall_values_by_condition`` stores the raw p50/p95
+    TTC and first-token-displayed values taken straight from the latency reports,
+    so tests can assert chart metadata equals the JSON source values exactly.
+    """
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    conditions = list(REGISTERED_CONDITIONS)
+    x = list(range(len(conditions)))
+
+    # Snapshot the source p50/p95 values once (single source of truth).
+    waterfall_values: dict[str, Any] = {}
+    for condition in conditions:
+        wf = latency_reports[condition]["waterfalls"]
+        waterfall_values[condition] = {
+            "p50_ttc_ms": wf["p50"]["ttc_ms"],
+            "p95_ttc_ms": wf["p95"]["ttc_ms"],
+            "p50_first_token_displayed_ms": wf["p50"]["first_token_displayed_ms"],
+            "p95_first_token_displayed_ms": wf["p95"]["first_token_displayed_ms"],
+        }
+
+    # --- condition-latency.png: p50/p95 TTC and first-token-displayed per condition ---
+    ttc_p50 = [waterfall_values[c]["p50_ttc_ms"] for c in conditions]
+    ttc_p95 = [waterfall_values[c]["p95_ttc_ms"] for c in conditions]
+    ftd_p50 = [waterfall_values[c]["p50_first_token_displayed_ms"] for c in conditions]
+    ftd_p95 = [waterfall_values[c]["p95_first_token_displayed_ms"] for c in conditions]
+    bar_width = 0.2
+    offsets = [-1.5 * bar_width, -0.5 * bar_width, 0.5 * bar_width, 1.5 * bar_width]
+    series = [
+        ("p50 TTC", ttc_p50, offsets[0]),
+        ("p95 TTC", ttc_p95, offsets[1]),
+        ("p50 first-token-displayed", ftd_p50, offsets[2]),
+        ("p95 first-token-displayed", ftd_p95, offsets[3]),
+    ]
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for label, values, offset in series:
+        ax.bar([i + offset for i in x], values, bar_width, label=label)
+    ax.set_xticks(x)
+    ax.set_xticklabels(conditions, rotation=15, ha="right")
+    ax.set_ylabel("latency (ms)")
+    ax.set_title("p50/p95 TTC and first-token-displayed by condition")
+    ax.legend()
+    fig.tight_layout()
+    cond_path = output_dir / "condition-latency.png"
+    fig.savefig(cond_path, format="png", dpi=110)
+    plt.close(fig)
+
+    # --- waterfalls.png: stacked p50+p95 stage values per condition ---
+    stage_fields = [f"{stage}_ms" for stage in TTC_STAGES]
+    colors = plt.cm.tab10.colors
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bar_width = 0.38
+    bottoms_p50 = [0.0] * len(conditions)
+    bottoms_p95 = [0.0] * len(conditions)
+    for index, stage_field in enumerate(stage_fields):
+        values_p50 = [latency_reports[c]["waterfalls"]["p50"][stage_field] for c in conditions]
+        values_p95 = [latency_reports[c]["waterfalls"]["p95"][stage_field] for c in conditions]
+        ax.bar(
+            [i - bar_width / 2 for i in x], values_p50, bar_width,
+            bottom=bottoms_p50, color=colors[index % len(colors)],
+            label=TTC_STAGES[index] if index < 6 else None,
+        )
+        ax.bar(
+            [i + bar_width / 2 for i in x], values_p95, bar_width,
+            bottom=bottoms_p95, color=colors[index % len(colors)],
+            hatch="//",
+            label=None,
+        )
+        bottoms_p50 = [b + v for b, v in zip(bottoms_p50, values_p50)]
+        bottoms_p95 = [b + v for b, v in zip(bottoms_p95, values_p95)]
+    ax.set_xticks(x)
+    ax.set_xticklabels(conditions, rotation=15, ha="right")
+    ax.set_ylabel("latency (ms)")
+    ax.set_title("Aligned p50 (solid) and p95 (hatched) stage waterfalls")
+    ax.legend(loc="upper right", fontsize="small")
+    fig.tight_layout()
+    waterfalls_path = output_dir / "waterfalls.png"
+    fig.savefig(waterfalls_path, format="png", dpi=110)
+    plt.close(fig)
+
+    return {
+        "condition_latency_png": {"name": cond_path.name, **_png_info(cond_path)},
+        "waterfalls_png": {"name": waterfalls_path.name, **_png_info(waterfalls_path)},
+        "waterfall_values_by_condition": waterfall_values,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Top-level report generation
 # ---------------------------------------------------------------------------
 
@@ -815,11 +931,15 @@ def generate_reports(
     )
     (output_dir / T19_MD_NAME).write_text(_render_t19_markdown(t19), encoding="utf-8")
 
+    # T17 (charts) — rendered from latency JSON only, hashed into the manifest.
+    chart_metadata = _render_charts(output_dir, latency_reports)
+
     manifest = _build_manifest(
         run_dir=run_dir, output_dir=output_dir, run_manifest=run_manifest,
         cases_path=cases_path, holdout_manifest_path=holdout_manifest_path,
         thresholds_path=thresholds_path, command=command, seed=seed,
         bootstrap_resamples=bootstrap_resamples, traces=traces,
+        chart_metadata=chart_metadata,
     )
     (output_dir / MANIFEST_NAME).write_text(
         json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8"

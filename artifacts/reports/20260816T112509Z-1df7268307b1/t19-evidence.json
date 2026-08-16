@@ -1,0 +1,234 @@
+{
+  "budget": {
+    "admission": 100,
+    "context_assembly": 300,
+    "contingency": 100,
+    "model_decode": 11200,
+    "model_dispatch_to_first_token": 3000,
+    "retrieval": 200,
+    "ttc": 15000,
+    "validation": 100
+  },
+  "budget_variance": {
+    "B0_buffered_256": {
+      "largest_p95_stage": "model_dispatch_to_first_token",
+      "stages": {
+        "admission": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 0.0074,
+          "within_budget": true
+        },
+        "context_assembly": {
+          "budget_p95_ms": 300.0,
+          "measured_p95_ms": 0.0657,
+          "within_budget": true
+        },
+        "model_decode": {
+          "budget_p95_ms": 11200.0,
+          "measured_p95_ms": 0.1735,
+          "within_budget": true
+        },
+        "model_dispatch_to_first_token": {
+          "budget_p95_ms": 3000.0,
+          "measured_p95_ms": 2058.4592,
+          "within_budget": true
+        },
+        "retrieval": {
+          "budget_p95_ms": 200.0,
+          "measured_p95_ms": 13.538,
+          "within_budget": true
+        },
+        "validation": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 1.5767,
+          "within_budget": true
+        }
+      },
+      "ttc": {
+        "budget_p95_ms": 15000.0,
+        "measured_p95_ms": 2066.2765,
+        "within_budget": true
+      },
+      "within_budget": true
+    },
+    "I1_streaming_256": {
+      "largest_p95_stage": "model_decode",
+      "stages": {
+        "admission": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 0.0065,
+          "within_budget": true
+        },
+        "context_assembly": {
+          "budget_p95_ms": 300.0,
+          "measured_p95_ms": 0.0576,
+          "within_budget": true
+        },
+        "model_decode": {
+          "budget_p95_ms": 11200.0,
+          "measured_p95_ms": 1516.5683,
+          "within_budget": true
+        },
+        "model_dispatch_to_first_token": {
+          "budget_p95_ms": 3000.0,
+          "measured_p95_ms": 145.1096,
+          "within_budget": true
+        },
+        "retrieval": {
+          "budget_p95_ms": 200.0,
+          "measured_p95_ms": 12.9859,
+          "within_budget": true
+        },
+        "validation": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 1.7275,
+          "within_budget": true
+        }
+      },
+      "ttc": {
+        "budget_p95_ms": 15000.0,
+        "measured_p95_ms": 1799.4586,
+        "within_budget": true
+      },
+      "within_budget": true
+    },
+    "I2_buffered_128": {
+      "largest_p95_stage": "model_dispatch_to_first_token",
+      "stages": {
+        "admission": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 0.0074,
+          "within_budget": true
+        },
+        "context_assembly": {
+          "budget_p95_ms": 300.0,
+          "measured_p95_ms": 0.0606,
+          "within_budget": true
+        },
+        "model_decode": {
+          "budget_p95_ms": 11200.0,
+          "measured_p95_ms": 0.1618,
+          "within_budget": true
+        },
+        "model_dispatch_to_first_token": {
+          "budget_p95_ms": 3000.0,
+          "measured_p95_ms": 1571.9887,
+          "within_budget": true
+        },
+        "retrieval": {
+          "budget_p95_ms": 200.0,
+          "measured_p95_ms": 13.0315,
+          "within_budget": true
+        },
+        "validation": {
+          "budget_p95_ms": 100.0,
+          "measured_p95_ms": 1.8047,
+          "within_budget": true
+        }
+      },
+      "ttc": {
+        "budget_p95_ms": 15000.0,
+        "measured_p95_ms": 1585.0758,
+        "within_budget": true
+      },
+      "within_budget": true
+    }
+  },
+  "contract_id": "text-rag-latency/v1",
+  "environment": {
+    "chip": "arm64",
+    "corpus_hash": "dbe884c22ac0f787287767d5447b18f4172c8ed3e7dd68237206c201d0aa728d",
+    "dataset_repo": "rag-datasets/rag-mini-wikipedia",
+    "dataset_revision": "1f9f3b53fbc5995b85aab8e993504ad42c5f16f6",
+    "index_snapshot": "b494259543f2b3aab92631dd666a2b98967f87e3d9dae4abcff68cb76081c6c7",
+    "live_identity": {
+      "endpoint": "http://127.0.0.1:11434",
+      "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+      "ollama_version": "0.32.13"
+    },
+    "macos_build": "macOS-26.5.1-arm64-arm-64bit",
+    "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+    "model_tag": "qwen3:4b-instruct",
+    "ollama_version": "0.32.13",
+    "power_mode": "authoritative-serial",
+    "python_version": "3.12.7",
+    "ram_bytes": 25769803776,
+    "swap_observation": {
+      "max_swap_used_bytes": 0,
+      "sample_count": 1274,
+      "sample_interval_ms": 250,
+      "sustained_swap": false
+    },
+    "thermal_observation": {
+      "reason": "no approved host thermal metric or threshold",
+      "status": "unavailable"
+    }
+  },
+  "frozen_thresholds": {
+    "answer_token_f1": 0.8,
+    "citation_precision": 0.95,
+    "citation_validity_rate": 0.98,
+    "external_runtime_api_cost_per_completed_task": 0.0,
+    "fatal_count": 0,
+    "max_answer_type_slice_regression": 0.05,
+    "p95_ttc_ms": 15000,
+    "p95_ttft_ms": 3900,
+    "retrieval_recall_at_5": 0.9,
+    "task_resolution_rate": 0.85,
+    "truncation_rate_max": 0.02
+  },
+  "generation_command": ".venv/bin/python -m scripts.reporting --run-dir artifacts/authoritative-runs/20260816T112509Z-1df7268307b1 --output-dir artifacts/reports/20260816T112509Z-1df7268307b1",
+  "interventions": {
+    "B0_buffered_256": {
+      "first_token_displayed_p95_ms": 2066.2808,
+      "perceived_latency_ms": 2066.2808,
+      "total_latency_ms": 2066.2765,
+      "ttc_p95_ms": 2066.2765,
+      "ttft_p95_ms": 2065.9033
+    },
+    "I1_streaming_256": {
+      "first_token_displayed_delta_vs_b0_ms": -917.6049,
+      "first_token_displayed_p95_ms": 1148.6759,
+      "perceived_latency_ms": 1148.6759,
+      "total_latency_ms": 1799.4586,
+      "ttc_delta_vs_b0_ms": -266.818,
+      "ttc_p95_ms": 1799.4586,
+      "ttft_p95_ms": 1148.6686
+    },
+    "I2_buffered_128": {
+      "first_token_displayed_delta_vs_b0_ms": -481.2009,
+      "first_token_displayed_p95_ms": 1585.08,
+      "perceived_latency_ms": 1585.08,
+      "total_latency_ms": 1585.0758,
+      "ttc_delta_vs_b0_ms": -481.2007,
+      "ttc_p95_ms": 1585.0758,
+      "ttft_p95_ms": 1584.6974
+    }
+  },
+  "run_id": "t16-fe7af435d4af4cfab1661df7268307b1",
+  "schema": "offline-provenance-evidence.v1",
+  "spend": {
+    "agent_spend": {
+      "available": false,
+      "reason": "no external API calls; runtime served qwen3:4b-instruct locally via Ollama"
+    },
+    "external_runtime_api_cost_per_completed_task": 0.0,
+    "local_runtime_serving_cost": 0.0,
+    "local_runtime_serving_cost_formatted": "$0.00"
+  },
+  "tokens": {
+    "completed_tasks": 360,
+    "input_tokens": {
+      "available": false,
+      "null_count": 360,
+      "reason": "not_reported_by_model"
+    },
+    "output_tokens_per_completed_task": 48.2639,
+    "output_tokens_total": 17375,
+    "tokens_per_second": {
+      "available": false,
+      "null_count": 360,
+      "reason": "not_reported_by_model"
+    }
+  }
+}

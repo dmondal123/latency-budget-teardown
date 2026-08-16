@@ -10,6 +10,7 @@ sealed holdouts.
 from __future__ import annotations
 
 import json
+import struct
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -573,3 +574,70 @@ def test_real_run_t18_t19_ground_truth(tmp_path: Path):
     assert env["python_version"] == "3.12.7"
     assert env["chip"] == "arm64"
     assert env["power_mode"] == "authoritative-serial"
+
+
+# ---------------------------------------------------------------------------
+# Task 3 — Charts, CLI, and manifest chart_metadata
+# ---------------------------------------------------------------------------
+
+_PNG_SIGNATURE = bytes.fromhex("89504e470d0a1a0a")
+
+
+def test_generate_reports_emits_valid_chart_files(synthetic_run: dict[str, Path]):
+    paths = synthetic_run
+    manifest = generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+    chart_metadata = manifest["chart_metadata"]
+    for png_key, name in (
+        ("condition_latency_png", "condition-latency.png"),
+        ("waterfalls_png", "waterfalls.png"),
+    ):
+        png = paths["output_dir"] / name
+        assert png.exists(), f"missing {name}"
+        data = png.read_bytes()
+        assert data[:8] == _PNG_SIGNATURE, f"{name} has invalid PNG signature"
+        width, height = struct.unpack(">II", data[16:24])  # IHDR: width, height big-endian
+        assert width > 0 and height > 0
+        meta = chart_metadata[png_key]
+        assert meta["name"] == name
+        assert meta["width"] == width
+        assert meta["height"] == height
+        assert meta["bytes"] == len(data)
+
+
+def test_manifest_chart_metadata_matches_latency_json(synthetic_run: dict[str, Path]):
+    paths = synthetic_run
+    manifest = generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+    values = manifest["chart_metadata"]["waterfall_values_by_condition"]
+    for condition in CONDITIONS:
+        report = json.loads((paths["output_dir"] / f"latency.{condition}.json").read_text(encoding="utf-8"))
+        vals = values[condition]
+        assert vals["p50_ttc_ms"] == report["waterfalls"]["p50"]["ttc_ms"]
+        assert vals["p95_ttc_ms"] == report["waterfalls"]["p95"]["ttc_ms"]
+        assert vals["p50_first_token_displayed_ms"] == report["waterfalls"]["p50"]["first_token_displayed_ms"]
+        assert vals["p95_first_token_displayed_ms"] == report["waterfalls"]["p95"]["first_token_displayed_ms"]
+
+
+def test_generate_reports_writes_seven_outputs(synthetic_run: dict[str, Path]):
+    paths = synthetic_run
+    generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+    expected = {
+        "latency.B0_buffered_256.json", "latency.I1_streaming_256.json", "latency.I2_buffered_128.json",
+        "t18-quality-evidence.json", "t19-evidence.json", "t19-evidence.md",
+        "condition-latency.png", "waterfalls.png",
+    }
+    produced = {path.name for path in paths["output_dir"].iterdir()}
+    # Six evidence + chart files plus the manifest; nothing else.
+    produced.add("report-manifest.json")
+    assert produced == expected | {"report-manifest.json"}, f"unexpected outputs: {produced ^ expected}"

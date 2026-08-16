@@ -26,9 +26,9 @@ repetitions for parity, and writes a trace-linked T19 Markdown evidence report.
 
 The same CLI will render two deterministic PNG charts from the generated JSON:
 a p50/p95 TTC and first-token-display comparison, plus percentile-aligned
-critical-stage waterfalls. The report directory contains only generated,
-run-specific evidence and a machine-readable generation manifest with exact
-input hashes and command.
+critical-stage waterfalls. The report directory must be new or empty. It
+contains only generated, run-specific evidence and a machine-readable
+generation manifest with exact input hashes, source run identity, and command.
 
 ## Outputs
 
@@ -38,9 +38,11 @@ For an explicit output directory, generate:
 - `t18-quality-evidence.json` with aggregate and answer-type-slice metrics;
 - `t19-evidence.md` with budget variance, provenance, environment, tokens,
   spend availability, and intervention evidence;
+- `t19-evidence.json` with the same machine-auditable evidence;
 - `condition-latency.png` and `waterfalls.png`;
-- `report-manifest.json`, recording hashes, source run identity, and exact
-  command.
+- `report-manifest.json`, recording hashes for every run artifact, development
+  cases, holdout manifest, and threshold contract; source run identity; and
+  the exact command.
 
 ## Acceptance criteria
 
@@ -49,7 +51,11 @@ For an explicit output directory, generate:
   generation command.
 - Every report uses 120 attempts per condition and T18 uses 24 development
   outputs per condition without holdout access.
-- Chart values are derived only from generated latency JSON, and rendering
-  succeeds in the headless local environment.
+- T18 emits every frozen promotion-gate input and the answer-type regression
+  deltas versus B0 without deciding C06.
+- T19 reports output-token totals, unavailable input tokens with their reason,
+  local runtime serving cost of `$0.00`, and unavailable agent spend separately.
+- Chart values are derived only from generated latency JSON, match their source
+  values in tests, and render as readable PNGs in the headless local environment.
 - Tests cover successful generation, sealed-holdout exclusion, invalid
   denominators, deterministic evidence, and readable chart files.

@@ -1,0 +1,117 @@
+{
+  "bootstrap_resamples": 10000,
+  "chart_metadata": {
+    "condition_latency_png": {
+      "bytes": 35415,
+      "height": 660,
+      "name": "condition-latency.png",
+      "signature": "89504e470d0a1a0a",
+      "width": 1100
+    },
+    "waterfall_values_by_condition": {
+      "B0_buffered_256": {
+        "p50_first_token_displayed_ms": 757.240333,
+        "p50_ttc_ms": 757.233917,
+        "p95_first_token_displayed_ms": 2066.280834,
+        "p95_ttc_ms": 2066.276542
+      },
+      "I1_streaming_256": {
+        "p50_first_token_displayed_ms": 155.022792,
+        "p50_ttc_ms": 728.416875,
+        "p95_first_token_displayed_ms": 1148.675917,
+        "p95_ttc_ms": 1799.4585829999999
+      },
+      "I2_buffered_128": {
+        "p50_first_token_displayed_ms": 737.119416,
+        "p50_ttc_ms": 737.1149160000001,
+        "p95_first_token_displayed_ms": 1585.079959,
+        "p95_ttc_ms": 1585.075792
+      }
+    },
+    "waterfalls_png": {
+      "bytes": 44693,
+      "height": 660,
+      "name": "waterfalls.png",
+      "signature": "89504e470d0a1a0a",
+      "width": 1100
+    }
+  },
+  "command": ".venv/bin/python -m scripts.reporting --run-dir artifacts/authoritative-runs/20260816T112509Z-1df7268307b1 --output-dir artifacts/reports/20260816T112509Z-1df7268307b1",
+  "conditions": [
+    "B0_buffered_256",
+    "I1_streaming_256",
+    "I2_buffered_128"
+  ],
+  "contract_id": "text-rag-latency/v1",
+  "denominators": {
+    "attempted": 360,
+    "development_cases": 24,
+    "per_condition": {
+      "B0_buffered_256": 120,
+      "I1_streaming_256": 120,
+      "I2_buffered_128": 120
+    },
+    "repetitions": 5
+  },
+  "generated_at": "2026-08-16T14:58:24.981869+00:00",
+  "input_hashes": {
+    "development_cases": "sha256:7ce02ece15e26633c79a4bec49867a0755c66918e35737315d045f52bdc3e3e7",
+    "holdout_manifest": "sha256:262498f9dacb3377f62af5636fbc609448ebd09de384f1f9e59df94d1ba73435",
+    "raw_traces": "sha256:15bd19875d8cb39c6e516c8a44f2a79583856660be73cf476724ce6fa777158f",
+    "run_manifest": "sha256:d9168238f3823af3ac95caf91837569d4c4fe19d185626ea60474cb3ab8b095a",
+    "thresholds": "sha256:f9178653351fb2bd6f8d19ec1e7c86fdf8fd0471de0675634752fbef7e93f80c",
+    "validations": "sha256:55c1e6732bcf55c8c98e1c87d3526f0fd55e29667ea3d5baf6fd9327d46cc558",
+    "warmups": "sha256:9d78fcaa016c4a3699c3b9ac1a7c15264d81cf9feec5c70e62a5954a74bfee86"
+  },
+  "input_paths": {
+    "development_cases": "eval/v1/development_cases.json",
+    "holdout_manifest": "eval/v1/holdout_manifest.json",
+    "raw_traces": "artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/raw-traces.jsonl",
+    "run_manifest": "artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/run-manifest.json",
+    "thresholds": "contracts/thresholds.2026-08-16.json",
+    "validations": "artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/validations.jsonl",
+    "warmups": "artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/warmups.jsonl"
+  },
+  "output_hashes": {
+    "condition-latency.png": "sha256:f6fd7c9b9bfdb8e9b0a368c32ad4ae8ac6445ba379a93499ec69f4037ea601ed",
+    "latency.B0_buffered_256.json": "sha256:6f60d1d2ecd47e2841c7ad257dcf4f8a4c92ae473e4e4f37ee0102c31639c0cd",
+    "latency.I1_streaming_256.json": "sha256:e723e6d902d894b22a9d44f0be86778f51fdf8dceae266a8ad24bf30931020b1",
+    "latency.I2_buffered_128.json": "sha256:151b3647ae1037c40ead6396a9bb46715c0a24bc98277677846bd67bc3e7386c",
+    "t18-quality-evidence.json": "sha256:44b4d8b1d0bb676cdb2614069ce5476a0f7915cbe3327ae9faba5f237208ed39",
+    "t19-evidence.json": "sha256:aa60420e25712ef40c2474dc867074dfb26e0691491df93db0b7604d825d09a0",
+    "t19-evidence.md": "sha256:0c8fd7f6f845890668839e266537c9cee15ce134eb728aabd6a26ceba79cd7e3",
+    "waterfalls.png": "sha256:266044503f059b3657ef11e2308f5866c3fe82a2a47dc2d3b6a792438db8539e"
+  },
+  "run_dir": "artifacts/authoritative-runs/20260816T112509Z-1df7268307b1",
+  "schema": "offline-reporting-manifest.v1",
+  "seed": 20260816,
+  "source_run_identity": {
+    "by_condition": {
+      "B0_buffered_256": 120,
+      "I1_streaming_256": 120,
+      "I2_buffered_128": 120
+    },
+    "c05": {
+      "accepted": true,
+      "blocking_categories": []
+    },
+    "command": "/Users/dmondal/Documents/week-1-fde/scripts/benchmark.py --conditions B0_buffered_256,I1_streaming_256,I2_buffered_128",
+    "live_identity": {
+      "endpoint": "http://127.0.0.1:11434",
+      "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+      "ollama_version": "0.32.13"
+    },
+    "run_id": "t16-fe7af435d4af4cfab1661df7268307b1",
+    "status": "complete",
+    "swap_observation": {
+      "max_swap_used_bytes": 0,
+      "sample_count": 1274,
+      "sample_interval_ms": 250,
+      "sustained_swap": false
+    },
+    "thermal_observation": {
+      "reason": "no approved host thermal metric or threshold",
+      "status": "unavailable"
+    }
+  }
+}
