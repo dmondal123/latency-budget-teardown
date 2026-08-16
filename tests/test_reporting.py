@@ -15,13 +15,44 @@ from typing import Any, Mapping
 
 import pytest
 
-from scripts.evaluation import FROZEN_THRESHOLDS, REGISTERED_CONDITIONS, load_jsonl
+from scripts.evaluation import FROZEN_CONTRACT_ID, FROZEN_THRESHOLDS, REGISTERED_CONDITIONS, load_jsonl
 from scripts.reporting import ReportError, generate_reports
 
 SEED = 20260816
 CONDITIONS = ("B0_buffered_256", "I1_streaming_256", "I2_buffered_128")
 ANSWER_TYPES = ("boolean", "numeric_or_date", "short_phrase", "free_form")
 RUN_FILES = ("raw-traces.jsonl", "validations.jsonl", "warmups.jsonl", "run-manifest.json")
+
+# Frozen promotion-gate inputs that T18 must emit per condition (see
+# evaluation.evaluate_promotion comparisons and the §5 ground-truth table).
+GATE_KEYS = {
+    "fatal_count",
+    "retrieval_recall_at_5",
+    "citation_precision",
+    "citation_validity_rate",
+    "task_resolution_rate",
+    "answer_token_f1",
+    "truncation_rate",
+    "p95_ttft_ms",
+    "p95_ttc_ms",
+    "external_runtime_api_cost_per_completed_task",
+}
+
+# Test thresholds mirror the real contract file: the flat frozen thresholds
+# (used for gate inputs) plus the per-stage p95 latency budget.
+TEST_THRESHOLDS = dict(FROZEN_THRESHOLDS)
+TEST_THRESHOLDS["latency_budget_p95_ms"] = {
+    "admission": 100,
+    "retrieval": 200,
+    "context_assembly": 300,
+    "model_dispatch_to_first_token": 3000,
+    "model_decode": 11200,
+    "validation": 100,
+    "contingency": 100,
+    "ttc": 15000,
+}
+
+REAL_RUN_DIR = Path("artifacts/authoritative-runs/20260816T112509Z-1df7268307b1")
 
 
 # ---------------------------------------------------------------------------
@@ -170,7 +201,7 @@ def build_synthetic_run(
     holdout_path.write_text(json.dumps(holdout_manifest), encoding="utf-8")
 
     thresholds_path = contract_dir / "thresholds.2026-08-16.json"
-    thresholds_path.write_text(json.dumps(FROZEN_THRESHOLDS), encoding="utf-8")
+    thresholds_path.write_text(json.dumps(TEST_THRESHOLDS), encoding="utf-8")
 
     cases_by_id = {c["case_id"]: c for c in cases}
     traces: list[dict[str, Any]] = []
@@ -349,3 +380,196 @@ def test_latency_reports_are_deterministic(tmp_path: Path):
         assert a["waterfalls"] == b["waterfalls"]
         assert a["marginal_stages"] == b["marginal_stages"]
         assert a["metadata"]["attempted_count"] == b["metadata"]["attempted_count"]
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — T18 quality evidence and T19 provenance evidence
+# ---------------------------------------------------------------------------
+
+_T18_GRADE_KEYS = {
+    "recall_at_5", "mrr", "citation_precision", "citation_validity_rate",
+    "answer_token_f1", "task_resolution", "truncated",
+}
+
+
+def _rep_zero_case_condition(record: Mapping[str, Any]) -> tuple[str, str]:
+    return (str(record["case_id"]), str(record["condition_id"]))
+
+
+def test_generate_reports_emits_t18_t19_evidence(synthetic_run: dict[str, Path]):
+    paths = synthetic_run
+    generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+
+    t18_path = paths["output_dir"] / "t18-quality-evidence.json"
+    t19_path = paths["output_dir"] / "t19-evidence.json"
+    t19_md_path = paths["output_dir"] / "t19-evidence.md"
+    assert t18_path.exists(), "missing t18-quality-evidence.json"
+    assert t19_path.exists(), "missing t19-evidence.json"
+    assert t19_md_path.exists(), "missing t19-evidence.md"
+
+    t18 = json.loads(t18_path.read_text(encoding="utf-8"))
+    t19 = json.loads(t19_path.read_text(encoding="utf-8"))
+    md = t19_md_path.read_text(encoding="utf-8")
+
+    # Frozen provenance identity carried through to evidence.
+    assert t18["run_id"] == "t16-fixture-run"
+    assert t19["run_id"] == "t16-fixture-run"
+    assert t18["contract_id"] == FROZEN_CONTRACT_ID
+    assert t19["contract_id"] == FROZEN_CONTRACT_ID
+
+    # Parity: 24 cases x 3 conditions, each with 5 repetitions present.
+    parity = t18["parity"]
+    assert parity["complete"] is True
+    assert parity["expected_replication"] == 5
+    assert parity["observed_replication"] == 5
+    assert parity["case_condition_pairs"] == 72
+
+    # Exactly 72 rep-0 grade records, one per case x condition.
+    rep_zero = t18["rep_zero_grades"]
+    assert len(rep_zero) == 72
+    assert len({r["repetition"] for r in rep_zero}) == 1
+    assert next(iter({r["repetition"] for r in rep_zero})) == 0
+    assert len({_rep_zero_case_condition(r) for r in rep_zero}) == 72
+    for record in rep_zero:
+        assert set(record["grades"].keys()) == _T18_GRADE_KEYS
+
+    # No sealed holdout leakage into the development run.
+    assert t18["holdout_overlap_count"] == 0
+
+    # Clean synthetic fixture: gates all clear (gold at rank 1, exact answers).
+    for condition in CONDITIONS:
+        cond = t18["by_condition"][condition]
+        assert cond["fatal_count"] == 0
+        assert cond["attempted_count"] == 120
+        grades = cond["grades"]
+        assert grades["recall_at_5"] == 1.0
+        assert grades["mrr"] == 1.0
+        assert grades["citation_precision"] == 1.0
+        assert grades["citation_validity_rate"] == 1.0
+        assert grades["task_resolution_rate"] == 1.0
+        assert grades["answer_token_f1"] == 1.0
+        assert grades["truncation_rate"] == 0.0
+        # All four answer types are exercised by the fixture.
+        assert set(cond["answer_type_slices"]) == set(ANSWER_TYPES)
+        assert set(cond["frozen_gate_inputs"]) == GATE_KEYS
+        assert cond["text_unavailable_count"] == 0
+
+    # Answer-type deltas versus B0 are emitted for both interventions.
+    deltas = t18["answer_type_deltas_vs_b0"]
+    assert set(deltas) == {"I1_streaming_256", "I2_buffered_128"}
+
+    # Frozen thresholds echoed from the contract.
+    assert t18["frozen_thresholds"] == FROZEN_THRESHOLDS
+
+    # T19 tokens: synthetic fixture reports tokens, so input is available; output
+    # total is non-zero and the markdown is rendered from the JSON dict.
+    assert t19["tokens"]["output_tokens_total"] > 0
+    assert t19["tokens"]["completed_tasks"] == 360
+    assert t19["spend"]["local_runtime_serving_cost"] == 0.0
+    assert t19["spend"]["agent_spend"]["available"] is False
+    for condition in CONDITIONS:
+        assert condition in t19["budget_variance"]
+        assert "ttc" in t19["budget_variance"][condition]
+        assert t19["budget_variance"][condition]["ttc"]["within_budget"] is True
+        assert condition in t19["interventions"]
+    assert t19["environment"]["model_tag"] == "qwen3:4b-instruct"
+    # Markdown is a faithful rendering of the JSON evidence (single source).
+    assert t19["run_id"] in md
+    assert "$0.00" in md
+
+
+def test_report_manifest_hashes_t18_t19_outputs(synthetic_run: dict[str, Path]):
+    paths = synthetic_run
+    manifest = generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+    output_hashes = manifest["output_hashes"]
+    for name in ("t18-quality-evidence.json", "t19-evidence.json", "t19-evidence.md"):
+        assert name in output_hashes, f"manifest missing output hash for {name}"
+        assert output_hashes[name].startswith("sha256:") and len(output_hashes[name]) == 71
+
+
+@pytest.mark.skipif(not REAL_RUN_DIR.is_dir(), reason="real T16 run not present")
+def test_real_run_t18_t19_ground_truth(tmp_path: Path):
+    """Validate generated evidence against the §5 handover ground-truth table."""
+    paths = {
+        "run_dir": REAL_RUN_DIR,
+        "output_dir": tmp_path / "real-reports",
+        "cases_path": Path("eval/v1/development_cases.json"),
+        "holdout_manifest_path": Path("eval/v1/holdout_manifest.json"),
+        "thresholds_path": Path("contracts/thresholds.2026-08-16.json"),
+    }
+    generate_reports(
+        run_dir=paths["run_dir"], output_dir=paths["output_dir"],
+        cases_path=paths["cases_path"], holdout_manifest_path=paths["holdout_manifest_path"],
+        thresholds_path=paths["thresholds_path"],
+    )
+    t18 = json.loads((paths["output_dir"] / "t18-quality-evidence.json").read_text(encoding="utf-8"))
+    t19 = json.loads((paths["output_dir"] / "t19-evidence.json").read_text(encoding="utf-8"))
+
+    # Parity and holdout integrity from the corrected C05 traces.
+    assert t18["parity"]["complete"] is True
+    assert t18["holdout_overlap_count"] == 0
+    assert len(t18["rep_zero_grades"]) == 72
+
+    expected = {
+        "B0_buffered_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
+                            "citation_precision": 0.875, "citation_validity_rate": 0.6181,
+                            "task_resolution_rate": 0.2727, "answer_token_f1": 0.4278,
+                            "truncation_rate": 0.0},
+        "I1_streaming_256": {"fatal_count": 10, "recall_at_5": 0.7917, "mrr": 0.6477,
+                             "citation_precision": 0.875, "citation_validity_rate": 0.6181,
+                             "task_resolution_rate": 0.2727, "answer_token_f1": 0.4278,
+                             "truncation_rate": 0.0},
+        "I2_buffered_128": {"fatal_count": 15, "recall_at_5": 0.7917, "mrr": 0.6477,
+                            "citation_precision": 0.8333, "citation_validity_rate": 0.6042,
+                            "task_resolution_rate": 0.2857, "answer_token_f1": 0.4312,
+                            "truncation_rate": 0.0417},
+    }
+    for condition, want in expected.items():
+        grades = t18["by_condition"][condition]["grades"]
+        got = {
+            "fatal_count": t18["by_condition"][condition]["fatal_count"],
+            "recall_at_5": round(grades["recall_at_5"], 4),
+            "mrr": round(grades["mrr"], 4),
+            "citation_precision": round(grades["citation_precision"], 4),
+            "citation_validity_rate": round(grades["citation_validity_rate"], 4),
+            "task_resolution_rate": round(grades["task_resolution_rate"], 4),
+            "answer_token_f1": round(grades["answer_token_f1"], 4),
+            "truncation_rate": round(grades["truncation_rate"], 4),
+        }
+        assert got == want, f"{condition}: {got} != {want}"
+        assert set(t18["by_condition"][condition]["frozen_gate_inputs"]) == GATE_KEYS
+
+    # T17 latency report p95 values flowed into the gate inputs.
+    assert t18["by_condition"]["B0_buffered_256"]["frozen_gate_inputs"]["p95_ttc_ms"] == pytest.approx(2066.28, abs=1e-2)
+    assert t18["by_condition"]["B0_buffered_256"]["frozen_gate_inputs"]["p95_ttft_ms"] == pytest.approx(2065.90, abs=1e-2)
+
+    # T19 provenance: unavailable input tokens with reason, real output totals.
+    assert t19["tokens"]["input_tokens"]["available"] is False
+    assert t19["tokens"]["input_tokens"]["reason"] == "not_reported_by_model"
+    assert t19["tokens"]["tokens_per_second"]["available"] is False
+    assert t19["tokens"]["output_tokens_total"] == 17375
+
+    # T19 spend: free local serving, no external/agent spend.
+    assert t19["spend"]["local_runtime_serving_cost"] == 0.0
+    assert t19["spend"]["agent_spend"]["available"] is False
+
+    # Interventions measured against B0 (perceived = first_token_displayed).
+    interventions = t19["interventions"]
+    assert interventions["I1_streaming_256"]["ttc_delta_vs_b0_ms"] == pytest.approx(-266.82, abs=1.0)
+    assert interventions["I1_streaming_256"]["first_token_displayed_delta_vs_b0_ms"] == pytest.approx(-917.60, abs=1.0)
+    assert interventions["I2_buffered_128"]["ttc_delta_vs_b0_ms"] == pytest.approx(-481.20, abs=1.0)
+
+    # Environment identity from the corrected run.
+    env = t19["environment"]
+    assert env["model_tag"] == "qwen3:4b-instruct"
+    assert env["python_version"] == "3.12.7"
+    assert env["chip"] == "arm64"
+    assert env["power_mode"] == "authoritative-serial"

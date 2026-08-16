@@ -86,8 +86,8 @@ Checkpoint action: if fewer than 360 valid attempts finish, preserve every row a
 Analysis and documentation can run concurrently from the immutable raw traces. Only the holdout benchmark remains serial.
 
 - [ ] **T17 [PAR-A; 7:30–8:10; depends: C05]** Regenerate aligned p50/p95 waterfalls, marginal-stage tables, case-bootstrap intervals, top-decile analysis, and charts from the corrected immutable C05 traces.
-- [ ] **T18 [PAR-B; 7:30–8:10; depends: C05]** Regenerate Recall@k/MRR, citations, exact match, token F1, resolution, truncation, and answer-type slices from the corrected saved C05 traces.
-- [ ] **T19 [PAR-C; 7:30–8:10; depends: C05]** Regenerate budget variance, spend, environment, collaboration, and intervention evidence from the corrected saved manifests/traces.
+- [x] **T18 [PAR-B; 7:30–8:10; depends: C05]** Regenerate Recall@k/MRR, citations, exact match, token F1, resolution, truncation, and answer-type slices from the corrected saved C05 traces.
+- [x] **T19 [PAR-C; 7:30–8:10; depends: C05]** Regenerate budget variance, spend, environment, collaboration, and intervention evidence from the corrected saved manifests/traces. T19 evidence JSON + Markdown emitted; charts remain in T17.
 - [ ] **C06 [GATE; 8:10–8:30; depends: T17, T18, T19, human G2/G3 approval]** Accept or reject each intervention using frozen intervals and quality gates; define `C_accepted` without inspecting holdout outputs.
 - [ ] **T20 [SERIAL-MEASURE; 8:30–8:50; depends: C06]** Run `C_accepted` against six sealed holdouts × five repetitions exactly once.
 - [ ] **T21 [SEQ; 8:50–9:15; depends: T20]** Generate final quality, budget, cost, environment, and intervention-decision reports including holdout results.
@@ -117,11 +117,3 @@ Checkpoint action: packaging never waits for optional cache/top-k diagnostics. I
 | 7:30–8:30 | Latency analysis; quality scoring; report drafting | Intervention decision, `C06` |
 | 8:30–9:15 | Report preparation after measurement | Holdout once; final report, `C07` |
 | 9:15–10:00 | Reproduction; write-up; artifact audit | ZIP integration, `C08` |
-
-## Offline reporting sub-plan (T17–T19)
-
-Sub-plan `docs/superpowers/plans/2026-08-16-offline-reporting.md`.
-
-- [x] **Task 1 [PAR-A]:** Validate run inputs and generate T17 latency reports. Fixture-backed tests verify a 360-row run creates three `latency.<condition>.json` reports with 120 attempts each and source hashes for run artifacts, development cases, holdout manifest, and thresholds; validation rejects non-empty output dirs, wrong denominators, and holdout overlap.
-- [ ] **Task 2 [PAR-B]:** Generate T18 quality evidence and T19 provenance evidence (JSON + Markdown) using the three graders without a C06 promotion decision.
-- [ ] **Task 3 [PAR-C]:** Render headless PNG charts, add the `scripts.reporting` CLI, run against the corrected T16 run, and publish `artifacts/reports/...`.

@@ -28,6 +28,7 @@ Update this file only after a significant decision, correction, failure investig
 | C004 | 2026-08-16 | Agent correction | Stopped a failed discovery command from suppressing later checks by running checks independently | Collaboration session evidence |
 | C005 | 2026-08-16 | Agent correction | Added the missing dedicated GitNexus impact-analysis workflow and logged the contract/eval approval boundary | `scripts/verify_eval.py`, GitNexus analysis output, `PROGRESS.md` |
 | C006 | 2026-08-16 | Agent correction | Revised Task 6 after review-plan found missing assembly bounds and durable citation identity | `scripts/retrieval.py`, `tests/test_retrieval.py` |
+| C007 | 2026-08-16 | Agent decision | T18/T19 evidence semantics from the corrected T16 run: quality metrics over all 120 attempts/condition; text grades skip malformed (bool/unparseable) answers; truncation counted over all attempts; T19 budget/intervention p95 reused from T17 latency reports (valid-trace waterfalls), not recomputed; T18 emits gate inputs without deciding C06 | `scripts/reporting.py`, `tests/test_reporting.py`, `docs/HANDOVER-offline-reporting-2026-08-16.md` §5–§6 |
 
 ## Detailed entries
 
@@ -58,6 +59,22 @@ What was wrong: The first rewrite treated automatic prefix caching as safe for e
 How it was caught: A post-edit source audit distinguished upstream cache design from the selected experimental hardware plugin path.
 
 Correction: Prefix caching now requires same-text/different-image, repeated-image, concurrency-2, and cache-disabled parity probes. The resulting policy is frozen across product interventions. A failed gate keeps prefix caching disabled and preserves the incompatibility as evidence.
+
+### C007: T18/T19 evidence semantics from the corrected T16 run
+
+Context: `scripts.reporting` regenerates offline T17 latency reports, T18 quality/gate inputs, and T19 provenance evidence from the immutable C05 run at `artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/`, without calling Ollama or inspecting sealed holdouts.
+
+What was verified against the §5 ground-truth table (full TDD cycle — failing tests first, then implementation, then green):
+
+- **Evidence-ID coercion** — `retrieved_evidence_ids`/`admitted_evidence_ids` are `"passage:N"` strings but `gold_evidence_ids` are ints; the grader coerces ids to int and explicitly guards Python `bool` (an `int` subclass) so `True` is never treated as passage id 1. Retrieval/citation grades are computed over all attempts; text grades are `None` for the 35 malformed boolean/unparseable answers.
+- **Truncation over all attempts** — `truncation_rate` counts `finish_reason == "length"` across all 120 attempts per condition, not only valid-text rows. This is what reproduces I2 = 0.0417 (the 5 length-finished I2 traces are themselves the malformed boolean rows), versus 0.0 if restricted to valid rows.
+- **p95 reuse** — T19 `budget_variance` and `interventions` read p95 TTFT/TTC from the T17 latency reports (valid-trace `waterfalls.p95`), per the "latency reports first, T18/T19 read from them" convention, rather than recomputing over all traces.
+- **Perceived vs total latency** — interventions separate `perceived_latency_ms` (first-token-displayed) from `total_latency_ms` (TTC); buffered B0 has perceived == total, while streaming I1 decouples them (I1 ftd delta −917.6 ms).
+- **No C06 decision** — T18 emits every frozen gate input (10 keys) and answer-type slices but never calls `evaluate_promotion` or sets an `accepted` flag.
+
+Evidence: generated artifacts reproduce every §5 value exactly (B0/I1 citation_validity_rate 0.6181, answer_token_f1 0.4278; I2 citation_precision 0.8333, truncation_rate 0.0417; p95 TTC 2066.28/1799.46/1585.08 ms; output_tokens_total 17375; local serving $0.00). `/status` is not available in this environment (see `docs/HANDOVER-offline-reporting-2026-08-16.md` §9), so no token/model figures are recorded for this commit.
+
+Preventive rule: when a metric can be sliced over "all attempts" vs "valid subset", prefer the denominator stated in the frozen contract and assert it against an independent ground-truth computation before trusting it.
 
 Preventive rule: Do not infer plugin support from upstream framework support. Require a target-backend correctness probe before performance testing.
 
