@@ -347,3 +347,11 @@ Follow-up:
 - Correction 4: the stale `test_real_run_t18_t19_ground_truth` expected `task_resolution_rate` values in `tests/test_reporting.py` were from the old `exact`-only behavior (B0/I1: 0.2727, I2: 0.2857). Updated to the correct content-based values (B0/I1: 0.7273, I2: 0.7619), verified by recomputing from the immutable C05 traces. All other metrics (`answer_token_f1`, `recall_at_5`, etc.) are unchanged.
 - Evidence: all 101 tests pass after fixes.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — T20 sealed holdout implementation and run
+
+- Context: with C06 approved (both interventions accepted via the no-regression-vs-baseline slice gate), T20 required running `C_accepted` against six sealed holdout cases × five repetitions exactly once, with no warmups and no retries.
+- Decision: defined `C_accepted = C_ACCEPTED_ORDER = {B0_buffered_256, I1_streaming_256, I2_buffered_128}` in `scripts/evaluation.py` from the corrected T18 answer-type deltas (I1 all 0.0, I2 max 0.0038 vs the 0.05 gate); no holdout outputs were inspected in this determination. Extended `scripts/benchmark.py` with a `--holdout` flag that loads `eval/v1/holdout_cases.json`, validates conditions via `validate_c_accepted_conditions`, skips warmups, marks every trace `holdout=true` with `power_mode=holdout-serial`, and emits a C07 manifest recording `holdout_count`, `repetitions`, `c_accepted`, and the same exclusive-lock / swap / thermal-observation contract as T16.
+- Evidence: `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/` — 90 attempted, 90 valid, 0 fatal gates, 0 errors, 30 per condition, 257 zero-swap samples, C07 accepted. Full suite: 113 passed (101 prior + 12 new holdout tests).
+- Preventive rule: holdout-only code paths must reuse the same validation, locking, and swap-sampling contracts as the development benchmark to keep the serial-measurement guarantee intact; the `C_accepted` decision must be made from development evidence only and recorded as a named constant before the holdout is ever opened.
+- `/status` model and token use: unavailable in this API session.

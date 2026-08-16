@@ -12,6 +12,7 @@ node_modules/
 logs/spend.csv
 logs/context-ledger/
 artifacts/manual-queries/
+artifacts/authoritative-runs/.benchmark.lock
 .ctx/
 .worktrees/
 .superpowers/

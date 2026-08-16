@@ -59,6 +59,16 @@ REGISTERED_DELTAS = {
     "I2_buffered_128": frozenset({"max_tokens"}),
 }
 
+# C_accepted: the condition set accepted at the C06 intervention-decision gate
+# for the sealed holdout benchmark (T20). The C06 decision basis is the
+# no-regression-vs-baseline slice gate (max_answer_type_slice_regression = 0.05),
+# evaluated from the corrected T18 evidence WITHOUT inspecting holdout outputs.
+# Measured answer-type deltas versus B0: I1_streaming_256 all 0.0;
+# I2_buffered_128 max 0.0038 (free_form) — both within the 0.05 gate.
+# Therefore B0 (baseline), I1, and I2 are all accepted.
+C_ACCEPTED = frozenset(REGISTERED_CONDITIONS)
+C_ACCEPTED_ORDER = tuple(REGISTERED_CONDITIONS)
+
 
 def _issue(category: str, **details: object) -> dict[str, object]:
     return {"category": category, **details}

@@ -6,13 +6,13 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Field | Value |
 | --- | --- |
-| Overall state | Wave 4 is complete through C05; quality analysis and intervention decisions remain |
-| Current phase | Wave 5 analysis, diagnosis, and decision preparation |
+| Overall state | Wave 5 holdout complete (T20 done); Wave 6 reproduction and delivery remain |
+| Current phase | Wave 6 reproduction and packaging |
 | Approved plan | `RAG_PIPELINE_PLAN.md`, revised 2026-08-16 |
-| Latest milestone | T16 matrix completed and C05 accepted: 360 attempts, no transport failures, zero sustained swap |
-| Authoritative measurements | `artifacts/authoritative-runs/20260816T110727Z-4b3a9c40865b/` |
-| Active blocker | C06 requires analysis of the 10/10/15 validation-fatal rows before intervention decisions |
-| Next gate | C06 accepted/rejected interventions with quality evidence |
+| Latest milestone | T20 holdout completed: 90 attempts, 0 fatal gates, 0 errors, C07 accepted |
+| Authoritative measurements | `artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/` (development C05) and `artifacts/authoritative-runs/20260816T172257Z-612d93faccd1/` (holdout C07) |
+| Active blocker | C07 requires T21 final-report generation before package delivery |
+| Next gate | C07 traceability of holdout reports |
 
 ## Milestones
 
@@ -25,8 +25,8 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Complete | `artifacts/ollama_preflight.v1.json`; Ollama `0.32.13`, immutable digest captured, buffered/streaming parity passes, zero sustained swap |
 | M06 | Implement instrumented text-RAG pipeline | Complete | T12–T15.2 stage spans, telemetry, raw traces, condition/report fixtures, representative tail diagnostics, and local manual-query CLI |
 | M07 | Run baseline and two isolated interventions | Complete | T16 raw traces, validations, warmups, and C05-accepted manifest |
-| M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
-| M09 | Run accepted holdout and reproduce/package | Not started | Expected clean log and ZIP audit |
+| M08 | Generate waterfalls, tails, quality, and decisions | Complete | T17/T18/T19 reports and scripts |
+| M09 | Run accepted holdout and reproduce/package | In progress | T20 holdout run complete; T21–T25 packaging remain |
 
 ## Approval gates
 
