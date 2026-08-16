@@ -85,9 +85,9 @@ Checkpoint action: if fewer than 360 valid attempts finish, preserve every row a
 
 Analysis and documentation can run concurrently from the immutable raw traces. Only the holdout benchmark remains serial.
 
-- [ ] **T17 [PAR-A; 7:30–8:10; depends: C05]** Generate aligned p50/p95 waterfalls, marginal-stage tables, case-bootstrap intervals, and top-decile analysis.
-- [ ] **T18 [PAR-B; 7:30–8:10; depends: C05]** Score Recall@k/MRR, citations, exact match, token F1, resolution, truncation, and answer-type slices.
-- [ ] **T19 [PAR-C; 7:30–8:10; depends: C05]** Draft budget variance, spend, environment, collaboration, and intervention evidence from saved manifests/traces.
+- [x] **T17 [PAR-A; 7:30–8:10; depends: C05]** Generated aligned p50/p95 waterfalls, marginal-stage tables, case-bootstrap intervals, and top-decile analysis from the immutable C05 traces.
+- [x] **T18 [PAR-B; 7:30–8:10; depends: C05]** Scored Recall@k/MRR, citations, exact match, token F1, resolution, truncation, and answer-type slices from saved C05 traces.
+- [x] **T19 [PAR-C; 7:30–8:10; depends: C05]** Drafted budget variance, spend, environment, collaboration, and intervention evidence from saved manifests/traces.
 - [ ] **C06 [GATE; 8:10–8:30; depends: T17, T18, T19, human G2/G3 approval]** Accept or reject each intervention using frozen intervals and quality gates; define `C_accepted` without inspecting holdout outputs.
 - [ ] **T20 [SERIAL-MEASURE; 8:30–8:50; depends: C06]** Run `C_accepted` against six sealed holdouts × five repetitions exactly once.
 - [ ] **T21 [SEQ; 8:50–9:15; depends: T20]** Generate final quality, budget, cost, environment, and intervention-decision reports including holdout results.

@@ -305,3 +305,10 @@ Follow-up:
 - Evidence: `artifacts/authoritative-runs/20260816T110727Z-4b3a9c40865b/run-manifest.json` records 360 attempts, 120 per condition, zero transport failures, 1,244 zero-swap samples, and C05 acceptance.
 - Learning: the tool-session wait detached while the local benchmark process continued; process and artifact inspection, rather than the tool-session completion alone, established the final run state. The immutable traces also contain 10/10/15 validation-fatal rows (B0/I1/I2), so latency point estimates cannot justify a promotion decision before quality diagnosis.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — C05 offline analysis finding
+
+- Context: T17–T19 analyzed only the immutable 360-row C05 traces in parallel; no Ollama or benchmark work was rerun.
+- Evidence: the generated condition reports retain 110/110/105 latency-valid rows for B0/I1/I2, while the trace-only quality evidence finds 2/2/3 fatal rows and every condition misses frozen quality gates. The T18 scorer initially failed only because its nested artifact launcher lacked the repository import path; rerunning with the recorded `PYTHONPATH=.` command reproduced the evidence exactly.
+- Learning: transport success and latency-trace validity do not establish promotion readiness; preserve validation exclusions and use a reproducible repository-root launcher for offline graders.
+- `/status` model and token use: unavailable in this API session.
