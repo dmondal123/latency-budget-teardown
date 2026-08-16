@@ -1,6 +1,6 @@
 """Task 6 retrieval and context-assembly contract tests.
 
-The tests use the public ``scripts.retrieval`` API: manifest parsing into
+The tests use the public ``scripts.legacy.retrieval`` API: manifest parsing into
 page-level ``Evidence``, ``BM25.search``, the ``noop_reranker`` seam,
 ``assemble_context``, and ``bind_citations``.  The assertions encode the
 ordering and hard-bound requirements in RAG_PIPELINE_PLAN.md 7.1-7.2.
@@ -8,7 +8,7 @@ ordering and hard-bound requirements in RAG_PIPELINE_PLAN.md 7.1-7.2.
 
 from copy import deepcopy
 
-from scripts.retrieval import (
+from scripts.legacy.retrieval import (
     BM25,
     assemble_context,
     bind_citations,

@@ -2,8 +2,7 @@
 
 import pytest
 
-from scripts.ingestion.corpus import ingest_passages, load_cached_passages
-from scripts.text_rag import TextRagError
+from scripts.ingestion.corpus import TextRagError, ingest_passages, load_cached_passages
 
 
 def _rows():

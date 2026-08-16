@@ -32,7 +32,10 @@ tests/
     test_cli.py
 ```
 
-The older PDF/multimodal scripts and their tests are out of scope.
+The legacy PDF/multimodal retrieval module moves unchanged to
+`scripts/legacy/retrieval.py` with its tests so that its current
+`scripts/retrieval.py` filename no longer blocks the text-RAG retrieval
+package. Other older PDF/multimodal scripts remain out of scope.
 
 ## Architecture
 
@@ -45,6 +48,9 @@ creation; `run.py` exposes the ingestion command.
 records, deterministic BM25 index, and stable ranks; `context.py` binds
 admitted ranked passages to `SOURCE_N` labels under the character budget;
 `run.py` exposes the retrieval command.
+
+`scripts.legacy.retrieval` retains the previous PDF/multimodal retrieval API.
+Its only changes are the package path and corresponding test imports.
 
 The commands intentionally move to module execution:
 

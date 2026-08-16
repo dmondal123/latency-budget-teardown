@@ -14,7 +14,7 @@
 - Preserve text-evidence manifest schema `text-evidence-manifest.v1`, durable `passage:<id>` evidence IDs, SHA-256 hashes, and deterministic index snapshots.
 - Preserve the frozen BM25 parameters `k1=1.2`, `b=0.75`, retrieval default `retrieve_k=20`, context default `admitted_top_k=5`, and character budget `12_000`.
 - Do not create compatibility wrappers at `scripts/ingest_corpus.py`, `scripts/retrieve.py`, or `scripts/text_rag.py`.
-- Leave the legacy PDF/multimodal scripts and tests unchanged.
+- Move the legacy PDF/multimodal `scripts/retrieval.py` module unchanged to `scripts/legacy/retrieval.py`, with its matching tests and imports, to free the `scripts.retrieval` package name. Leave every other legacy PDF/multimodal script and test unchanged.
 - Run module commands with `python -m scripts.ingestion.run` and `python -m scripts.retrieval.run`.
 
 ---
@@ -85,6 +85,9 @@ git commit -m "refactor(ingestion): group text corpus modules"
 - Create: `scripts/retrieval/bm25.py`
 - Create: `scripts/retrieval/context.py`
 - Create: `scripts/retrieval/run.py`
+- Create: `scripts/legacy/__init__.py`
+- Move: `scripts/retrieval.py` → `scripts/legacy/retrieval.py`
+- Move: `tests/test_retrieval.py` → `tests/legacy/test_retrieval.py`
 - Modify: remaining `tests/test_text_rag.py` → `tests/retrieval/test_bm25.py`, `tests/retrieval/test_context.py`, and `tests/retrieval/test_cli.py`
 - Delete: `scripts/retrieve.py`
 - Delete: `scripts/text_rag.py`

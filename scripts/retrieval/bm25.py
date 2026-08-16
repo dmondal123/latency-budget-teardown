@@ -1,27 +1,25 @@
-"""Deterministic ingestion, BM25 retrieval, and text-context assembly.
-
-This module owns the text-only evidence boundary described in
-``RAG_PIPELINE_PLAN.md``.  It deliberately performs no generation or
-validation: callers receive durable passage IDs and source labels that those
-later stages can validate against.
-"""
+"""Deterministic BM25 retrieval over durable text evidence manifests."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
 from rank_bm25 import BM25Okapi
 
-from scripts.ingestion.corpus import TextRagError, normalize_text
-
 
 _TOKEN_RE = re.compile(r"[\w]+", re.UNICODE)
+_WHITESPACE_RE = re.compile(r"\s+")
 _MANIFEST_VERSION = "text-evidence-manifest.v1"
 _BM25_CONFIG = {"algorithm": "BM25Okapi", "k1": 1.2, "b": 0.75}
+
+
+class RetrievalError(ValueError):
+    """Raised when a retrieval manifest or query contract is malformed."""
 
 
 @dataclass(frozen=True)
@@ -42,20 +40,17 @@ class RetrievedPassage:
 
 
 @dataclass(frozen=True)
-class AssembledContext:
-    admitted_evidence_ids: tuple[str, ...]
-    text: str
-    abstained: bool
-    reason: str | None
-    input_characters: int
-
-
-@dataclass(frozen=True)
 class BM25Index:
     passages: tuple[Passage, ...]
     corpus_hash: str
     index_snapshot: str
     _index: BM25Okapi
+
+
+def normalize_text(value: str) -> str:
+    if not isinstance(value, str):
+        raise RetrievalError(f"passage must be a string, got {type(value).__name__}")
+    return _WHITESPACE_RE.sub(" ", unicodedata.normalize("NFKC", value)).strip()
 
 
 def tokenize(value: str) -> list[str]:
@@ -72,7 +67,7 @@ def _canonical_json(value: Mapping[str, Any]) -> str:
 
 def _validate_hash(value: str, field: str) -> None:
     if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
-        raise TextRagError(f"{field} must be a lowercase SHA-256 hex digest")
+        raise RetrievalError(f"{field} must be a lowercase SHA-256 hex digest")
 
 
 def _snapshot(corpus_hash: str, passages: Sequence[Passage]) -> str:
@@ -86,15 +81,17 @@ def _snapshot(corpus_hash: str, passages: Sequence[Passage]) -> str:
         ],
     }
     return _sha256_text(_canonical_json(payload))
+
+
 def build_index(manifest: Mapping[str, Any]) -> BM25Index:
     """Build the fixed BM25 index and reject manifest/snapshot drift."""
     if manifest.get("schema_version") != _MANIFEST_VERSION:
-        raise TextRagError(f"expected {_MANIFEST_VERSION}")
+        raise RetrievalError(f"expected {_MANIFEST_VERSION}")
     corpus_hash = manifest.get("corpus_hash")
     _validate_hash(corpus_hash, "corpus_hash")
     raw_passages = manifest.get("passages")
     if not isinstance(raw_passages, list):
-        raise TextRagError("manifest passages must be a list")
+        raise RetrievalError("manifest passages must be a list")
     passages = tuple(
         Passage(
             evidence_id=str(raw["evidence_id"]),
@@ -106,15 +103,15 @@ def build_index(manifest: Mapping[str, Any]) -> BM25Index:
         if isinstance(raw, Mapping)
     )
     if len(passages) != len(raw_passages) or len({passage.passage_id for passage in passages}) != len(passages):
-        raise TextRagError("manifest passages must be unique objects")
+        raise RetrievalError("manifest passages must be unique objects")
     if tuple(sorted(passages, key=lambda passage: passage.passage_id)) != passages:
-        raise TextRagError("manifest passages must be sorted by passage_id")
+        raise RetrievalError("manifest passages must be sorted by passage_id")
     for passage in passages:
         if passage.evidence_id != f"passage:{passage.passage_id}" or passage.text_sha256 != _sha256_text(passage.text):
-            raise TextRagError(f"invalid durable metadata for {passage.evidence_id}")
+            raise RetrievalError(f"invalid durable metadata for {passage.evidence_id}")
     expected_snapshot = _snapshot(corpus_hash, passages)
     if manifest.get("index_snapshot") != expected_snapshot:
-        raise TextRagError("manifest index_snapshot does not match passages")
+        raise RetrievalError("manifest index_snapshot does not match passages")
     tokens = [tokenize(passage.text) for passage in passages]
     return BM25Index(passages, corpus_hash, expected_snapshot, BM25Okapi(tokens, k1=1.2, b=0.75))
 
@@ -122,7 +119,7 @@ def build_index(manifest: Mapping[str, Any]) -> BM25Index:
 def retrieve(index: BM25Index, query: str, *, retrieve_k: int = 20) -> tuple[RetrievedPassage, ...]:
     """Return positive BM25 matches in score/id order with stable one-based ranks."""
     if retrieve_k < 0:
-        raise TextRagError("retrieve_k must be non-negative")
+        raise RetrievalError("retrieve_k must be non-negative")
     query_tokens = tokenize(normalize_text(query))
     if not query_tokens or not index.passages or retrieve_k == 0:
         return ()
@@ -137,27 +134,3 @@ def retrieve(index: BM25Index, query: str, *, retrieve_k: int = 20) -> tuple[Ret
         RetrievedPassage(passage.evidence_id, passage.passage_id, passage.text, score, rank)
         for rank, (score, passage) in enumerate(scored[:retrieve_k], 1)
     )
-
-
-def assemble_context(
-    ranked: Sequence[RetrievedPassage], *, admitted_top_k: int = 5, character_budget: int = 12_000
-) -> AssembledContext:
-    """Pack rank-ordered whole passages, binding labels only after admission."""
-    if admitted_top_k < 0 or character_budget < 0:
-        raise TextRagError("context budgets must be non-negative")
-    sections: list[str] = []
-    evidence_ids: list[str] = []
-    for item in ranked:
-        if len(evidence_ids) >= admitted_top_k:
-            break
-        label = f"SOURCE_{len(evidence_ids) + 1}"
-        section = f"{label} [{item.evidence_id}]\n{item.text}"
-        next_length = sum(len(part) for part in sections) + (2 * len(sections)) + len(section)
-        if next_length > character_budget:
-            continue
-        sections.append(section)
-        evidence_ids.append(item.evidence_id)
-    if not sections:
-        return AssembledContext((), "", True, "zero_admissible_evidence", 0)
-    text = "\n\n".join(sections)
-    return AssembledContext(tuple(evidence_ids), text, False, None, len(text))

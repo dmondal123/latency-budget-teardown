@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Query a text-evidence manifest with fixed BM25 retrieval."""
 
 from __future__ import annotations
@@ -9,18 +8,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
-_REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-if str(_REPOSITORY_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPOSITORY_ROOT))
-
-from scripts.text_rag import TextRagError, assemble_context, build_index, retrieve
+from .bm25 import RetrievalError, build_index, retrieve
+from .context import assemble_context
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
     with path.open(encoding="utf-8") as stream:
         manifest = json.load(stream)
     if not isinstance(manifest, dict):
-        raise TextRagError("evidence manifest must be an object")
+        raise RetrievalError("evidence manifest must be an object")
     return manifest
 
 
@@ -37,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
         context = assemble_context(
             ranked, admitted_top_k=args.admitted_top_k, character_budget=args.character_budget
         )
-    except (OSError, json.JSONDecodeError, TextRagError) as exc:
+    except (OSError, json.JSONDecodeError, RetrievalError) as exc:
         print(f"retrieval blocked: {exc}", file=sys.stderr)
         return 2
     print(
