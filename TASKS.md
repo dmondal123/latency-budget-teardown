@@ -117,3 +117,11 @@ Checkpoint action: packaging never waits for optional cache/top-k diagnostics. I
 | 7:30–8:30 | Latency analysis; quality scoring; report drafting | Intervention decision, `C06` |
 | 8:30–9:15 | Report preparation after measurement | Holdout once; final report, `C07` |
 | 9:15–10:00 | Reproduction; write-up; artifact audit | ZIP integration, `C08` |
+
+## Offline reporting sub-plan (T17–T19)
+
+Sub-plan `docs/superpowers/plans/2026-08-16-offline-reporting.md`.
+
+- [x] **Task 1 [PAR-A]:** Validate run inputs and generate T17 latency reports. Fixture-backed tests verify a 360-row run creates three `latency.<condition>.json` reports with 120 attempts each and source hashes for run artifacts, development cases, holdout manifest, and thresholds; validation rejects non-empty output dirs, wrong denominators, and holdout overlap.
+- [ ] **Task 2 [PAR-B]:** Generate T18 quality evidence and T19 provenance evidence (JSON + Markdown) using the three graders without a C06 promotion decision.
+- [ ] **Task 3 [PAR-C]:** Render headless PNG charts, add the `scripts.reporting` CLI, run against the corrected T16 run, and publish `artifacts/reports/...`.
