@@ -1,200 +1,164 @@
-# Multimodal RAG Latency Implementation Plan
+# Text RAG Latency Implementation Plan
 
-> **Status:** Draft implementation plan. The behavioral contract, numeric budgets, eval cases, and model/runtime identity require human approval before benchmark execution. Intervention promotion and final delivery require separate approval.
+> **For agentic workers:** Execute the work in `TASKS.md` sequentially, using test-first changes and review checkpoints. Parallelize only disjoint implementation files; authoritative measurements remain serial on the target M4 Pro.
 
-## 1. Outcome, scope, and evidence rules
+**Goal:** Build and measure a reproducible local text-RAG pipeline within ten hours while preserving rigorous latency and quality evaluation.
 
-Build a reproducible CLI pipeline over the PDFs in `documents/`:
+**Architecture:** A pinned Hugging Face text corpus feeds deterministic BM25 retrieval and bounded context assembly. A pinned Ollama qwen3:4b service generates cited answers; validation and raw tracing precede scripted quality and latency reports.
 
-```text
-request → retrieval → context/media assembly → vLLM-Metal model → validation → display
-```
+**Tech stack:** Python 3.12, Hugging Face Datasets, `rank-bm25`, HTTPX, Ollama, Qwen3 4B, JSONL, NumPy, Matplotlib, JSON Schema, and pytest/unittest.
 
-The primary deployment target is an M4 Pro with 24 GB unified memory, using an open-weight vision-language model served through `vllm-metal`. The initial candidate is `mlx-community/Qwen3-VL-4B-Instruct-4bit`, which the current vLLM-Metal documentation lists as **experimental** native multimodal support on the paged backend. It remains a feasibility candidate until the pinned build passes the smoke and memory gates below.
+> **Status:** Approved design, pending implementation and G1 measurement-contract approval. This revision is intentionally scoped for a ten-hour build-and-measurement window. Numeric budgets remain provisional until G1; no value in this document is a measured result.
 
-The work is complete only when:
+## 1. Goal, scope, and completion contract
 
-- A frozen evaluation suite passes all fatal and quality gates.
-- Every request persists stage timings, TTFE, TTFT, TTA, TTC, quality, tokens, cost, cache state, and full environment identity.
-- Baseline and each isolated intervention have enough valid samples for stable p50 and p95 estimates.
-- p50/p95 waterfall charts are derived from raw request traces without adding unrelated percentile values.
-- At least two latency interventions are measured independently and rejected if their quality side-effects exceed the frozen tolerance.
-- Every number and chart is reproduced by one exact command.
-- Tests, generated metrics/charts, pinned dependencies, AI-collaboration log, and a final write-up of at most two pages are included.
-
-Evidence labels used throughout this plan:
-
-- **Frozen:** approved before candidate measurements; cannot change in the same comparison.
-- **Measured:** obtained from this repository's raw benchmark traces.
-- **Candidate:** must be tested; no performance claim is assumed.
-- **Excluded:** intentionally outside the five-day critical path, with a recorded reason.
-
-Primary vLLM-Metal references, accessed 2026-08-16:
-
-- [vLLM-Metal supported models](https://docs.vllm.ai/projects/vllm-metal/en/latest/supported_models/)
-- [vLLM-Metal configuration](https://docs.vllm.ai/projects/vllm-metal/en/latest/configuration/)
-- [vLLM automatic prefix caching design](https://docs.vllm.ai/en/latest/design/prefix_caching/)
-- [Qwen3-VL concurrent vision-encoder batching evidence](https://github.com/vllm-project/vllm-metal/issues/420)
-- [Metal speculative-decoding regression evidence](https://github.com/vllm-project/vllm-metal/issues/482)
-
-## 2. Measurement contract: define this before implementation
-
-### 2.1 Stage boundaries and ownership
-
-Every request emits monotonic timestamps using `time.perf_counter_ns()`. Stage durations are mutually exclusive on the critical path unless a span explicitly records an overlapping branch.
-
-| Stage | Start | Stop | Required dimensions | Owner |
-|---|---|---|---|---|
-| `admission` | CLI/API accepts request | first `retrieval_started` event | queue depth, warm/cold server | client/gateway |
-| `retrieval` | retrieval starts | ranked evidence IDs fixed | query tokens, candidate count, Recall@k | BM25/index |
-| `context_media` | evidence IDs fixed | serialized model request dispatched | admitted pages, text tokens, image pixels, cache hits | packer/media loader |
-| `model_queue_prefill` | model request dispatched | first non-empty SSE token received | engine queue, prefix-cache hit tokens, input tokens, image count | vLLM-Metal |
-| `model_decode` | first token received | terminal SSE event received | output tokens, tokens/s, finish reason | vLLM-Metal |
-| `validation` | complete output available | validation result persisted | schema/citation checks, fatal gate | validator |
-| `display_finalize` | validated result available | CLI returns | buffered/streamed mode | client |
-
-If server telemetry can split engine queue, vision encoding, text prefill, and first-token sampling without changing benchmark behavior, persist them as nested spans. The portable waterfall still uses `model_queue_prefill` so all runs remain comparable.
-
-Parallel spans compose as `max(branch_duration)`, never as a sum. Required validation remains on the TTC critical path. `display_finalize` is post-TTC client overhead and appears beside, not inside, the additive TTC waterfall. Offline grading is outside TTC and is reported separately.
-
-### 2.2 Four user-visible clocks
-
-- `TTFE`: request accepted → first real state event. Target event is `retrieval_started`; a log line emitted before work begins does not count.
-- `TTFT`: request accepted → first model token available to the client. Also record `model_dispatch_to_first_token_ms` to isolate the engine.
-- `TTA`: persist `null` and `not_applicable_reason=no_actions`; this answer-only pipeline executes no governed action.
-- `TTC`: request accepted → validated completion. This is the authoritative total-latency metric.
-
-Streaming changes perceived delivery but not the definition of TTFT or TTC. Report both `first_token_available_ms` and `first_token_displayed_ms`; buffered mode makes the latter equal to post-validation display time.
-
-### 2.3 Per-request record
-
-Each JSONL row contains at least:
+Build a reproducible local CLI pipeline:
 
 ```text
-run_id, trace_id, case_id, condition_id, repetition, attempt
-modality_group, traffic_slice, holdout, concurrency
-server_state, thermal_block, swap_state, memory_bytes
-app_cache_state, prefix_cache_hit_tokens, media_cache_state
-raw_output, admitted_evidence_ids, retrieved_ranks
-admission_ms, retrieval_ms, context_media_ms
-model_queue_prefill_ms, model_decode_ms, validation_ms, display_finalize_ms
-ttfe_ms, ttft_ms, tta_ms, ttc_ms
-input_text_tokens, input_image_tokens_or_pixels, output_tokens, tokens_per_second
-model_checkpoint, model_revision, chat_template_hash
-vllm_metal_version, vllm_version, mlx_version, mlx_vlm_version
-python_version, macos_build, chip, ram_bytes, power_mode
-prompt_hash, contract_hash, index_snapshot, grader_version
-scores, fatal_gates, finish_reason, error_type
+question → BM25 retrieval → context assembly → Ollama/qwen3:4b → validation → display
 ```
 
-Cost is reported per completed task, not per call. Failed attempts contribute their input/output tokens and any external dollar cost. Local model API cost is `$0.00`; local energy or hardware amortization is outside scope and must not be reported as zero-dollar compute cost.
+The corpus and gold questions come from the Hugging Face dataset `rag-datasets/rag-mini-wikipedia` at immutable revision `1f9f3b53fbc5995b85aab8e993504ad42c5f16f6`:
 
-## 3. Baseline protocol and required metrics
+- `text-corpus`, split `passages`: `id`, `passage`
+- `question-answer`, split `test`: `id`, `question`, `answer`
 
-### 3.1 Frozen workload
+The dataset supplies gold answers but does **not** document a QA-ID-to-passage-ID mapping. The evaluation-preparation step must therefore find candidate passages by normalized answer containment and manually verify the final gold evidence ID for each selected case. The plan never treats the QA `id` as a passage ID.
 
-Use 30 manually verified cases:
+Work is complete only when:
 
-- 10 text-focused, 10 visual/chart/diagram, and 10 mixed-modality cases.
-- Coverage across at least 15 PDFs.
-- Exactly one traffic slice per case: `typical`, `edge`, `adversarial`, or `ambiguous`.
-- Six sealed holdout cases: two per modality group. Development decisions cannot inspect holdout outputs.
+- The frozen 30-case suite has 24 development cases and six sealed holdouts.
+- The development set is run five times for baseline and each isolated intervention.
+- Every attempt persists raw output, evidence IDs, stage timings, TTFE, TTFT, TTA, TTC, tokens, scores, cache state, and full dataset/model/runtime identity.
+- Reproducible p50/p95 waterfalls, marginal stage tables, bootstrap intervals, and top-decile tail analysis are generated only from saved traces.
+- Streaming and output-token reduction are measured independently against the same baseline, latency budget, and frozen quality gates.
+- One exact command regenerates every reported number and chart.
+- Tests, generated metrics/charts, pinned dependencies, spend, collaboration log, final write-up of at most two pages, and a valid submission ZIP are present.
 
-Each case stores `case_id`, question, modality group, traffic slice, reference answer, required facts, gold evidence IDs, expected abstention, verification status, and holdout flag. Thirty cases are below the evaluation skill's preferred 48–60 starting set; record this as a limitation and use repetitions only for latency uncertainty, never to pretend there are more independent quality cases.
+Out of scope: PDFs, image ingestion, multimodal models, dense retrieval, reranking, vLLM-Metal, concurrency optimization, speculative decoding, and production serving.
 
-### 3.2 Baseline condition
+## 2. Frozen identities and fail-fast preflight
 
-The primary baseline is single-user latency (`concurrency=1`) on a warm, persistent server with cold application result/render caches and the pinned vLLM-Metal prefix-cache policy. It uses:
+Freeze these before authoritative measurements:
+
+- Dataset repository, revision, configurations, splits, downloaded-file hashes, license (`CC BY 3.0`), and derived index snapshot.
+- Ollama version and the immutable digest returned for `qwen3:4b`.
+- Model mode: thinking/reasoning disabled, temperature `0`, fixed seed where Ollama supports it, and a hashed prompt template.
+- macOS build, architecture, chip, memory, Python version, dependency lock, power mode, and application commit or source snapshot.
+
+Preflight must finish within 45 minutes:
+
+1. Verify the pinned dataset revision and both expected schemas.
+
+2. Pull or locate `qwen3:4b`, capture its digest, and confirm local-only serving.
+
+3. Send one non-streaming and one streaming request with `think=false`.
+
+4. Verify deterministic final-text parity, terminal streaming metadata, token counts, no OOM, and no sustained swap.
+
+5. Stop rather than benchmark if the dataset schema differs, the model digest is unavailable, thinking cannot be disabled, or streaming is malformed.
+
+The Ollama API is treated as an opaque service boundary. Do not claim separate engine queue and prefill times that the API cannot observe.
+
+## 3. Measurement contract
+
+### 3.1 Critical-path stages
+
+Use `time.perf_counter_ns()` for all client-owned timestamps.
+
+| Stage | Start | Stop | Required dimensions |
+|---|---|---|---|
+| `admission` | CLI accepts request | First `retrieval_started` event emitted | Warm/cold server |
+| `retrieval` | Retrieval starts | Ranked passage IDs fixed | Query terms, candidate count, gold rank |
+| `context_assembly` | Ranked IDs fixed | Ollama request dispatched | Admitted IDs, passages, input characters/tokens |
+| `model_dispatch_to_first_token` | Request dispatched | First non-empty answer token received | Input/output tokens when available, stream mode |
+| `model_decode` | First answer token received | Terminal response received | Output tokens, tokens/s, finish reason |
+| `validation` | Full output available | Validation record persisted | Schema, citation, answer checks |
+| `display_finalize` | Validated output available | CLI returns | Buffered/streamed mode |
+
+The first six spans are mutually exclusive and add to TTC except that `display_finalize` is reported separately as client overhead. Offline grading and report generation are outside TTC.
+
+### 3.2 User-visible clocks
+
+- **TTFE:** Request accepted → real `retrieval_started` event.
+- **TTFT:** Request accepted → first model answer token available to the client.
+- **`first_token_displayed_ms`:** Request accepted → first token actually displayed; equal to post-validation display time in buffered mode.
+- **TTA:** `null`, with `not_applicable_reason=no_actions`.
+- **TTC:** Request accepted → deterministic validation completed.
+
+Streaming is a perceived-latency intervention. It is not reported as a TTC win unless the measured TTC itself changes.
+
+### 3.3 Raw trace schema
+
+Each JSONL row includes at least:
 
 ```text
-retriever: BM25, k1=1.2, b=0.75, retrieve_k=50
-admitted page images: 2
-maximum image side: 1280 px
-maximum output tokens: 256
-display: buffered until deterministic validation completes
-application retrieval/render/result cache: off
-sampling: temperature=0 with a fixed seed where supported
-retries during measured request: 0
+run_id, trace_id, case_id, source_row_id, condition_id, repetition, attempt,
+answer_type, holdout, server_state, cache_state, raw_output,
+retrieved_evidence_ids, admitted_evidence_ids, retrieved_ranks, admission_ms,
+retrieval_ms, context_assembly_ms, model_dispatch_to_first_token_ms,
+model_decode_ms, validation_ms, display_finalize_ms, ttfe_ms, ttft_ms,
+first_token_displayed_ms, tta_ms, ttc_ms, input_tokens, output_tokens,
+tokens_per_second, finish_reason, error_type, dataset_repo, dataset_revision,
+corpus_hash, index_snapshot, model_tag, model_digest, think_mode,
+ollama_version, prompt_hash, contract_hash, python_version, macos_build,
+chip, ram_bytes, power_mode, scores, fatal_gates
 ```
 
-Keep a stable evidence-contract/system prefix so realistic automatic prefix caching remains measurable. Insert a fixed-length unique benchmark nonce at the start of the dynamic user/evidence portion—not before the shared system prefix—to prevent an exact full-prompt replay from being counted as representative reuse. Record cache-hit tokens rather than assuming cache state.
+If Ollama omits a token or timing field, persist `null` plus a reason. Never infer engine-internal timings from client observations.
 
-Report these additional profiles separately; never mix them into the headline baseline:
+## 4. Evaluation design
 
-- Cold process/model startup: 10 launches, startup and first-request latency.
-- Concurrent service: concurrency 2 and 4, with request rate, goodput, p95 TTFT/TTC, and memory pressure.
-- Cache-warm repetitions: explicit app-cache and engine-prefix-cache hit strata.
+### 4.1 Frozen workload
 
-### 3.3 Sampling, ordering, and stability
+Select 30 QA rows deterministically from the pinned `question-answer/test` split with seed `20260816`. Stratify across answer types:
 
-1. Run 10 warm-up requests spanning all modality groups; exclude them and retain their logs.
-2. Run all 30 cases five times per condition: 150 measured requests.
-3. Interleave condition and case order in seeded thermal blocks; never run one entire condition before the next.
-4. Keep model identity, corpus/index snapshot, prompt, hardware, power mode, image settings, and server settings fixed except for the one registered intervention field.
-5. Use every valid repetition for latency. Use one deterministic output per case and condition for quality scoring.
-6. Do not retry failed measured requests. Report failure rate and classify the failure; exclude a row from latency only under a pre-registered invalid-environment rule.
-7. Bootstrap by case, not by row, with 10,000 resamples so repetitions of one case do not masquerade as independent traffic.
-8. If the relative 95% bootstrap-CI width for p95 TTC exceeds 20%, add complete 30-request blocks, up to 300 requests per condition. If still unstable, report the interval and mark the tail conclusion inconclusive.
+- Boolean (`yes`/`no` variants)
+- Numeric/date
+- Named entity or short phrase
+- Longer free-form answer
 
-### 3.4 Baseline metric set
+For each selected row, find all corpus passages containing the normalized gold answer, inspect the candidates, and record exactly one or more verified gold passage IDs. Reject a row if its evidence is absent, ambiguous, malformed, or requires outside knowledge; draw the next row in seeded order. Store the source row ID so selection is replayable.
 
-Latency and reliability:
+Freeze 24 cases for development and six for holdout, stratified by answer type.
 
-- p50, p95, and 95% bootstrap CIs for every critical-path stage, TTFE, TTFT, and TTC.
-- p99 as diagnostic only, because 150–300 samples are insufficient for a strong p99 claim.
-- Error, timeout, truncation, and abstention rates.
-- Input tokens, output tokens, image pixels/tokens, prefix-cache hit tokens, and decode tokens/s.
-- Tail slices by modality, traffic slice, input-size quartile, output-size quartile, image count, cache state, memory pressure, and swap state.
+The holdout questions and evidence IDs may be materialized for reproducibility, but their outputs and aggregate quality are not inspected until the final accepted configuration is chosen.
 
-Quality:
-
-- Retrieval Recall@1/3/5 and MRR.
-- Citation precision and citation validity.
-- Required-fact coverage, task-resolution rate, and abstention correctness.
-- Schema-validity and truncation rates.
-- Fatal-gate count and per-slice deltas.
-
-## 4. p50/p95 waterfall methodology
-
-Do not construct end-to-end latency by summing independently calculated stage percentiles.
-
-Generate two complementary outputs:
-
-1. **Percentile-aligned request waterfall:** sort complete request traces by TTC and select the deterministic trace nearest empirical p50 and p95, breaking ties by `case_id` then `repetition`. Plot that request's mutually exclusive stages. The bars add to its measured TTC. Across 10,000 case-block bootstrap samples, repeat rank selection to produce confidence intervals for the total and the aligned stage contributions.
-2. **Marginal stage table:** report each stage's own p50/p95 and confidence interval. Label it “marginal; columns are not additive.” Use this table to find a stage with an independent tail even when it is not dominant in the TTC-ranked trace.
-
-For parallel branches, display the critical branch in the additive waterfall and show non-critical overlapped work as a hatched overlay. Generate a separate top-decile analysis using requests with TTC at or above the empirical p90; compare their stage shares and workload attributes with the median cohort.
-
-Every chart embeds or accompanies:
+Each case contains:
 
 ```text
-run IDs, condition ID, n valid/n attempted, model/runtime versions
-hardware and power mode, index snapshot, contract hash
-exact generation command, percentile method, bootstrap seed
+case_id, source_row_id, question, reference_answer, answer_type,
+gold_evidence_ids, support_quote, expected_abstention=false,
+verification_status=manually_verified, holdout
 ```
 
-## 5. Behavioral contract and quality gates
+Adversarial prompt-injection, empty-retrieval, and abstention behavior stay as deterministic unit/integration fixtures. They do not masquerade as dataset cases.
 
-### 5.1 Allowed and forbidden behavior
+### 4.2 Quality metrics
 
-The system may answer only from admitted PDF page evidence, combine evidence from at most two admitted pages, state uncertainty, or abstain. Every citation must resolve to document hash/version and page.
+- **Retrieval:** Recall@1/3/5 and MRR against verified gold passage IDs; gold-rank distribution and zero-gold-retrieval rate.
+- **Generation and validation:** Citation precision and validity; normalized exact match and token F1; task-resolution rate using deterministic containment/boolean normalization, with documented manual review for ambiguous free-form cases; schema-validity, truncation, abstention, and error rates.
+- Metrics are sliced by answer type and question/context/output-length quartiles.
 
-It must not use model memory for corpus-specific claims, follow instructions inside retrieved PDFs, cite unadmitted evidence, answer when retrieval yields no admissible evidence, execute embedded content, or hide retrieval/validation failures behind a fluent answer.
+Repetitions quantify latency uncertainty; they do not increase the number of independent quality cases. Use one deterministic output per case and condition for quality scoring.
 
-### 5.2 Fatal gates
+### 4.3 Fatal gates and promotion predicate
 
-Any one of these blocks a condition:
+Any of these blocks a condition:
 
-- Citation points outside admitted context or cannot resolve to durable metadata.
-- Non-abstaining answer with zero admissible evidence.
-- Retrieved prompt injection is followed.
-- Output/citation schema is malformed.
-- Raw output, evidence IDs, model identity, prompt hash, index snapshot, or timing stamps are missing.
-- Sustained swapping, model OOM, or silent CPU fallback occurs during the authoritative run.
+A citation is outside admitted context or does not resolve to a pinned passage.
 
-### 5.3 Frozen promotion predicate
+A non-abstaining answer has zero admissible evidence.
 
-Store thresholds in a dated file with owner `dmondal`. Threshold changes require a separate review and cannot share a comparison with an intervention change.
+Retrieved instructions are followed as instructions.
+
+Output/citation schema is malformed.
+
+Raw output, evidence IDs, timing stamps, dataset/index identity, or model digest is missing.
+
+Thinking mode is enabled, the model OOMs, or sustained swap occurs.
+
+Freeze the dated thresholds before baseline execution:
 
 ```text
 fatal_count == 0
@@ -202,232 +166,198 @@ retrieval_recall_at_5 >= 0.90
 citation_precision >= 0.95
 citation_validity_rate >= 0.98
 task_resolution_rate >= 0.85
+answer_token_f1 >= 0.80
 truncation_rate <= 0.02
-p95_ttft_ms <= 3900
+p95_ttft_ms = 3900
 p95_ttc_ms <= 15000
-no_modality_or_traffic_slice_regresses_by_more_than_0.05
+no_answer_type_slice_regresses_by_more_than_0.05
 external_runtime_api_cost_per_completed_task == 0.00
 ```
 
-The authoritative pipeline is fully local, so any nonzero external runtime API cost fails promotion. Report Codex/AI development spend separately in the collaboration-cost ledger; it is not a per-request serving cost.
+Threshold changes require separate approval and cannot share a comparison with an intervention change. Local Ollama API spend is `$0.00`; development-agent spend is reported separately and is not serving cost.
 
-Use deterministic code graders first. Human reviewers score evidence support and resolution on `0=unsupported/unresolved`, `1=partial`, `2=fully resolved`. If an LLM judge is introduced, calibrate it against human labels and publish Cohen's kappa and `grader_version` before it gates any run.
+## 5. Baseline and sampling protocol
 
-## 6. Latency-budget methodology and initial allocation
+### 5.1 Baseline condition
 
-The methodology is frozen before baseline execution; the numeric allocation below remains **provisional until human approval**, then freezes before any candidate intervention runs.
+`B0_buffered_256` uses:
 
-Budget from user-visible milestones backward:
+```text
+retriever: BM25, k1=1.2, b=0.75
 
-1. First real feedback must appear within 300 ms (`TTFE`).
-2. First answer token must be available within 3.9 s (`TTFT`) so local inference does not present a long silent wait.
-3. A concise, validated answer must complete within 15.0 s (`TTC`).
-4. Allocate the critical-path total by stage ownership and work that can be controlled.
-5. Reserve explicit contingency instead of hiding unowned time inside the model stage.
-6. Compare measured per-request totals with the TTC budget and measured marginal stage p95s with stage budgets.
-7. Never add stage p95s and call the result observed p95 TTC.
+retrieve_k: 20
 
-Initial p95 design allocation:
+admitted_top_k: 5
+
+maximum output tokens: 256
+
+display: buffered until deterministic validation completes
+
+application result/retrieval cache: off
+
+Ollama keep_alive: fixed for all conditions
+
+think: false
+
+temperature: 0
+
+retries during measured request: 0
+```
+
+Passages are admitted in rank order under a hard character/token budget. Every passage is labeled `SOURCE_N` and mapped to its durable corpus passage ID.
+
+### 5.2 Sampling and ordering
+
+1. Run six excluded warmups spanning answer types.
+2. Run 24 development cases five times per condition: 120 measured requests.
+3. Interleave condition, case, and repetition order in seeded thermal blocks.
+4. Keep every field fixed except the registered condition delta.
+5. Do not retry measured failures; report them in the denominator.
+6. Bootstrap by case with 10,000 resamples and seed `20260816`.
+7. If relative p95 TTC CI width exceeds 20%, add complete 24-request blocks up to 240 requests per condition if the ten-hour deadline still permits it; otherwise report the interval and mark the tail conclusion inconclusive.
+
+8. Run the six holdouts five times only for the accepted final configuration.
+
+The primary matrix is 360 development requests plus 30 final holdout requests.
+
+Benchmark requests are serial on the M4 Pro; parallel agents may implement and review code but may not parallelize authoritative measurements on the same host.
+
+## 6. Waterfalls and tail analysis
+
+Never sum independent stage percentiles and label the result p95 TTC.
+
+Generate:
+
+1. **Percentile-aligned request waterfalls:** Sort complete traces by TTC, select the deterministic trace nearest empirical p50 and p95, and plot that trace's mutually exclusive stages. Bars must add to its measured TTC.
+2. **Marginal stage table:** Report each stage's p50/p95 and case-bootstrap interval, labeled “marginal; columns are not additive.”
+3. **Tail report:** Compare traces at or above p90 TTC with the median cohort using stage shares, answer type, question length, context length, output length, gold rank, and error/truncation state.
+
+Every artifact records run IDs, condition, valid/attempted counts, dataset/model identity, environment, contract/index hashes, bootstrap seed, percentile method, and exact generation command.
+
+## 7. Provisional p95 latency budget
+
+The methodology freezes before baseline; these values freeze only after G1.
 
 | Critical-path stage | p95 budget | Rationale |
 |---|---:|---|
-| Admission/event | 100 ms | Local CLI/API acknowledgement should be immediate; TTFE ceiling remains 300 ms. |
-| Retrieval | 400 ms | Local BM25 over a small static corpus should not dominate perceived delay. |
-| Context/media assembly | 600 ms | Bounded page loads, resize, serialization, and token counting. |
-| Model queue + vision/text prefill | 2,800 ms | Largest contributor to TTFT; bounded by input/image work and no swap. |
-| Decode after first token | 10,800 ms | Largest allocation, but narration is the first degradable work. |
-| Deterministic validation | 200 ms | Required safety/evidence work remains protected. |
-| Contingency | 100 ms | Explicit unowned jitter allowance. |
-| **TTC** | **15,000 ms** | Sum of design allocations, not a measured percentile. |
+| Admission/event | 100 ms | Local CLI acknowledgement should be immediate. |
+| Retrieval | 200 ms | Small in-memory BM25 index. |
+| Context assembly | 300 ms | Five bounded text passages; no media work. |
+| Dispatch to first token | 3,000 ms | Observable Ollama request/prompt-processing boundary. |
+| Decode after first token | 11,200 ms | Largest budget and first stage cut under pressure. |
+| Deterministic validation | 100 ms | Required citation/schema checks remain protected. |
+| Contingency | 100 ms | Explicit unowned jitter. |
+| **TTC** | **15,000 ms** | Design allocation, not a measured percentile. |
 
-Under pressure, cut optional decode narration/output tokens first. Next test lower image resolution or fewer admitted pages as separately quality-gated changes. Never cut citation validation, fatal gates, provenance, or required evidence. Streaming may improve perceived latency but does not excuse a missed TTC budget.
+TTFE remains capped at 300 ms and TTFT at 3.9 s. Under pressure, reduce optional decode length first. Next consider a separately quality-gated context reduction.
 
-## 7. Pipeline design
+Never remove citation validation, provenance, fatal gates, or required evidence.
 
-### 7.1 Ingestion and evidence units
+## 8. Pre-registered isolated interventions
 
-- Process PDFs in deterministic filename/page order with PyMuPDF.
-- Preserve native text, layout, page render, document SHA-256, version, page, source span, ACL, and content hash.
-- Use a complete page/slide as the primary evidence unit so diagrams stay with labels and qualifications.
-- Generate visual descriptions offline with the pinned VLM; validate their schema and provenance before indexing.
-- Treat all PDF text and imagery as untrusted data.
-
-### 7.2 Retrieval and context assembly
-
-1. Retrieve 50 BM25 candidates over extracted text plus visual descriptions.
-2. Keep a no-op reranker seam; dense retrieval is not hidden baseline behavior.
-3. Assign stable evidence IDs.
-4. Deduplicate equivalent text/renders.
-5. Diversify deterministically with lexical MMR and a per-document cap.
-6. Expand only with page title and adjacent structural metadata.
-7. Pack whole evidence units under hard token, image-count, and pixel budgets.
-8. Order direct evidence before supporting/limiting evidence.
-9. Bind `SOURCE_N` citations to admitted evidence and durable source metadata.
-
-Zero admissible evidence fails fast to abstention before model dispatch.
-
-### 7.3 Generation and validation
-
-The prompt defines admitted evidence, citation syntax, uncertainty/abstention behavior, and that retrieved instructions are data. Online deterministic validation checks output schema, citation syntax, citation resolution, and provenance. Human offline evaluation checks claim support; citation resolution alone is not treated as entailment.
-
-## 8. vLLM-Metal feasibility and optimization lane
-
-### 8.1 Hard feasibility gate
-
-Before baseline work:
-
-- Pin the `vllm-metal` tag or commit, vLLM core, MLX, `mlx-vlm`, Transformers, Python, model revision, tokenizer/chat template, macOS build, and hardware identity.
-- Use native ARM64 Python 3.12; Rosetta/x86_64 is unsupported.
-- Run one text and one image request through the OpenAI-compatible SSE endpoint.
-- Verify image-only multimodal behavior, citation-shaped output, deterministic completion, and no silent CPU fallback.
-- Record startup latency, peak resident/unified memory, swap delta, TTFT, TTC, and tokens/s.
-- Stop if the candidate cannot complete at the bounded configuration without sustained swap. Use an NVIDIA fallback only as a separately labeled environment; never merge its metrics with Metal results.
-
-### 8.2 Pinned baseline server policy
-
-Start from explicit settings rather than implicit defaults:
-
-```text
-VLLM_MLX_DEVICE=gpu
-VLLM_METAL_USE_PAGED_ATTENTION=1
-VLLM_METAL_MULTIMODAL_MODE=multimodal-native
-VLLM_METAL_DECODE_PIPELINE=1
-MLX_MAX_OPS_PER_BUFFER=2000
-VLLM_METAL_MEMORY_FRACTION=<selected by preflight>
---max-model-len 4096
---max-num-seqs 1
---limit-mm-per-prompt {"image":2}
-```
-
-Run a preflight memory-fraction sweep at `0.60`, `0.70`, and `0.80`, one field at a time. Select the highest setting that leaves documented OS headroom and causes no sustained swap during the worst two-image prompt; if a lower fraction has equivalent cache capacity and better p95, select it. This is environment qualification, not one of the two required product interventions.
-
-Treat automatic prefix caching as a correctness-gated server policy because the selected Qwen3-VL Metal path is experimental. Before freezing the baseline, run same-text/different-image, repeated-image, and concurrency-2 probes; require distinct image identity, output parity with caching disabled, and valid multimodal cache hashes. If all probes pass, explicitly enable prefix caching for every primary condition; otherwise disable it for every primary condition and record the lost optimization. Never change this policy between product interventions. Separate application retrieval/render/result caches from engine KV-prefix caching in telemetry and configuration. Use a reproducible secure hash (`sha256_cbor`) when supported by the pinned vLLM version.
-
-### 8.3 Metal-specific candidates and exclusions
-
-- **Warm persistent engine:** pre-load the model and run fixed warmups. Report cold startup separately; do not hide it in warm p95.
-- **Input/image bounding:** image pixels and admitted page count directly affect vision/prefill work and unified memory. Test each knob separately.
-- **Single-user versus batching:** keep `max_num_seqs=1` for the headline latency test. Run concurrency 2/4 separately to measure current Qwen3-VL vision batching, throughput, queueing, and p95; a throughput win is not automatically a single-user latency win.
-- **Prefix-cache observability:** report hit tokens and hit/miss strata. If the correctness gate passes, an optional APC-off diagnostic may quantify the enabled policy's benefit; it is not a product-intervention candidate. If the gate fails, keep APC off and preserve the failure as compatibility evidence.
-- **Decode pipeline:** keep the current greedy decode pipeline pinned on if the feasibility smoke test confirms output parity. Only A/B it if decode dominates and the pinned build exposes the toggle.
-- **Command-buffer setting:** retain the plugin's documented `MLX_MAX_OPS_PER_BUFFER=2000` default. Tune it only after a profile shows command-buffer commit overhead, and never profile during benchmark measurement.
-- **Rust frontend:** excluded from the primary five-day path. Consider only if measured admission plus HTTP/server overhead is at least 10% of TTFT; treat it as an experimental isolated change.
-- **Speculative decoding:** excluded from the primary plan. Current project evidence reports draft-model overhead can be net-negative, and the verification-window option can regress single-stream M4 Pro workloads. Reconsider only with a supported VLM pairing and a separate A/B quality/latency study.
-- **Custom Metal kernels, distributed inference, and model substitution:** excluded. They change the project from pipeline optimization into engine development or model selection.
-
-## 9. Pre-registered isolated interventions
-
-Each condition is an immutable configuration delta. The runner asserts that it differs from baseline in exactly the registered fields. Server/runtime identity and thermal-block ordering stay fixed.
-
-| Condition | Only changed field | Expected clock | Required quality check |
+| Condition | Only changed field | Expected effect | Required quality check |
 |---|---|---|---|
-| `B0_baseline` | none | reference | full frozen suite |
-| `I1_image_1024` | max image side `1280→1024` | model prefill, TTFT, TTC | visual/mixed required facts and citations |
-| `I2_output_128` | max output tokens `256→128` | decode, TTC | truncation, required facts, resolution |
-| `I3_streaming` | display `buffered→immediate SSE` | first-token displayed/perceived | final text equality except whitespace |
-| `I4_app_cache` | app retrieval/render cache `off→on` | retrieval/context media | exact evidence/index identity; cold/warm split |
-| `I5_page_1` | admitted page images `2→1` | context/media, prefill, TTFT | Recall of admitted gold evidence and resolution |
-| `C_best_combined` | only independently accepted deltas | all | full suite plus sealed holdout |
+| `B0_buffered_256` | None | Reference | Full development suite |
+| `I1_streaming_256` | Display: buffered → streamed | Immediate first-token displayed/perceived latency | Normalized final-text and citation equality; token F1, task resolution, truncation |
+| `I2_buffered_128` | Output tokens: 256 → 128 | Decode and TTC | Token F1, task resolution, truncation |
 
-The two required primary interventions are `I1_image_1024` and `I2_output_128`; they target different model phases and have explicit quality risks. `I3_streaming` is reported as perceived-latency work, not a TTC reduction. `I4_app_cache` reports cold misses and warm hits separately; no blended cache percentile is headline evidence.
+Each condition is an immutable delta. The runner rejects configurations that differ from baseline in any unregistered field.
 
-Reject an intervention if it fires a fatal gate, exceeds the frozen quality tolerance, raises truncation above 2%, produces an unstable tail conclusion, or misses TTC without a separately reported perceived-latency benefit. Select candidates on the development set, then open the sealed holdout once for `C_best_combined`.
+Streaming is accepted when it materially improves first-token display without changing normalized final output or quality. Output reduction is accepted only if its latency interval improves and no fatal, aggregate, or slice gate fails. Do not combine changes merely because point estimates look favorable.
 
-## 10. Execution sequence and HITL gates
+After decisions on the development set, define `C_accepted` from accepted deltas and open the six holdouts once. Exact-query caching and `admitted_top_k` 5→3 are optional follow-up diagnostics only if required work finishes early; they cannot replace either primary intervention or delay final delivery.
 
-### D1: contract, fixtures, and feasibility
+## 9. Ten-hour execution sequence
 
-1. Create the versioned behavioral contract, eval schema, threshold schema, and human-verification CLI.
-2. Verify 30 cases and seal six holdouts.
-3. Pin the model/runtime/environment identity and pass the vLLM-Metal feasibility gate.
-4. **HITL gate — human reviewer:** approve contract, cases, model identity, and provisional numeric budgets. Acceptance requires an explicit approval; skipping permits benchmark target drift and invalid comparisons.
+| Window | Work | Exit evidence |
+|---|---|---|
+| 0:00–0:45 | Dataset/Ollama preflight and immutable pins | Passing text/stream smoke, dataset schema, model digest |
+| 0:45–2:00 | Materialize corpus, 30 verified cases, BM25 index | Corpus/index hashes, 24/6 split, verifier output |
+| 2:00–4:30 | Pipeline, Ollama client, validation, trace writer | Focused unit and integration tests |
+| 4:30–5:30 | Benchmark runner and fixed-fixture report tests | Condition-delta and waterfall arithmetic tests |
+| 5:30–7:30 | Interleaved B0/I1/I2 measurements | Raw JSONL and complete run manifests |
+| 7:30–8:30 | Quality scoring, CIs, waterfalls, tails, decisions | Generated tables/charts and gate report |
+| 8:30–9:15 | Accepted holdout run and final report generation | Sealed holdout decision evidence |
+| 9:15–10:00 | Clean reproduction, write-up, spend, ZIP audit | Reproduction log and valid archive |
 
-### D2: pipeline, instrumentation, and baseline
+Fail-fast rules:
 
-1. Implement deterministic ingestion, evidence manifest, BM25 retrieval, context assembly, SSE generation, and validation.
-2. Add stage spans, four clocks, cache/memory telemetry, and raw JSONL persistence.
-3. Test trace arithmetic, critical-path handling, and report generation from fixed fixtures.
-4. Run the baseline, generate aligned p50/p95 waterfalls, marginal stage tables, and tail slices.
-5. **HITL gate — human reviewer:** inspect raw-run completeness and baseline charts. Acceptance requires stage sums to match each aligned request TTC and all marginal tables to be labeled non-additive.
+If preflight exceeds 45 minutes, record the blocker before changing runtime or model; do not silently mix identities.
 
-### D3–D4: isolated changes and promotion decision
+If the full 30-case gold mapping is not verified by two hours, use no fabricated mappings. Reduce implementation extras, not evidence integrity.
 
-1. Run `I1`, `I2`, `I3`, `I4`, and `I5` independently in interleaved blocks.
-2. Score quality and latency; diagnose failures at the earliest broken invariant.
-3. Build `C_best_combined` only from individually accepted deltas.
-4. Open the sealed holdout once and run the combined condition.
-5. Run concurrency 2/4 as a separate Metal service profile.
-6. **HITL gate — human reviewer:** approve or reject each intervention from raw deltas, confidence intervals, and quality effects. Skipping risks combining a latency win with an unobserved quality regression.
+If benchmark time threatens delivery, stop optional extensions and report wide p95 intervals honestly.
 
-### D5: reproducibility and final artifacts
+Human approval is required at G1 before measurement, G2 after baseline integrity,
 
-1. Generate final charts, budget variance, tail analysis, quality tables, environment manifest, and spend report.
-2. Complete README, tests, AI-collaboration log, and ≤2-page final write-up.
-3. Run the full reproduction command in a clean environment and validate ZIP contents/size.
-4. **Final HITL gate — human reviewer:** approve requirement coverage and artifact integrity. Acceptance requires every reported metric/chart to map to raw data and an exact command.
+G3 for intervention decisions, and G4 before final packaging.
 
-## 11. Verification and reproducibility
+## 10. Verification and reproducibility
 
 Required tests cover:
 
-- Contract/threshold schemas, fatal gates, and holdout isolation.
-- Deterministic document hashes, evidence IDs, model/prompt/index identity.
-- PDF rendering, malformed-page rejection, metadata/ACL preservation.
-- BM25 ranking and gold-evidence retrieval on fixtures.
-- Empty-retrieval abstention and retrieved prompt-injection resistance.
-- Whole-page packing, image/token bounds, ordering, and citation binding.
-- SSE parsing; TTFE, TTFT, TTC, and mutually exclusive stage arithmetic.
-- Buffered versus streamed display and final-text equivalence.
-- Prefix-cache/app-cache separation, multimodal cache correctness, hit/miss strata, and invalidation.
-- Intervention single-delta assertions and promotion predicate.
-- Bootstrap-by-case, percentile-aligned trace selection, marginal percentile labels, and tail cohorts.
-- vLLM-Metal text/image smoke tests and sustained-swap veto.
-- Report generation from fixed JSONL fixtures.
+Dataset revision/schema and deterministic 30-case selection.
 
-Provide commands equivalent to:
+Verified QA-to-passage mappings, unique IDs, and 24/6 holdout isolation.
+
+Deterministic corpus/index/prompt/model identity.
+
+BM25 ranking and Recall@k/MRR fixtures.
+
+Context bounds, ordering, and `SOURCE_N` citation binding.
+
+Empty retrieval, abstention, and retrieved prompt-injection resistance.
+
+Ollama NDJSON streaming, thinking-disabled requests, errors, and timeouts.
+
+TTFE/TTFT/TTC boundaries and additive stage arithmetic.
+
+Buffered/streamed final-text equivalence.
+
+Normalized exact match, token F1, citation, and truncation graders.
+
+Single-delta condition assertions and promotion predicate.
+
+Bootstrap-by-case, aligned-trace selection, non-additive marginal labels, and top-decile cohorts.
+
+Report generation from fixed JSONL fixtures.
+
+Target commands:
 
 ```bash
 rag-latency contract-check
+rag-latency eval-prepare
 rag-latency eval-verify
 rag-latency ingest
-rag-latency benchmark --condition B0_baseline
-rag-latency benchmark --all-isolated
-rag-latency benchmark --condition C_best_combined --include-holdout
+rag-latency benchmark --conditions B0_buffered_256,I1_streaming_256,I2_buffered_128
+rag-latency decide
+rag-latency benchmark --condition C_accepted --include-holdout
 rag-latency report
 bash scripts/reproduce.sh
 ```
 
-`scripts/reproduce.sh` verifies the environment and contract, starts its own pinned server, waits for health, builds/reuses content-addressed ingestion artifacts, executes registered conditions, generates every metric/chart, and stops only the process it started. It prints the exact subordinate commands and writes them into the run manifest.
+scripts/reproduce.sh verifies pins and contracts, starts or validates only its
 
-## 12. Requirement coverage
+own expected Ollama service/model identity, reuses content-addressed downloads and ingestion artifacts, runs registered conditions, regenerates artifacts, and stops only processes it started. It writes every subordinate command to the run manifest.
 
-| Requirement | Execution evidence | Verification evidence |
+## 11. Requirement coverage
+
+| Requirement | Execution | Verification |
 |---|---|---|
-| End-to-end retrieval → model → validation | Sections 2 and 7 | trace schema and integration test |
-| Reproducible p50/p95 waterfall | Sections 3–4 | aligned-trace arithmetic test, raw JSONL, chart command |
-| Median versus tail behavior | Sections 3–4 | bootstrap CIs and top-decile slices |
-| Defensible per-stage budget | Section 6 | approved frozen budget and variance report |
-| Perceived versus total latency | Sections 2, 6, and 9 | first-token display versus TTC metrics |
-| Stage cut first under pressure | Section 6 | decode/output intervention decision |
-| Two isolated interventions | Section 9 | single-delta assertions for `I1` and `I2` |
-| Quality side-effects checked | Sections 5 and 9 | quality vector, fatal gates, slice deltas |
-| vLLM-Metal optimization | Section 8 | pinned manifest, preflight, cache/memory/concurrency reports |
-| Versions, dependencies, spend | Sections 2, 8, and 11 | run manifest and cost report |
-| Exact reproduction | Section 11 | clean-run `scripts/reproduce.sh` result |
-| Tests, charts, write-up, AI log | Sections 10–11 | final artifact/ZIP check |
+| Retrieval model validation | Sections 3 and 5 | Integration trace and stage-arithmetic tests |
+| Stable p50/p95 waterfalls | Sections 5–6 | Raw traces, case bootstrap, aligned-trace test |
+| Tail separate from median | Section 6 | Top-decile cohort report |
+| Defensible stage budget | Section 7 | Frozen G1 budget and variance report |
+| Perceived versus total latency | Sections 3 and 8 | Displayed-first-token versus TTC |
+| Stage cut first under pressure | Section 7 | Output-token intervention |
+| Two isolated interventions | Section 8 | Single-delta assertions for I1/I2 |
+| Quality effects | Sections 4 and 8 | Retrieval, citation, F1, resolution, slice gates |
+| Versions/dependencies/spend | Sections 2 and 10 | Manifests and spend report |
+| Exact reproduction | Section 10 | Clean `scripts/reproduce.sh` log |
+| Tests/charts/write-up/AI log | Sections 9–10 | Artifact audit and ZIP check |
 
-## 13. Deliverables and exclusions
+## 12. Deliverables and exclusions
 
-Deliver:
+Deliver source, tests, README, frozen contracts, dataset/eval/runtime manifests, derived evidence/index manifests, raw JSONL, generated tables/charts, decision and budget reports, spend, collaboration log, final write-up, reproduction log, and a real ZIP under 500 MB uncompressed.
 
-- README and one-command reproduction.
-- Frozen contract, thresholds, verified development set, and sealed holdout.
-- Pinned dependency/model/runtime/environment manifest.
-- Durable evidence manifest and reproducible index.
-- Raw benchmark JSONL, aggregate tables, p50/p95 waterfalls, CIs, and tail charts.
-- Budget-variance and intervention-decision reports.
-- Token and dollar-spend report.
-- Tests, AI-collaboration log with at least two caught agent errors, and staff-level final write-up ≤2 pages.
-- Real ZIP archive under 500 MB uncompressed.
-
-Exclude secrets, credentials, `.env` files, virtual environments, model weights, dependency caches, `node_modules`, and build directories. Include source PDFs only if redistribution and submission rules permit them; otherwise include hashes and acquisition instructions and record the resulting reproducibility limitation.
+Do not include credentials, `.env`, virtual environments, Ollama model blobs, Hugging Face caches, dependency caches, or build directories. Include downloaded dataset files only if license/size/submission rules permit; otherwise include their immutable revision, hashes, attribution, and acquisition command.

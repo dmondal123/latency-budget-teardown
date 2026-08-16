@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clean OCR Markdown"
+  short_description: "Conservatively clean noisy OCR Markdown"
+  default_prompt: "Use $clean-ocr-markdown to clean this scanned Markdown without changing its meaning."

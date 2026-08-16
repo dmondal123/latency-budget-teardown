@@ -22,6 +22,7 @@ The agent can discover and use these skills from this index; their contents do n
 | `review-plan` | Review a proposed plan for correctness and coverage | `.codex/.agents/skills/review-plan/SKILL.md` |
 | `rlm-based-rag` | Use RLM-style adaptive retrieval for large or rot-prone corpora | `.codex/.agents/skills/rlm-based-rag/SKILL.md` |
 | `selecting-models` | Choose or route between models using hard constraints | `.codex/.agents/skills/selecting-models/SKILL.md` |
+| `clean-ocr-markdown` | Conservatively clean noisy OCR Markdown | `.codex/.agents/skills/clean-ocr-markdown/SKILL.md` |
 
 ## GitNexus skills
 
