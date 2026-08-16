@@ -228,6 +228,13 @@ Follow-up:
 - Evidence: `tests/retrieval/test_cli.py`, `docs/superpowers/plans/2026-08-16-text-rag-package-layout.md`, and the T09a validation commands.
 - `/status` model and token use: unavailable in this API session.
 
+## 2026-08-16 — Retire stale multimodal verifier tests
+
+- Context: the completed package-refactor branch retained three unrelated full-suite failures from tests that asserted the superseded multimodal runtime and fixtures.
+- Decision: user explicitly approved deletion of `tests/test_verify_eval.py`; its GitNexus impact analysis found no callers or affected execution flows.
+- Evidence: the removed assertions expected vLLM-Metal, a multimodal schema title, and non-empty retired fixtures, all contrary to the approved text-RAG plan.
+- `/status` model and token use: unavailable in this API session.
+
 ## 2026-08-16 — Qwen3 model-tag correction and swap gate
 
 - Context: `qwen3:4b` ignored `think=false`; the user identified the separate non-thinking `qwen3:4b-instruct` tag.
