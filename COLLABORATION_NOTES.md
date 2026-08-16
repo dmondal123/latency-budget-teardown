@@ -240,3 +240,11 @@ Follow-up:
 - Evidence: `datasets==5.0.1` in the project environment materialized the pinned corpus (3,200 passages) and QA split (918 rows); both downloaded-file and normalized-corpus hashes are recorded in `artifacts/dataset_materialization.v1.json`.
 - Decision: T06 and C01 are complete. The next dependency is T07's manual QA-to-passage verification, not further runtime setup.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Offline text-corpus ingestion boundary
+
+- Context: implementing the approved text-RAG ingestion and BM25 retrieval foundation.
+- Correction: direct `load_dataset` ingestion retried Hub metadata checks even with a local-only download configuration in `datasets==5.0.1`. The ingestion CLI now reads the uniquely pinned cached Arrow file directly, so no network is part of the ingestion path.
+- Evidence: focused tests cover cache-only Arrow discovery, content-addressed manifest construction, deterministic BM25 ranking, bounded `SOURCE_N` context admission, and both direct CLIs. The real cached corpus produced 3,200 passages, corpus hash `dbe884c2...0aa728d`, and index snapshot `b4942595...81c6c7`.
+- Learning: a downloader's `local_files_only` flag does not necessarily prevent metadata resolution during builder construction; use a local artifact reader when the measurement contract requires an offline boundary.
+- `/status` model and token use: unavailable in this API session.

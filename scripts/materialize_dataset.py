@@ -109,15 +109,24 @@ def _cache_files(cache_dir: Path) -> tuple[Path, ...]:
     return tuple(sorted((p.resolve() for p in cache_dir.rglob("*") if p.is_file() and not p.name.endswith(".lock")), key=str))
 
 
-def load_huggingface(config: str, split: str, cache_dir: Path, revision: str) -> LoadedRows:
+def load_huggingface(
+    config: str, split: str, cache_dir: Path, revision: str, *, local_files_only: bool = False
+) -> LoadedRows:
     try:
-        from datasets import load_dataset
+        from datasets import DownloadConfig, load_dataset
     except ImportError as exc:
         raise MaterializationError(
             "datasets tooling is unavailable; install requirements.txt (or run in the Python 3.12 environment)"
         ) from exc
     try:
-        dataset = load_dataset(DATASET_REPOSITORY, config, split=split, revision=revision, cache_dir=str(cache_dir))
+        dataset = load_dataset(
+            DATASET_REPOSITORY,
+            config,
+            split=split,
+            revision=revision,
+            cache_dir=str(cache_dir),
+            download_config=DownloadConfig(local_files_only=True) if local_files_only else None,
+        )
     except Exception as exc:  # datasets exposes several version-specific exception types
         raise MaterializationError(f"failed to load {config}/{split} at revision {revision}: {exc}") from exc
     columns = tuple(str(column) for column in dataset.column_names)

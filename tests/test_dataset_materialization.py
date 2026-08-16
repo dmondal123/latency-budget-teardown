@@ -1,4 +1,6 @@
 import hashlib
+import sys
+import types
 import unittest
 from pathlib import Path
 
@@ -10,6 +12,7 @@ from scripts.materialize_dataset import (
     materialize,
     normalize_text,
     normalized_corpus_hash,
+    load_huggingface,
 )
 
 
@@ -106,3 +109,28 @@ class DatasetMaterializationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_local_only_loader_does_not_contact_the_hub(monkeypatch, tmp_path):
+    calls = []
+
+    class DownloadConfig:
+        def __init__(self, *, local_files_only):
+            self.local_files_only = local_files_only
+
+    class Dataset:
+        column_names = ("id", "passage")
+
+        def __iter__(self):
+            return iter(({"id": 1, "passage": "cached"},))
+
+    def load_dataset(*args, **kwargs):
+        calls.append((args, kwargs))
+        return Dataset()
+
+    monkeypatch.setitem(sys.modules, "datasets", types.SimpleNamespace(load_dataset=load_dataset, DownloadConfig=DownloadConfig))
+
+    loaded = load_huggingface("text-corpus", "passages", tmp_path, DATASET_REVISION, local_files_only=True)
+
+    assert loaded.rows == ({"id": 1, "passage": "cached"},)
+    assert calls[0][1]["download_config"].local_files_only is True
