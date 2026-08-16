@@ -4,7 +4,7 @@
 
 **Goal:** Build and measure a reproducible local text-RAG pipeline within ten hours while preserving rigorous latency and quality evaluation.
 
-**Architecture:** A pinned Hugging Face text corpus feeds deterministic BM25 retrieval and bounded context assembly. A pinned Ollama qwen3:4b service generates cited answers; validation and raw tracing precede scripted quality and latency reports.
+**Architecture:** A pinned Hugging Face text corpus feeds deterministic BM25 retrieval and bounded context assembly. A pinned Ollama qwen3:4b-instruct service generates cited answers; validation and raw tracing precede scripted quality and latency reports.
 
 **Tech stack:** Python 3.12, Hugging Face Datasets, `rank-bm25`, HTTPX, Ollama, Qwen3 4B, JSONL, NumPy, Matplotlib, JSON Schema, and pytest/unittest.
 
@@ -15,7 +15,7 @@
 Build a reproducible local CLI pipeline:
 
 ```text
-question → BM25 retrieval → context assembly → Ollama/qwen3:4b → validation → display
+question → BM25 retrieval → context assembly → Ollama/qwen3:4b-instruct → validation → display
 ```
 
 The corpus and gold questions come from the Hugging Face dataset `rag-datasets/rag-mini-wikipedia` at immutable revision `1f9f3b53fbc5995b85aab8e993504ad42c5f16f6`:
@@ -42,7 +42,7 @@ Out of scope: PDFs, image ingestion, multimodal models, dense retrieval, reranki
 Freeze these before authoritative measurements:
 
 - Dataset repository, revision, configurations, splits, downloaded-file hashes, license (`CC BY 3.0`), and derived index snapshot.
-- Ollama version and the immutable digest returned for `qwen3:4b`.
+- Ollama version and the immutable digest returned for `qwen3:4b-instruct`.
 - Model mode: thinking/reasoning disabled, temperature `0`, fixed seed where Ollama supports it, and a hashed prompt template.
 - macOS build, architecture, chip, memory, Python version, dependency lock, power mode, and application commit or source snapshot.
 
@@ -50,7 +50,7 @@ Preflight must finish within 45 minutes:
 
 1. Verify the pinned dataset revision and both expected schemas.
 
-2. Pull or locate `qwen3:4b`, capture its digest, and confirm local-only serving.
+2. Pull or locate `qwen3:4b-instruct`, capture its digest, and confirm local-only serving.
 
 3. Send one non-streaming and one streaming request with `think=false`.
 

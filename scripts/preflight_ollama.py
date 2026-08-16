@@ -11,7 +11,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -19,10 +21,11 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-MODEL = "qwen3:4b"
+MODEL = "qwen3:4b-instruct"
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
 PROMPT = "Reply with exactly the word READY."
 LOCAL_HOSTS = {"127.0.0.1", "localhost", "::1"}
+SWAP_SAMPLE_INTERVAL_MS = 250
 
 
 class PreflightError(RuntimeError):
@@ -153,6 +156,64 @@ def failure(error_type: str, message: str) -> dict[str, str]:
     return {"error_type": error_type, "message": message}
 
 
+def summarize_swap_samples(samples: list[int], sample_interval_ms: int) -> dict[str, Any]:
+    return {
+        "sample_interval_ms": sample_interval_ms,
+        "sample_count": len(samples),
+        "max_swap_used_bytes": max(samples, default=0),
+        "sustained_swap": any(left > 0 and right > 0 for left, right in zip(samples, samples[1:])),
+    }
+
+
+def macos_swap_used_bytes() -> int | None:
+    if sys.platform != "darwin":
+        return None
+    try:
+        output = subprocess.run(
+            ["sysctl", "vm.swapusage"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        ).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+    match = re.search(r"\bused\s*=\s*([0-9]+(?:\.[0-9]+)?)\s*([KMGTP])", output)
+    if not match:
+        return None
+    units = {"K": 1, "M": 2, "G": 3, "T": 4, "P": 5}
+    return int(float(match.group(1)) * (1024**units[match.group(2)]))
+
+
+class SwapSampler:
+    def __init__(self, sample_interval_ms: int = SWAP_SAMPLE_INTERVAL_MS):
+        self.sample_interval_ms = sample_interval_ms
+        self.samples: list[int] = []
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._run, daemon=True)
+
+    def _record_sample(self) -> None:
+        sample = macos_swap_used_bytes()
+        if sample is not None:
+            self.samples.append(sample)
+
+    def _run(self) -> None:
+        while not self._stop.wait(self.sample_interval_ms / 1000):
+            self._record_sample()
+
+    def start(self) -> None:
+        self._record_sample()
+        self._thread.start()
+
+    def stop(self) -> dict[str, Any]:
+        self._stop.set()
+        self._thread.join()
+        self._record_sample()
+        if not self.samples:
+            return {"sustained_swap": None, "reason": "macOS vm.swapusage was unavailable"}
+        return summarize_swap_samples(self.samples, self.sample_interval_ms)
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     base_url = validate_local_url(args.base_url)
     result: dict[str, Any] = {
@@ -164,7 +225,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "think": False,
         "temperature": 0,
         "seed": 20260816,
-        "resource_checks": {"sustained_swap": None, "reason": "not observable because Ollama preflight was blocked"},
+        "resource_checks": {"sustained_swap": None, "reason": "not yet observed"},
         "identity": {"ollama_version": None, "model_digest": None},
         "smoke": {"buffered": None, "streaming": None, "final_text_parity": False},
         "failures": [],
@@ -175,8 +236,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if args.pull:
             result["pull"] = pull_model(base_url, args.model, args.pull_timeout)
         result["identity"]["model_digest"] = model_digest(base_url, args.model, args.timeout)
-        buffered_text, buffered_raw, buffered_ms = request_buffered(base_url, args.model, args.timeout)
-        streaming_text, stream_chunks, streaming_ms = request_streaming(base_url, args.model, args.timeout)
+        swap_sampler = SwapSampler()
+        swap_sampler.start()
+        try:
+            buffered_text, buffered_raw, buffered_ms = request_buffered(base_url, args.model, args.timeout)
+            streaming_text, stream_chunks, streaming_ms = request_streaming(base_url, args.model, args.timeout)
+        finally:
+            result["resource_checks"] = swap_sampler.stop()
         terminal = stream_chunks[-1] if stream_chunks else {}
         buffered_ok = bool(buffered_text.strip()) and not leakage(buffered_raw)
         streaming_ok = bool(streaming_text.strip()) and bool(terminal.get("done")) and not leakage(stream_chunks)
@@ -191,6 +257,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             result["failures"].append(failure("stream_invalid", "stream lacked non-empty text, terminal done metadata, or exposed reasoning"))
         if buffered_text != streaming_text:
             result["failures"].append(failure("final_text_mismatch", "buffered and streamed final text differ"))
+        if result["resource_checks"]["sustained_swap"] is None:
+            result["failures"].append(failure("swap_unavailable", "macOS vm.swapusage could not be observed"))
+        if result["resource_checks"]["sustained_swap"] is True:
+            result["failures"].append(failure("sustained_swap", "swap usage was nonzero in consecutive samples"))
         result["status"] = "pass" if not result["failures"] else "fail"
     except PreflightError as exc:
         result["failures"].append(failure(exc.error_type, str(exc)))

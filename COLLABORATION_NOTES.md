@@ -220,3 +220,11 @@ Follow-up:
 - Correction: a failed exploratory higher memory fraction is retained as evidence but does not fail M05 when a lower fraction passes and is selected. The final gate still requires the selected fraction plus cache and concurrency conditions to pass.
 - Evidence: focused acceptance test and the full `.venv/bin/python -m pytest -q` suite.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Qwen3 model-tag correction and swap gate
+
+- Context: `qwen3:4b` ignored `think=false`; the user identified the separate non-thinking `qwen3:4b-instruct` tag.
+- Changed: pinned the instruct tag throughout the current model contract and added bounded 250 ms macOS `vm.swapusage` sampling to the Ollama preflight. Consecutive nonzero samples now fail the preflight.
+- Evidence: focused preflight tests passed (`10 passed`); the host preflight returned `READY` for buffered and streaming responses with digest `sha256:0edcdef...f168ba0`, but recorded sustained swap peaking at 1,202,129,469 bytes and therefore failed truthfully.
+- Learning: a passing model response is insufficient for a latency benchmark gate when memory pressure persists; resource qualification must be part of the preflight predicate.
+- `/status` model and token use: unavailable in this API session.

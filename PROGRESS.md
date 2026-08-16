@@ -22,7 +22,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | M02 | Pin dataset repository/revision and observed schemas | In progress | `eval/v1/dataset_manifest.json`; materialization blocked, hashes pending |
 | M03 | Migrate behavioral contract and thresholds | In progress | Draft JSON contracts; awaiting G1 |
 | M04 | Build and verify 30 text QA cases | Not started | Expected 24 development + six holdout fixtures |
-| M05 | Pin and smoke-test Ollama `qwen3:4b` | Blocked | `scripts/preflight_ollama.py`, `artifacts/ollama_preflight.v1.json`; service unavailable |
+| M05 | Pin and smoke-test Ollama `qwen3:4b-instruct` | Blocked | `scripts/preflight_ollama.py`, `artifacts/ollama_preflight.v1.json`; smoke passes, but sustained swap was observed |
 | M06 | Implement instrumented text-RAG pipeline | Not started | Expected source and passing tests |
 | M07 | Run baseline and two isolated interventions | Not started | Expected raw JSONL and manifests |
 | M08 | Generate waterfalls, tails, quality, and decisions | Not started | Expected scripted reports |
@@ -41,7 +41,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 | Priority | Action | Completion evidence |
 | --- | --- | --- |
-| P0 | Pin Ollama version and `qwen3:4b` digest; verify `think=false` streaming | Environment manifest and smoke trace; tooling is ready, host preflight blocked |
+| P0 | Remove sustained swap, then pin Ollama version and `qwen3:4b-instruct` digest; verify `think=false` streaming | Environment manifest and smoke trace |
 | P0 | Load the pinned dataset and verify file hashes/schema | Dataset manifest verification; tooling is ready, materialization blocked |
 | P0 | Select and manually verify 30 QA-to-passage mappings | Passing eval verifier |
 | P1 | Regenerate the application dependency lock | `requirements.in` / `requirements.txt` |
@@ -53,7 +53,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 | Risk | Treatment | Trigger |
 | --- | --- | --- |
 | QA IDs may be mistaken for passage IDs | Never infer the mapping; verify answer-containing passages manually | Any selected row lacks unique support |
-| `qwen3:4b` tag is mutable | Capture immutable Ollama digest before measurement | Digest missing or changes |
+| `qwen3:4b-instruct` tag is mutable | Capture immutable Ollama digest before measurement | Digest missing or changes |
 | Qwen thinking tokens distort latency | Require `think=false` and reject traces showing reasoning mode | Smoke/output metadata mismatch |
 | p95 is unstable with 120 rows/condition | Case bootstrap; extend in 24-row blocks only if time permits | Relative p95 CI width >20% |
 | Warm server or OS state drifts | Interleaved seeded blocks, fixed keep-alive/power mode, record swap | Thermal/swap changes |
@@ -65,7 +65,7 @@ Use this file for current milestone, approval, risk, and blocker state. Detailed
 
 Status: Complete
 
-What changed: Replaced PDF/multimodal ingestion and experimental vLLM-Metal with the pinned `rag-mini-wikipedia` text dataset, Ollama `qwen3:4b`, and two primary interventions: streaming and output-token reduction.
+What changed: Replaced PDF/multimodal ingestion and experimental vLLM-Metal with the pinned `rag-mini-wikipedia` text dataset, Ollama `qwen3:4b-instruct`, and two primary interventions: streaming and output-token reduction.
 
 Evidence: Human approval and `RAG_PIPELINE_PLAN.md`.
 

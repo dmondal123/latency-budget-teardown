@@ -17,7 +17,7 @@
     "manifest": "eval/v1/dataset_manifest.json"
   },
   "model": {
-    "tag": "qwen3:4b",
+    "tag": "qwen3:4b-instruct",
     "digest": null,
     "digest_required_before_benchmark": true,
     "think_mode": false,

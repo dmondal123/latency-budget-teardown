@@ -33,7 +33,7 @@ The benchmarked path ends at validated completion. Offline grading and reporting
 | Ingestion | Normalize passages in ID order and hash corpus content. | Evidence manifest and index snapshot |
 | Retrieval | Run frozen BM25 and return ranked passage IDs. | Ranked IDs, scores, gold rank |
 | Context assembly | Admit five bounded passages and bind `SOURCE_N` citations. | Model prompt and admitted IDs |
-| Model client | Call pinned Ollama `qwen3:4b` with thinking disabled and parse NDJSON streaming. | Raw output and observable token metadata |
+| Model client | Call pinned Ollama `qwen3:4b-instruct` with thinking disabled and parse NDJSON streaming. | Raw output and observable token metadata |
 | Validation | Enforce output schema, citations, provenance, and fatal gates. | Validated answer or classified failure |
 | Benchmark harness | Run immutable conditions in seeded thermal blocks. | Raw JSONL and run manifest |
 | Evaluation/reporting | Compute quality, aligned waterfalls, marginal stages, CIs, tails, and decisions from traces. | Tables, charts, gate report |
@@ -72,4 +72,4 @@ Conditions are interleaved and differ in exactly one registered field. Six seale
 
 ## Operations
 
-The authoritative environment is native ARM64 macOS on an M4 Pro with 16 GB unified memory. Before measurement, capture the Ollama version, immutable `qwen3:4b` digest, thinking-disabled request mode, dataset revision, file hashes, index snapshot, and host identity. `scripts/reproduce.sh` must stop only processes it started and must never package model blobs or caches.
+The authoritative environment is native ARM64 macOS on an M4 Pro with 16 GB unified memory. Before measurement, capture the Ollama version, immutable `qwen3:4b-instruct` digest, thinking-disabled request mode, dataset revision, file hashes, index snapshot, and host identity. `scripts/reproduce.sh` must stop only processes it started and must never package model blobs or caches.

@@ -12,7 +12,7 @@ Instrument an end-to-end retrieval → model → validation pipeline, produce st
 - Hardware: M4 Pro, 16 GB unified memory.
 - Corpus/QA source: `rag-datasets/rag-mini-wikipedia` at revision `1f9f3b53fbc5995b85aab8e993504ad42c5f16f6`.
 - Retrieval: deterministic BM25 over the text-corpus passages.
-- Model: Ollama `qwen3:4b`, exact digest captured before measurement.
+- Model: Ollama `qwen3:4b-instruct`, exact digest captured before measurement.
 - Model mode: thinking disabled, temperature zero, local-only serving.
 - Evaluation: 30 manually verified mappings, split 24 development / six holdout.
 - Primary interventions: streaming and output-token reduction.

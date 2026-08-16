@@ -1,32 +1,97 @@
 {
   "command": "python scripts/preflight_ollama.py",
-  "elapsed_ms": 15.326166,
+  "elapsed_ms": 1590.717708,
   "endpoint": "http://127.0.0.1:11434",
   "failures": [
     {
-      "error_type": "service_unavailable",
-      "message": "/api/version: URLError: <urlopen error [Errno 1] Operation not permitted>"
+      "error_type": "sustained_swap",
+      "message": "swap usage was nonzero in consecutive samples"
     }
   ],
   "identity": {
-    "model_digest": null,
-    "ollama_version": null
+    "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+    "ollama_version": "0.32.13"
   },
-  "invocation": "scripts/preflight_ollama.py --timeout 3 --pull-timeout 5 --output artifacts/ollama_preflight.v1.json",
+  "invocation": "scripts/preflight_ollama.py --output artifacts/ollama_preflight.v1.json",
   "local_only": true,
-  "model": "qwen3:4b",
+  "model": "qwen3:4b-instruct",
+  "pull": {
+    "status": "success"
+  },
   "resource_checks": {
-    "reason": "not observable because Ollama preflight was blocked",
-    "sustained_swap": null
+    "max_swap_used_bytes": 1202129469,
+    "sample_count": 3,
+    "sample_interval_ms": 250,
+    "sustained_swap": true
   },
   "schema_version": "ollama-preflight.v1",
   "seed": 20260816,
   "smoke": {
-    "buffered": null,
-    "final_text_parity": false,
-    "streaming": null
+    "buffered": {
+      "elapsed_ms": 185.397667,
+      "metadata": {
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 2,
+        "eval_duration": 13328000,
+        "load_duration": 136129375,
+        "prompt_eval_count": 15,
+        "prompt_eval_duration": 30668000,
+        "total_duration": 183833875
+      },
+      "status": "pass",
+      "text": "READY"
+    },
+    "final_text_parity": true,
+    "streaming": {
+      "chunk_count": 2,
+      "elapsed_ms": 128.379958,
+      "metadata": {
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 2,
+        "eval_duration": 14004000,
+        "load_duration": 95420125,
+        "prompt_eval_count": 15,
+        "prompt_eval_duration": 13693000,
+        "total_duration": 127414834
+      },
+      "status": "pass",
+      "terminal": {
+        "context": [
+          151644,
+          872,
+          198,
+          20841,
+          448,
+          6896,
+          279,
+          3409,
+          85332,
+          13,
+          151645,
+          198,
+          151644,
+          77091,
+          198,
+          45578
+        ],
+        "created_at": "2026-08-16T07:42:46.954423Z",
+        "done": true,
+        "done_reason": "stop",
+        "eval_count": 2,
+        "eval_duration": 14004000,
+        "load_duration": 95420125,
+        "model": "qwen3:4b-instruct",
+        "prompt_eval_count": 15,
+        "prompt_eval_duration": 13693000,
+        "response": "",
+        "total_duration": 127414834
+      },
+      "text": "READY"
+    }
   },
-  "status": "blocked",
+  "status": "fail",
   "temperature": 0,
   "think": false
 }
