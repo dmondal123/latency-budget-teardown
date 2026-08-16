@@ -312,3 +312,11 @@ Follow-up:
 - Evidence: the generated condition reports retain 110/110/105 latency-valid rows for B0/I1/I2, while the trace-only quality evidence finds 2/2/3 fatal rows and every condition misses frozen quality gates. The T18 scorer initially failed only because its nested artifact launcher lacked the repository import path; rerunning with the recorded `PYTHONPATH=.` command reproduced the evidence exactly.
 - Learning: transport success and latency-trace validity do not establish promotion readiness; preserve validation exclusions and use a reproducible repository-root launcher for offline graders.
 - `/status` model and token use: unavailable in this API session.
+
+## 2026-08-16 — Streaming-clock and T16 rerun correction
+
+- Context: the Ollama client converted its HTTP response to a tuple before parsing NDJSON, so an `I1_streaming_256` display callback could not observe a live network chunk.
+- Correction: retain the HTTP context for a generator consumed by `parse_ndjson`; a regression test proves each response chunk reaches the display callback before the next chunk is read.
+- Evidence: 88 tests passed; the reproducibility checks revalidated the pinned corpus and 30-case suite; rerun `20260816T112509Z-1df7268307b1` completed 360 transport-valid rows with C05 accepted, zero sustained swap, and median I1 TTFT/display at 134.18 ms.
+- Diagnosis: all 35 fatal rows are validation-schema failures—15 each for `eval-v1-01` and `eval-v1-02` (JSON boolean answer) and five for `eval-v1-24` (128-token output truncation)—not streaming transport failures. The frozen validator was not relaxed.
+- `/status` model and token use: unavailable in this API session.

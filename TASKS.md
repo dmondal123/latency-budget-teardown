@@ -76,8 +76,8 @@ Checkpoint action: authoritative measurement cannot begin without both `C03` and
 
 No implementation lane may run Ollama load, benchmark, or profiling work during this wave. Documentation-only work may continue if it does not change measured source/configuration or create material host load.
 
-- [x] **T16 [SERIAL-MEASURE; 5:30–7:30; depends: C04, human G1 approval]** Ran the seeded, interleaved `B0_buffered_256`, `I1_streaming_256`, and `I2_buffered_128` matrix: 24 development cases × three conditions × five repetitions. Evidence: `artifacts/authoritative-runs/20260816T110727Z-4b3a9c40865b/`.
-- [x] **C05 [GATE; at 7:30; depends: T16]** Confirmed 360 attempted rows, 360 valid transport attempts, complete identities, exclusive benchmark lock, and zero sustained swap. Thermal observation is explicitly unavailable. Evidence: run manifest.
+- [x] **T16 [SERIAL-MEASURE; 5:30–7:30; depends: C04, human G1 approval]** Reran the seeded, interleaved `B0_buffered_256`, `I1_streaming_256`, and `I2_buffered_128` matrix after fixing live HTTP chunk consumption: 24 development cases × three conditions × five repetitions. Evidence: `artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/`.
+- [x] **C05 [GATE; at 7:30; depends: T16]** Confirmed 360 attempted rows, 360 valid transport attempts, complete identities, exclusive benchmark lock, and zero sustained swap. Thermal observation is explicitly unavailable. Evidence: `artifacts/authoritative-runs/20260816T112509Z-1df7268307b1/run-manifest.json`.
 
 Checkpoint action: if fewer than 360 valid attempts finish, preserve every row and report the actual denominator. Do not retry measured failures or silently extend past the reporting/packaging reserve.
 

@@ -67,11 +67,15 @@ class OllamaClient:
             f"{self._base_url}/api/generate", data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json"}, method="POST",
         )
-        try:
-            with urllib.request.urlopen(request, timeout=self._timeout) as response:
-                return tuple(response)
-        except (OSError, urllib.error.URLError, TimeoutError) as exc:
-            raise OllamaClientError(f"service_unavailable: {type(exc).__name__}: {exc}") from exc
+
+        def response_lines() -> Iterable[bytes]:
+            try:
+                with urllib.request.urlopen(request, timeout=self._timeout) as response:
+                    yield from response
+            except (OSError, urllib.error.URLError, TimeoutError) as exc:
+                raise OllamaClientError(f"service_unavailable: {type(exc).__name__}: {exc}") from exc
+
+        return response_lines()
 
     def generate(
         self,

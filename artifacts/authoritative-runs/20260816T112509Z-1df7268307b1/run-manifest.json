@@ -1,0 +1,37 @@
+{
+  "attempted_count": 360,
+  "by_condition": {
+    "B0_buffered_256": 120,
+    "I1_streaming_256": 120,
+    "I2_buffered_128": 120
+  },
+  "c05": {
+    "accepted": true,
+    "blocking_categories": []
+  },
+  "command": "/Users/dmondal/Documents/week-1-fde/scripts/benchmark.py --conditions B0_buffered_256,I1_streaming_256,I2_buffered_128",
+  "failure_count": 0,
+  "live_identity": {
+    "endpoint": "http://127.0.0.1:11434",
+    "model_digest": "sha256:0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+    "ollama_version": "0.32.13"
+  },
+  "lock": {
+    "acquired_at": "2026-08-16T11:25:09.140916+00:00",
+    "path": "artifacts/authoritative-runs/.benchmark.lock",
+    "pid": 49288
+  },
+  "run_id": "t16-fe7af435d4af4cfab1661df7268307b1",
+  "status": "complete",
+  "swap_observation": {
+    "max_swap_used_bytes": 0,
+    "sample_count": 1274,
+    "sample_interval_ms": 250,
+    "sustained_swap": false
+  },
+  "thermal_observation": {
+    "reason": "no approved host thermal metric or threshold",
+    "status": "unavailable"
+  },
+  "valid_count": 360
+}

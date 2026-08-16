@@ -52,3 +52,31 @@ def test_default_client_uses_loopback_generate_endpoint(monkeypatch):
     assert result.text == "ok"
     assert seen["url"] == "http://127.0.0.1:11434/api/generate"
     assert seen["timeout"] == 7
+
+
+def test_default_client_delivers_each_network_chunk_before_reading_the_next(monkeypatch):
+    events = []
+
+    class Response:
+        def __enter__(self):
+            events.append("opened")
+            return self
+
+        def __exit__(self, *_args):
+            events.append("closed")
+
+        def __iter__(self):
+            events.append("received:first")
+            yield b'{"response":"first"}\n'
+            events.append("received:second")
+            yield b'{"response":"second","done":true}\n'
+
+    monkeypatch.setattr("scripts.ollama_client.urllib.request.urlopen", lambda *_args, **_kwargs: Response())
+    result = OllamaClient().generate(
+        "Question", stream=True, max_tokens=8, on_response_chunk=lambda chunk: events.append(f"displayed:{chunk}")
+    )
+
+    assert result.text == "firstsecond"
+    assert events == [
+        "opened", "received:first", "displayed:first", "received:second", "displayed:second", "closed",
+    ]
